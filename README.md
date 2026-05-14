@@ -10,23 +10,23 @@
 
 ### Capturas de Tela
 
-| | |
-|:-:|---|
-| <img src="docs/screenshots/1.png" width="420" alt="Screenshot 1"> | **Screenshot 1**<br>Descrição em breve. |
-| <img src="docs/screenshots/2.png" width="420" alt="Screenshot 2"> | **Screenshot 2**<br>Descrição em breve. |
-| <img src="docs/screenshots/3.png" width="420" alt="Screenshot 3"> | **Screenshot 3**<br>Descrição em breve. |
-| <img src="docs/screenshots/4.png" width="420" alt="Screenshot 4"> | **Screenshot 4**<br>Descrição em breve. |
-| <img src="docs/screenshots/5.png" width="420" alt="Screenshot 5"> | **Screenshot 5**<br>Descrição em breve. |
-| <img src="docs/screenshots/6.png" width="420" alt="Screenshot 6"> | **Screenshot 6**<br>Descrição em breve. |
-| <img src="docs/screenshots/7.png" width="420" alt="Screenshot 7"> | **Screenshot 7**<br>Descrição em breve. |
-| <img src="docs/screenshots/8.png" width="420" alt="Screenshot 8"> | **Screenshot 8**<br>Descrição em breve. |
-| <img src="docs/screenshots/9.png" width="420" alt="Screenshot 9"> | **Screenshot 9**<br>Descrição em breve. |
-| <img src="docs/screenshots/10.png" width="420" alt="Screenshot 10"> | **Screenshot 10**<br>Descrição em breve. |
-| <img src="docs/screenshots/11.png" width="420" alt="Screenshot 11"> | **Screenshot 11**<br>Descrição em breve. |
-| <img src="docs/screenshots/12.png" width="420" alt="Screenshot 12"> | **Screenshot 12**<br>Descrição em breve. |
-| <img src="docs/screenshots/13.png" width="420" alt="Screenshot 13"> | **Screenshot 13**<br>Descrição em breve. |
-| <img src="docs/screenshots/14.png" width="420" alt="Screenshot 14"> | **Screenshot 14**<br>Descrição em breve. |
-| <img src="docs/screenshots/15.png" width="420" alt="Screenshot 15"> | **Screenshot 15**<br>Descrição em breve. |
+|                                                                     |                                                                                                                                                    |
+| :-----------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  <img src="docs/screenshots/1.png" width="420" alt="Screenshot 1">  | **AGENTE DE IA**<br>Acesso inteligente a IA via chat para automação, suporte e análises em tempo real.                                             |
+|  <img src="docs/screenshots/2.png" width="420" alt="Screenshot 2">  | **AGENTE DE IA VIA TERMINAL**<br>Interaja com a IA diretamente pelo terminal para execução de comandos e automações avançadas.                     |
+|  <img src="docs/screenshots/3.png" width="420" alt="Screenshot 3">  | **UPLOAD DE ARQUIVOS**<br>Envio seguro de arquivos com suporte para múltiplos formatos e gerenciamento centralizado.                               |
+|  <img src="docs/screenshots/4.png" width="420" alt="Screenshot 4">  | **ANALISE BINARIA DE ARQUIVOS E ANTIVIRUS**<br>Realize análise binária e verificação antivírus para identificação de ameaças e arquivos suspeitos. |
+|  <img src="docs/screenshots/5.png" width="420" alt="Screenshot 5">  | **DASHBOARD**<br>Painel completo com métricas, estatísticas e monitoramento em tempo real da plataforma.                                           |
+|  <img src="docs/screenshots/6.png" width="420" alt="Screenshot 6">  | **ACESSO AO TERMINAL DO COMPUTADOR**<br>Controle e acesso remoto ao terminal do sistema diretamente pela plataforma.                               |
+|  <img src="docs/screenshots/7.png" width="420" alt="Screenshot 7">  | **CANAL DE NOTÍCIAS**<br>Acompanhe notícias, atualizações e alertas relevantes em um único ambiente integrado.                                     |
+|  <img src="docs/screenshots/8.png" width="420" alt="Screenshot 8">  | **LISTAGEM DE CVES**<br>Consulta e monitoramento de vulnerabilidades CVE organizadas de forma prática e acessível.                                 |
+|  <img src="docs/screenshots/9.png" width="420" alt="Screenshot 9">  | **DORKS PERSONALIZADAS**<br>Crie e gerencie dorks personalizadas para pesquisas avançadas e investigações específicas.                             |
+| <img src="docs/screenshots/10.png" width="420" alt="Screenshot 10"> | **FERRAMENTAS DE OSINT**<br>Conjunto de ferramentas OSINT para coleta, análise e correlação de informações públicas.                               |
+| <img src="docs/screenshots/11.png" width="420" alt="Screenshot 11"> | **GERENCIADOR DE NOTAS**<br>Organize anotações, observações e informações importantes em um único lugar.                                           |
+| <img src="docs/screenshots/12.png" width="420" alt="Screenshot 12"> | **IMPORTAÇÃO DE TXT**<br>Importe arquivos TXT rapidamente para processamento, análise ou armazenamento automatizado.                               |
+| <img src="docs/screenshots/13.png" width="420" alt="Screenshot 13"> | **PAINEL ADMIN**<br>Área administrativa completa para gerenciamento de usuários, permissões e configurações do sistema.                            |
+| <img src="docs/screenshots/14.png" width="420" alt="Screenshot 14"> | **CONFIGURAÇÃO PERSONALIZADA DE ARMAZENAMENTO**<br>Defina regras e limites personalizados para armazenamento de dados e arquivos.                  |
+| <img src="docs/screenshots/15.png" width="420" alt="Screenshot 15"> | **CONFIGURAR TAMANHO PERMITIDO**<br>Controle o tamanho máximo permitido para uploads e armazenamento de arquivos na plataforma.                    |
 
 ### Requisitos
 

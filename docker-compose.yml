@@ -17,7 +17,7 @@ services:
       timeout: 5s
       retries: 10
 
-  web:
+  gdrive:
     build: .
     container_name: gdrive_web
     restart: unless-stopped

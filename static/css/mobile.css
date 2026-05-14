@@ -1,0 +1,413 @@
+/*
+ * mobile.css — Responsividade global do sistema GDrive
+ * Carregado por último em base_generic.html para sobrescrever com precisão.
+ */
+
+/* ── Safe area (notch / Dynamic Island iOS & Android) ── */
+:root {
+  --safe-top:    env(safe-area-inset-top,    0px);
+  --safe-right:  env(safe-area-inset-right,  0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left,   0px);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   1. HEADER & NAVBAR
+───────────────────────────────────────────────────────────── */
+header {
+  padding-left:  max(12px, var(--safe-left))  !important;
+  padding-right: max(12px, var(--safe-right)) !important;
+}
+
+/* Header padding do div interno (Bootstrap px-5 → menor) */
+header > div {
+  padding-left:  16px !important;
+  padding-right: 16px !important;
+}
+
+/* Logo menor em mobile */
+header .logo,
+header h1.logo {
+  font-size: clamp(1.1rem, 5vw, 1.6rem) !important;
+  white-space: nowrap;
+}
+
+/* Navbar collapse – fundo sólido para leitura */
+.navbar-collapse.show,
+.navbar-collapse.collapsing {
+  background: rgba(8, 8, 20, 0.97) !important;
+  border: 1px solid rgba(0,255,200,.2) !important;
+  border-radius: 10px !important;
+  margin-top: 8px !important;
+  padding: 8px 0 !important;
+}
+
+.navbar-nav .nav-link {
+  padding: 10px 20px !important;
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.navbar-toggler {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 6px !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   2. BODY PADDING-TOP (reduzir em mobile)
+───────────────────────────────────────────────────────────── */
+@media (max-width: 991px) {
+  body {
+    padding-top: 100px !important;
+  }
+}
+@media (max-width: 480px) {
+  body {
+    padding-top: 80px !important;
+  }
+}
+@media (max-width: 380px) {
+  body {
+    padding-top: 72px !important;
+    padding-left:  var(--safe-left)  !important;
+    padding-right: var(--safe-right) !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   3. BOTÕES — touch target mínimo 44px (Apple/Android HIG)
+───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .btn-modern,
+  .btn,
+  button:not(.navbar-toggler):not(.preview-close):not(.preview-btn) {
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Botões pequenos (small) ficam um pouco menores mas ainda tocáveis */
+  .btn-modern.small {
+    min-height: 38px !important;
+    padding: 6px 14px !important;
+    font-size: 0.82rem !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   4. INPUTS & FORMULÁRIOS
+───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Search form empilha verticalmente */
+  .search-form {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  .search-form input[type="text"],
+  .search-form input[type="search"] {
+    width: 100% !important;
+    font-size: 16px !important; /* evita zoom automático no iOS */
+  }
+  .search-form button { width: 100% !important; }
+
+  /* Inputs gerais sem zoom no iOS (font-size mínimo 16px) */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="number"],
+  input[type="url"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    min-height: 44px !important;
+  }
+
+  /* filter-section (CVE, Dorks) */
+  .filter-section {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .filter-section input,
+  .filter-section select,
+  .filter-section button {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   5. TABELAS → card layout em mobile
+───────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Wrapper para scroll horizontal como fallback */
+  .table-responsive-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+  }
+
+  /* Card table: esconde cabeçalho e converte rows em cards */
+  table.mobile-cards thead {
+    display: none !important;
+  }
+  table.mobile-cards,
+  table.mobile-cards tbody,
+  table.mobile-cards tr,
+  table.mobile-cards td {
+    display: block !important;
+    width: 100% !important;
+  }
+  table.mobile-cards tr {
+    background: rgba(13,13,26,.9) !important;
+    border: 1px solid rgba(0,255,200,.2) !important;
+    border-radius: 10px !important;
+    margin-bottom: 12px !important;
+    padding: 4px 0 !important;
+  }
+  table.mobile-cards td {
+    padding: 8px 14px !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(0,255,200,.06) !important;
+    font-size: 13px !important;
+  }
+  table.mobile-cards td:last-child { border-bottom: none !important; }
+  table.mobile-cards td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(0,255,200,.6);
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    margin-bottom: 3px;
+  }
+
+  /* CVE table — overflow-x para tabelas que não usam mobile-cards */
+  .cve-table-wrapper,
+  .results-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   6. GRIDS — gaps e paddings menores em mobile
+───────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .stats-grid,
+  .files-grid,
+  .folder-list {
+    gap: 10px !important;
+  }
+  .stat-card,
+  .file-card,
+  .form-card,
+  .search-card {
+    padding: 14px !important;
+  }
+  .page-header {
+    padding: 16px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .stats-grid,
+  .files-grid {
+    gap: 8px !important;
+  }
+  .stat-card,
+  .file-card {
+    padding: 12px !important;
+  }
+  .page-title {
+    font-size: 1.25rem !important;
+  }
+  .page-subtitle {
+    font-size: 0.9rem !important;
+  }
+  /* Ações do arquivo em coluna */
+  .file-actions {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+  .file-actions .btn-modern {
+    width: 100% !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   7. MODAL DE PREVIEW — ajuste em mobile
+───────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .preview-container {
+    max-width: 100vw !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+  .preview-overlay {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+  .preview-body img,
+  .preview-body video {
+    max-height: 70dvh !important;
+    border-radius: 0 !important;
+  }
+  .preview-body iframe {
+    width: 100vw !important;
+    height: 70dvh !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   8. MAIN CONTENT — padding responsivo
+───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  main[style*="padding-left: 8%"],
+  main[style*="padding-right: 8%"] {
+    padding-left:  14px !important;
+    padding-right: 14px !important;
+  }
+
+  /* Seções com padding-top fixo */
+  main {
+    padding-top: 20px !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   9. BREADCRUMBS
+───────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .breadcrumb-modern {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    padding: 10px !important;
+  }
+  .breadcrumb-separator {
+    display: none !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   10. AÇÕES DO TOOLBAR (selecionar/excluir)
+───────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .actions-toolbar {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+  }
+  .action-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .action-buttons .btn-modern,
+  .action-buttons a.btn-modern {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   11. PAGINAÇÃO
+───────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .pagination-bar {
+    gap: 6px !important;
+    padding: 14px 8px !important;
+  }
+  .pagination-bar .btn-modern {
+    padding: 6px 10px !important;
+    font-size: 0.8rem !important;
+  }
+  .pagination-info {
+    font-size: 0.8rem !important;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   12. PASTAS — itens responsivos
+───────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .folder-item-modern {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+  .folder-actions-modern {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+  }
+  .folder-actions-modern .btn-modern {
+    flex: 1 !important;
+    text-align: center !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   13. CARDS DE ESTATÍSTICAS — texto menor
+───────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .stat-value {
+    font-size: 1.4rem !important;
+  }
+  .stat-header .stat-icon {
+    font-size: 1.6rem !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   14. FOOTER — safe area bottom (home indicator iOS)
+───────────────────────────────────────────────────────────── */
+footer {
+  padding-bottom: max(16px, calc(8px + var(--safe-bottom))) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   15. DASHBOARD — grid responsivo
+───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .row.g-4 > [class*="col-"] {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+@media (max-width: 480px) {
+  .card-hover {
+    margin-bottom: 12px !important;
+  }
+  h2 { font-size: 1.3rem !important; }
+  h4 { font-size: 1rem !important; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   16. UTILITÁRIOS — texto não transborda
+───────────────────────────────────────────────────────────── */
+.file-name,
+.folder-name,
+.note-title {
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+  max-width: 100% !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   17. PREVENT iOS auto-zoom on focus (garantia)
+───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  input, textarea, select {
+    font-size: max(16px, 1em) !important;
+  }
+}

@@ -1,0 +1,797 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    :root {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d2d2d;
+      --bg-card: #343a40;
+      --text-primary: #ffffff;
+      --text-secondary: #b0b0b0;
+      --border-color: #495057;
+      --accent-primary: #007bff;
+      --accent-success: #28a745;
+      --accent-warning: #ffc107;
+      --accent-info: #17a2b8;
+    }
+    
+    @media (max-width: 768px) {
+      main {
+        padding-top: 15%;
+      }
+    }
+    
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+    }
+    
+    .card {
+      transition: transform 0.2s;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+    }
+    
+    .card-header {
+      background-color: var(--bg-secondary) !important;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary) !important;
+    }
+    
+    .card-title {
+      color: var(--text-primary) !important;
+      font-weight: 600;
+    }
+    
+    .badge-count {
+      font-size: 0.7rem;
+    }
+    
+    .display-6 {
+      font-size: 2rem;
+      font-weight: 300;
+      line-height: 1.2;
+      color: var(--text-primary);
+    }
+    
+    .text-decoration-none {
+      color: var(--text-primary) !important;
+    }
+    
+    .text-decoration-none:hover {
+      color: var(--text-primary) !important;
+      text-decoration: none !important;
+    }
+    
+    .bg-light {
+      background-color: var(--bg-secondary) !important;
+    }
+    
+    .btn-outline-secondary, .btn-outline-primary {
+      border-width: 1px;
+      color: var(--text-primary);
+    }
+    
+    .btn-outline-primary {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+    
+    .btn-outline-primary:hover {
+      background-color: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+    
+    .btn-outline-success {
+      border-color: var(--accent-success);
+      color: var(--accent-success);
+    }
+    
+    .btn-outline-success:hover {
+      background-color: var(--accent-success);
+      border-color: var(--accent-success);
+    }
+    
+    .btn-outline-warning {
+      border-color: var(--accent-warning);
+      color: var(--accent-warning);
+    }
+    
+    .btn-outline-warning:hover {
+      background-color: var(--accent-warning);
+      border-color: var(--accent-warning);
+      color: var(--bg-primary);
+    }
+    
+    .btn-outline-info {
+      border-color: var(--accent-info);
+      color: var(--accent-info);
+    }
+    
+    .btn-outline-info:hover {
+      background-color: var(--accent-info);
+      border-color: var(--accent-info);
+    }
+    
+    .list-group-item {
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+    }
+    
+    .list-group-item:last-child {
+      border-bottom: none;
+    }
+    
+    .text-muted {
+      color: var(--text-secondary) !important;
+    }
+    
+    /* Cores específicas para headers */
+    .bg-primary {
+      background-color: var(--accent-primary) !important;
+    }
+    
+    .bg-success {
+      background-color: var(--accent-success) !important;
+    }
+    
+    .bg-info {
+      background-color: var(--accent-info) !important;
+    }
+    
+    .bg-secondary {
+      background-color: var(--bg-secondary) !important;
+    }
+    
+    /* Links dentro do card */
+    a.text-primary, a.text-success, a.text-danger {
+      color: var(--text-primary) !important;
+    }
+    
+    a.text-primary:hover, a.text-success:hover, a.text-danger:hover {
+      color: var(--text-secondary) !important;
+    }
+    
+    /* Badges */
+    .badge.bg-primary {
+      background-color: var(--accent-primary) !important;
+    }
+    
+    .badge.bg-success {
+      background-color: var(--accent-success) !important;
+    }
+    
+    .badge.bg-info {
+      background-color: var(--accent-info) !important;
+    }
+    
+    /* Modal no tema escuro */
+    .modal-content {
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+    }
+    
+    .modal-header {
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .modal-footer {
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .form-control, .form-select {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+    
+    .form-control:focus, .form-select:focus {
+      background-color: var(--bg-secondary);
+      border-color: var(--accent-primary);
+      color: var(--text-primary);
+    }
+    
+    .form-text {
+      color: var(--text-secondary) !important;
+    }
+    
+    /* Toast notifications */
+    .toast {
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+    }
+    
+    .toast-header {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    /* Tabelas (se houver) */
+    .table {
+      color: var(--text-primary);
+    }
+    
+    .table-hover tbody tr:hover {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+</style>
+
+
+<div class="container my-5">
+    <h1 class="mb-4 text-center">Dashboard - KnowledgeVault</h1>
+
+    <!-- Barra de Pesquisa -->
+    <div class="container mt-4 mb-5">
+        <form method="get" action="{% url 'search_all' %}" class="row g-2 align-items-center">
+          <div class="col-auto flex-grow-1">
+            <input type="text" name="q" class="form-control form-control-lg" placeholder="🔍 Pesquisar no sistema (arquivos, notas, CVEs, projetos...)">
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-lg">Pesquisar</button>
+          </div>
+          <div class="col-auto">
+            <a href="{% url 'dork_search' %}" class="btn btn-outline-secondary btn-lg">Pesquisa Avançada</a>
+          </div>
+          <div class="col-auto">
+            <a href="{% url 'debug_shared_resources' %}" class="btn btn-outline-info btn-sm">Debug Compartilhamento</a>
+          </div>
+        </form>
+    </div>
+
+    <!-- Cards de Resumo -->
+    <div class="row g-4 mb-5">
+        <!-- Notas -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'notes_list' %}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm p-3 h-100 text-center">
+                    <h5 class="card-title">📝 Notas</h5>
+                    <p class="card-text display-6">{{ notes|length }}</p>
+                    <p class="text-muted">
+                        <span class="badge bg-primary badge-count">Suas: {{ notes|length }}</span>
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- CVEs -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'cve_list' %}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm p-3 h-100 text-center">
+                    <h5 class="card-title">🛡️ CVEs</h5>
+                    <p class="card-text display-6">{{ cves|length }}</p>
+                    <p class="text-muted">
+                        <span class="badge bg-primary badge-count">Suas: {{ user_cves_count|default:cves|length }}</span>
+                        {% if shared_cves_count %}
+                        <span class="badge bg-success badge-count">Compart.: {{ shared_cves_count }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Dorks -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'dork_list' %}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm p-3 h-100 text-center">
+                    <h5 class="card-title">🧠 Dorks</h5>
+                    <p class="card-text display-6">{{ dorks|length }}</p>
+                    <p class="text-muted">
+                        <span class="badge bg-primary badge-count">Suas: {{ user_dorks_count|default:dorks|length }}</span>
+                        {% if shared_dorks_count %}
+                        <span class="badge bg-success badge-count">Compart.: {{ shared_dorks_count }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Ferramentas -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'tool_list' %}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm p-3 h-100 text-center">
+                    <h5 class="card-title">🧰 Ferramentas</h5>
+                    <p class="card-text display-6">{{ tools|length }}</p>
+                    <p class="text-muted">
+                        <span class="badge bg-primary badge-count">Suas: {{ user_tools_count }}</span>
+                        {% if shared_tools_count %}
+                        <span class="badge bg-success badge-count">Compart.: {{ shared_tools_count }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Projetos -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'project_list' %}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm p-3 h-100 text-center">
+                    <h5 class="card-title">📁 Projetos</h5>
+                    <p class="card-text display-6">{{ projects|length }}</p>
+                    <p class="text-muted">
+                        <span class="badge bg-primary badge-count">Seus: {{ projects|length }}</span>
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Arquivos -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'file_list' %}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm p-3 h-100 text-center">
+                    <h5 class="card-title">📂 Arquivos</h5>
+                    <p class="card-text display-6">{{ files|length }}</p>
+                    <p class="text-muted">
+                        <span class="badge bg-primary badge-count">Seus: {{ user_files_count|default:files|length }}</span>
+                        {% if shared_files_count %}
+                        <span class="badge bg-success badge-count">Compart.: {{ shared_files_count }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Links -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'resource_links_list' %}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm p-3 h-100 text-center">
+                    <h5 class="card-title">🔗 Links</h5>
+                    <p class="card-text display-6">{{ resource_links|length }}</p>
+                    <p class="text-muted">
+                        <span class="badge bg-primary badge-count">Seus: {{ user_links_count|default:resource_links|length }}</span>
+                        {% if shared_links_count %}
+                        <span class="badge bg-success badge-count">Compart.: {{ shared_links_count }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Canais YouTube -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'youtube_channels_list' %}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm p-3 h-100 text-center">
+                    <h5 class="card-title">📺 Canais YouTube</h5>
+                    <p class="card-text display-6">{{ channels|length }}</p>
+                    <p class="text-muted">
+                        <span class="badge bg-primary badge-count">Seus: {{ user_channels_count }}</span>
+                        {% if shared_channels_count %}
+                        <span class="badge bg-success badge-count">Compart.: {{ shared_channels_count }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Análise Binária -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <a href="{% url 'binary_analyzer:list' %}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm p-3 h-100 text-center">
+                    <h5 class="card-title">🔍 Análise Binária</h5>
+                    <p class="card-text display-6">{{ binary_analyses_count|default:0 }}</p>
+                    <p class="text-muted">
+                        {% if binary_high_risk_count %}
+                        <span class="badge bg-danger badge-count">Alto risco: {{ binary_high_risk_count }}</span>
+                        {% endif %}
+                        {% if binary_pending_count %}
+                        <span class="badge bg-warning text-dark badge-count">Em análise: {{ binary_pending_count }}</span>
+                        {% endif %}
+                        {% if not binary_high_risk_count and not binary_pending_count %}
+                        <span class="badge bg-secondary badge-count">APK / EXE / DLL</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Seção de Notícias -->
+    <div class="row mb-5">
+        <!-- Notícias em Português -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">📰 Notícias Cybersecurity (Português)</h3>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% for item in news_pt %}
+                    <div class="mb-3 pb-2 border-bottom">
+                        <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer" class="fw-semibold text-primary text-decoration-none">
+                            {{ item.title }}
+                        </a>
+                        <div>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>{{ item.published }}
+                            </small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-newspaper fa-2x mb-2"></i>
+                        <p>Sem notícias no momento.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Notícias em Inglês -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">🌐 Cybersecurity News (English)</h3>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% for item in news_en %}
+                    <div class="mb-3 pb-2 border-bottom">
+                        <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer" class="fw-semibold text-success text-decoration-none">
+                            {{ item.title }}
+                        </a>
+                        <div>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>{{ item.published }}
+                            </small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-newspaper fa-2x mb-2"></i>
+                        <p>No news available at the moment.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Canais do YouTube -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="fab fa-youtube me-2"></i>Canais do YouTube 
+                        <small class="fs-6 opacity-75">
+                            ({{ user_channels_count }} seus + {{ shared_channels_count }} compartilhados)
+                        </small>
+                    </h3>
+                    <div>
+                        <a href="{% url 'youtube_channels_list' %}" class="btn btn-sm btn-light me-2">
+                            <i class="fas fa-list me-1"></i> Ver Todos
+                        </a>
+                        <a href="{% url 'add_youtube_channel' %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-plus me-1"></i> Adicionar Canal
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if channels %}
+                        <div class="list-group list-group-flush">
+                            {% for channel in channels|slice:":5" %}
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <a href="{{ channel.url }}" target="_blank" class="fw-semibold text-danger text-decoration-none me-2">
+                                            <i class="fab fa-youtube me-1"></i>{{ channel.name }}
+                                        </a>
+                                        {% if channel.user != request.user %}
+                                        <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">
+                                            <i class="fas fa-share-alt me-1"></i>Compartilhado por {{ channel.user.username }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    {% if channel.description %}
+                                    <small class="text-muted">{{ channel.description|truncatewords:20 }}</small>
+                                    {% else %}
+                                    <small class="text-muted fst-italic">Sem descrição</small>
+                                    {% endif %}
+                                </div>
+                                {% if channel.user == request.user %}
+                                <button class="btn btn-sm btn-outline-secondary share-btn ms-2" 
+                                        data-resource-type="youtube_channel" 
+                                        data-resource-id="{{ channel.id }}"
+                                        data-resource-name="{{ channel.name }}"
+                                        title="Compartilhar canal">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if channels|length > 5 %}
+                        <div class="text-center mt-3">
+                            <a href="{% url 'youtube_channels_list' %}" class="btn btn-outline-primary btn-sm">
+                                Ver todos os {{ channels|length }} canais
+                            </a>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fab fa-youtube fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Nenhum canal adicionado ainda.</p>
+                            <a href="{% url 'add_youtube_channel' %}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i> Adicionar Primeiro Canal
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">⚡ Ações Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'upload_file' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-upload me-1"></i> Upload Arquivo
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'add_note' %}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-plus me-1"></i> Nova Nota
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'add_cve' %}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-shield-alt me-1"></i> Adicionar CVE
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'add_project' %}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-folder-plus me-1"></i> Novo Projeto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Compartilhamento -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareModalLabel">Compartilhar Recurso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="shareForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="resourceType" name="resource_type">
+                    <input type="hidden" id="resourceId" name="resource_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Compartilhar com:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="shared_with_all" id="sharePublic" value="true">
+                            <label class="form-check-label" for="sharePublic">
+                                <i class="fas fa-globe me-1"></i>Todos os usuários (público)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="shared_with_all" id="shareSpecific" value="false" checked>
+                            <label class="form-check-label" for="shareSpecific">
+                                <i class="fas fa-users me-1"></i>Usuários específicos
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3" id="usersSelect">
+                        <label class="form-label fw-bold">Selecionar usuários:</label>
+                        <select class="form-select" multiple name="users" id="userSelect" size="5">
+                            <option disabled>Carregando usuários...</option>
+                        </select>
+                        <div class="form-text">Segure Ctrl (ou Cmd no Mac) para selecionar múltiplos usuários</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Permissão:</label>
+                        <select class="form-select" name="permission" id="permissionSelect">
+                            <option value="view">👀 Apenas Visualização</option>
+                            <option value="edit">✏️ Permitir Edição</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmShare">
+                    <i class="fas fa-share-alt me-1"></i>Compartilhar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast para notificações -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Sistema</strong>
+            <small class="text-muted">agora</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            <!-- Mensagem será inserida via JavaScript -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Inicializar toasts
+    const toastEl = document.getElementById('liveToast');
+    const toast = new bootstrap.Toast(toastEl);
+
+    // Função para mostrar notificações toast
+    function showToast(message, type = 'info') {
+        const toastMessage = document.getElementById('toastMessage');
+        toastMessage.textContent = message;
+        
+        // Adicionar ícone baseado no tipo
+        let icon = 'ℹ️';
+        if (type === 'success') {
+            icon = '✅';
+            toastMessage.className = 'toast-body text-success';
+        } else if (type === 'error') {
+            icon = '❌';
+            toastMessage.className = 'toast-body text-danger';
+        } else if (type === 'warning') {
+            icon = '⚠️';
+            toastMessage.className = 'toast-body text-warning';
+        } else {
+            toastMessage.className = 'toast-body text-info';
+        }
+        
+        toastMessage.innerHTML = `${icon} ${message}`;
+        toast.show();
+    }
+
+    // JavaScript para o compartilhamento
+    $('.share-btn').click(function() {
+        const resourceType = $(this).data('resource-type');
+        const resourceId = $(this).data('resource-id');
+        const resourceName = $(this).data('resource-name');
+        
+        $('#resourceType').val(resourceType);
+        $('#resourceId').val(resourceId);
+        $('#shareModalLabel').text(`Compartilhar: ${resourceName}`);
+        
+        // Mostrar loading
+        $('#userSelect').html('<option disabled>Carregando usuários...</option>');
+        
+        // Carregar usuários disponíveis
+        $.get('/get_shareable_users/', function(data) {
+            $('#userSelect').empty();
+            if (data.users && data.users.length > 0) {
+                data.users.forEach(function(user) {
+                    $('#userSelect').append(
+                        $('<option>', {
+                            value: user.id,
+                            text: `${user.username} (${user.email})`
+                        })
+                    );
+                });
+                showToast(`${data.users.length} usuários carregados`, 'success');
+            } else {
+                $('#userSelect').append(
+                    $('<option>', {
+                        disabled: true,
+                        text: 'Nenhum usuário disponível para compartilhamento'
+                    })
+                );
+                showToast('Nenhum usuário disponível para compartilhamento', 'warning');
+            }
+        }).fail(function(xhr) {
+            console.error('Erro ao carregar usuários:', xhr);
+            $('#userSelect').empty().append(
+                $('<option>', {
+                    disabled: true,
+                    text: 'Erro ao carregar usuários'
+                })
+            );
+            showToast('Erro ao carregar lista de usuários', 'error');
+        });
+        
+        $('#shareModal').modal('show');
+    });
+    
+    $('#confirmShare').click(function() {
+        const formData = $('#shareForm').serialize();
+        const button = $(this);
+        const originalText = button.html();
+        
+        // Mostrar loading
+        button.html('<i class="fas fa-spinner fa-spin me-1"></i>Compartilhando...');
+        button.prop('disabled', true);
+        
+        $.ajax({
+            url: '/share_resource/',
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    $('#shareModal').modal('hide');
+                    showToast(response.message || 'Recurso compartilhado com sucesso!', 'success');
+                    // Recarregar após 2 segundos para atualizar contagens
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else if (response.error) {
+                    showToast('Erro: ' + response.error, 'error');
+                }
+            },
+            error: function(xhr) {
+                let errorMessage = 'Erro ao compartilhar recurso';
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.error) {
+                        errorMessage = response.error;
+                    }
+                } catch (e) {
+                    errorMessage = xhr.statusText || 'Erro de conexão';
+                }
+                showToast(errorMessage, 'error');
+            },
+            complete: function() {
+                // Restaurar botão
+                button.html(originalText);
+                button.prop('disabled', false);
+            }
+        });
+    });
+
+    // Mostrar/ocultar seletor de usuários baseado no tipo de compartilhamento
+    $('input[name="shared_with_all"]').change(function() {
+        if ($(this).val() === 'true') {
+            $('#usersSelect').hide();
+        } else {
+            $('#usersSelect').show();
+        }
+    });
+
+    // Inicializar estado
+    if ($('#sharePublic').is(':checked')) {
+        $('#usersSelect').hide();
+    }
+
+    // Adicionar animação aos cards
+    $('.card').hover(
+        function() {
+            $(this).addClass('shadow-lg');
+        },
+        function() {
+            $(this).removeClass('shadow-lg');
+        }
+    );
+
+    // Mostrar contagem total de recursos
+    const totalResources = {{ files|length }} + {{ notes|length }} + {{ cves|length }} + {{ dorks|length }} + {{ tools|length }} + {{ projects|length }} + {{ resource_links|length }} + {{ channels|length }};
+    console.log(`Total de recursos no sistema: ${totalResources}`);
+});
+</script>
+{% endblock %}

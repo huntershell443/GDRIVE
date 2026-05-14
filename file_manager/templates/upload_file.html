@@ -1,0 +1,690 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<style>
+@media (max-width: 768px) {
+  main {
+    padding-top: 15%;
+  }
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
+}
+#uploadButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.progress {
+  height: 25px;
+  background-color: #121827 !important;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #00ffc8 !important;
+}
+.progress-bar-striped {
+  background-image: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);
+  background-size: 1rem 1rem;
+}
+.progress-bar-animated {
+  animation: progress-bar-stripes 1s linear infinite;
+}
+@keyframes progress-bar-stripes {
+  0% { background-position: 1rem 0; }
+  100% { background-position: 0 0; }
+}
+#progressContainer {
+  margin: 20px 0;
+}
+.file-info {
+  font-size: 0.9em;
+  color: #70c7bc !important;
+}
+.time-info {
+  font-size: 0.8em;
+  color: #a0eaff !important;
+}
+.global-option {
+  background: rgba(10, 10, 30, 0.9) !important;
+  border-left: 4px solid #28a745 !important;
+  color: #e0e0e0 !important;
+}
+
+/* Ajustar texto do checkbox global */
+.form-check-label {
+  color: #e0e0e0 !important;
+}
+
+.form-text {
+  color: #a0eaff !important;
+}
+
+/* Forçar tema escuro no formulário de upload */
+#uploadForm.card {
+  background-color: rgba(10, 10, 30, 0.9) !important;
+  border: 1px solid #00ffc8 !important;
+  color: #e0e0e0 !important;
+  box-shadow: 0 4px 10px #00ffc8 !important;
+}
+
+/* Forçar tema escuro no modal de sucesso */
+.modal-content {
+  background-color: rgba(10, 10, 30, 0.95) !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #00ffc8 !important;
+}
+
+.modal-header {
+  border-bottom: 1px solid #00ffc8 !important;
+}
+
+.modal-footer {
+  border-top: 1px solid #00ffc8 !important;
+}
+
+/* Ajustar cores dos textos no modal */
+.modal-body p {
+  color: #e0e0e0 !important;
+}
+
+.modal-title {
+  color: #00ffc8 !important;
+}
+
+/* Ajustar botões no modal */
+.modal-footer .btn {
+  background-color: #00ffc8 !important;
+  color: #0f111a !important;
+  border: none !important;
+}
+
+.modal-footer .btn:hover {
+  background-color: #00d4a8 !important;
+  color: #fff !important;
+}
+
+/* Ajustar botão close do modal */
+.btn-close {
+  filter: invert(1) !important;
+}
+
+/* Garantir que o modal tenha fundo escuro */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Ajustar lista de nomes de arquivos */
+#file-name-list p {
+  color: #70c7bc !important;
+}
+
+/* Ajustar botão secundário no modal */
+.btn-secondary {
+  background-color: #6c757d !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268 !important;
+  color: #fff !important;
+}
+
+/* Ajustar itens de progresso individual */
+.file-upload-item {
+  background: rgba(10, 10, 30, 0.8) !important;
+  border: 1px solid #00ffc8 !important;
+  color: #e0e0e0 !important;
+}
+
+.file-upload-item .progress-bar {
+  background-color: #00ffc8 !important;
+}
+
+/* Modal de Erro */
+.file-upload-item .upload-status.error-status {
+  color: #ff6b6b !important;
+}
+
+/* Forçar fundo escuro no container principal */
+.container.mt-5 {
+  background-color: rgba(10, 10, 30, 0.9) !important;
+  border-radius: 10px !important;
+  padding: 20px !important;
+  box-shadow: 0 4px 10px #00ffc8 !important;
+  border: 1px solid #00ffc8 !important;
+}
+
+/* Ajustar título */
+h2.text-center {
+  color: #00ffc8 !important;
+  text-shadow: 0 0 8px #00ffc8 !important;
+}
+
+/* Ajustar labels e selects */
+.form-label {
+  color: #a0eaff !important;
+}
+
+.form-control {
+  background-color: #121827 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #00ffc8 !important;
+}
+
+.form-control:focus {
+  background-color: #0f111a !important;
+  color: #e0e0e0 !important;
+  border-color: #00ffc8 !important;
+  box-shadow: 0 0 8px #00ffc8 !important;
+}
+
+/* Ajustar botão de upload */
+.btn-primary {
+  background-color: #00ffc8 !important;
+  color: #0f111a !important;
+  border: none !important;
+}
+
+.btn-primary:hover {
+  background-color: #00d4a8 !important;
+  color: #fff !important;
+}
+
+/* ── File input responsivo ─────────────────────────────────── */
+input[type="file"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: #121827;
+  color: #e0e0e0;
+  border: 1px solid #00ffc8;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+  background-color: #00ffc8;
+  color: #0f111a;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  margin-right: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: #00d4a8;
+}
+
+/* Container responsivo — sem overflow lateral */
+.container.mt-5 {
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+@media (max-width: 576px) {
+  .container.mt-5 {
+    padding: 12px !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    width: calc(100% - 16px) !important;
+    max-width: 100% !important;
+  }
+
+  #uploadForm.card {
+    padding: 12px !important;
+  }
+
+  input[type="file"] {
+    font-size: 0.82rem;
+  }
+
+  input[type="file"]::file-selector-button {
+    padding: 4px 8px;
+    font-size: 0.82rem;
+  }
+}
+</style>
+
+<div class="container mt-5" style="max-width: 800px;">
+  <h2 class="text-center mb-4" style="color: #4CAF50;">Upload de Arquivos</h2>
+
+  <form id="uploadForm" method="post" enctype="multipart/form-data" class="card p-4">
+    {% csrf_token %}
+
+    <!-- Opção de Arquivo Global -->
+    <div class="mb-3 global-option p-3 rounded" style="background: transparent; color:#fff">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" name="is_global" id="is_global" value="true">
+        <label class="form-check-label fw-bold text-success" for="is_global">
+          <i class="fas fa-globe-americas me-2"></i>Tornar arquivo global
+        </label>
+        <div class="form-text">
+          Se ativado, este arquivo ficará visível para <strong>TODOS os usuários</strong> do sistema
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="folder" class="form-label">Enviar para a pasta:</label>
+      <select name="folder" id="folder" class="form-control" style="background: transparent; color: #222;">
+        <option value="">Raiz</option>
+        {% for folder in folders %}
+          <option value="{{ folder.id }}">{{ folder.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group mb-3" style="min-width:0; overflow:hidden;">
+      <label for="{{ form.file.id_for_label }}" class="form-label">Escolha os arquivos</label>
+      <input type="file" name="file" id="{{ form.file.id_for_label }}" multiple>
+      <div id="file-name-list" class="mt-2 text-muted" style="word-break:break-all; overflow-wrap:anywhere;"></div>
+    </div>
+
+    <!-- Barra de Progresso -->
+    <div id="progressContainer" style="display: none;">
+      <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <strong id="progressText" class="text-primary">0%</strong>
+          <span id="fileInfo" class="file-info">Preparando upload...</span>
+        </div>
+        <div class="progress">
+          <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+               role="progressbar" style="width: 0%;" 
+               aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          </div>
+        </div>
+        <div class="mt-2 text-center">
+          <small id="timeRemaining" class="time-info">Calculando tempo restante...</small>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100" id="uploadButton" style="background-color: #4CAF50; border-color: #4CAF50;">
+      <span id="buttonText">Enviar Arquivos</span>
+      <div id="buttonSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></div>
+    </button>
+  </form>
+</div>
+
+<!-- Modal de Sucesso -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-success">✅ Upload Concluído!</h5>
+      </div>
+      <div class="modal-body">
+        <p>Seus arquivos foram enviados com sucesso!</p>
+        <p id="successMessage" class="text-muted"></p>
+        <p id="globalStatus" class="fw-bold"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fazer outro Upload</button>
+        <a href="{% url 'file_list' %}" class="btn btn-primary">Ver Arquivos</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de arquivos com falha (reenvio seletivo) -->
+<div class="modal fade" id="failedFilesModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content" style="background:rgba(10,10,30,0.97); border:1px solid #ff4444;">
+      <div class="modal-header" style="border-bottom:1px solid #ff4444;">
+        <h5 class="modal-title" style="color:#ff6b6b;">Resultado do Envio</h5>
+      </div>
+      <div class="modal-body">
+        <ul id="failedFilesList" style="list-style:none; padding:0; margin:0;"></ul>
+        <p style="color:#e0e0e0; font-size:0.88em; margin-top:12px; margin-bottom:0;">Os arquivos marcados com ❌ <strong>não foram salvos</strong>. Use o botão abaixo para reenviar <strong>somente eles</strong>.</p>
+      </div>
+      <div class="modal-footer" style="border-top:1px solid #ff4444; flex-wrap:wrap; gap:8px;">
+        <button type="button" id="retryFailedBtn" class="btn btn-warning">🔄 Reenviar somente os arquivos com falha</button>
+        <a href="{% url 'file_list' %}" class="btn btn-primary">Ver Arquivos</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+#failedFilesList li {
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  gap: 3px;
+}
+#failedFilesList li.item-success {
+  background: rgba(0,255,200,0.08);
+  border: 1px solid rgba(0,255,200,0.35);
+}
+#failedFilesList li.item-failed {
+  background: rgba(255,68,68,0.08);
+  border: 1px solid rgba(255,68,68,0.35);
+}
+#failedFilesList .failed-file-name { color: #e0e0e0; font-weight: 600; }
+#failedFilesList .failed-reason    { color: #ff9999; font-size: 0.82em; }
+#failedFilesList .success-label    { color: #00ffc8; font-weight: 600; }
+</style>
+
+<script>
+  class ChunkedUploader {
+    constructor() {
+      this.chunkSize = 2 * 1024 * 1024;
+    }
+
+    async uploadFiles(files, folderId, isGlobal) {
+      const results = [];
+      for (const file of files) {
+        try {
+          let result;
+          if (file.size < 10 * 1024 * 1024) {
+            result = await this.uploadFileNormal(file, folderId, isGlobal);
+          } else {
+            result = await this.uploadFileChunked(file, this.generateUploadId(), folderId, isGlobal);
+          }
+          results.push({ success: true, file, fileName: file.name, isGlobal });
+        } catch (err) {
+          const isHash = err.message.startsWith('HASH_MISMATCH');
+          results.push({
+            success: false, file, fileName: file.name,
+            reason: isHash ? 'Hash divergente — arquivo corrompido no envio' : (err.message || 'Erro desconhecido'),
+          });
+        }
+      }
+      return results;
+    }
+
+    async computeFileHash(file) {
+      if (!window.crypto || !window.crypto.subtle) return null;
+      const buf = await file.arrayBuffer();
+      const hash = await window.crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async uploadFileChunked(file, uploadId, folderId, isGlobal) {
+      const totalChunks = Math.ceil(file.size / this.chunkSize);
+      const el = this.createFileProgressElement(file.name, file.size, true);
+      this.updateFileProgress(el, 0, 'Preparando envio...');
+      const fileHash = await this.computeFileHash(file);
+
+      let lastResult = null;
+      for (let i = 0; i < totalChunks; i++) {
+        const chunk = file.slice(i * this.chunkSize, Math.min((i + 1) * this.chunkSize, file.size));
+        lastResult = await this.uploadChunk(
+          chunk, i, totalChunks, file.name, file.size,
+          uploadId, folderId, isGlobal, el,
+          i === totalChunks - 1 ? fileHash : null
+        );
+        const pct = Math.round(((i + 1) / totalChunks) * 100);
+        this.updateFileProgress(el, pct, 'Enviando parte ' + (i+1) + ' de ' + totalChunks + ' (' + pct + '%)');
+      }
+
+      if (fileHash && lastResult && lastResult.server_hash && lastResult.server_hash !== fileHash) {
+        this.markError(el, '❌ Falha na verificação de integridade');
+        throw new Error('HASH_MISMATCH:' + file.name);
+      }
+
+      this.updateFileProgress(el, 100, fileHash ? '✓ Arquivo salvo! Integridade verificada.' : '✓ Arquivo salvo!');
+      return { success: true };
+    }
+
+    async uploadFileNormal(file, folderId, isGlobal) {
+      const el = this.createFileProgressElement(file.name, file.size, false);
+      this.updateFileProgress(el, 0, 'Preparando envio...');
+      const fileHash = await this.computeFileHash(file);
+
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('folder', folderId || '');
+      fd.append('is_global', isGlobal);
+      if (fileHash) fd.append('fileHash', fileHash);
+      fd.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+      this.updateFileProgress(el, 50, 'Processando arquivo...');
+      const response = await fetch('{% url "upload_file" %}', { method: 'POST', body: fd });
+      const result = await this._parseJson(response, el);
+
+      if (!result.success) {
+        this.markError(el, '❌ ' + (result.error || 'Erro no upload'));
+        throw new Error(result.error_type === 'HASH_MISMATCH' ? 'HASH_MISMATCH:' + file.name : (result.error || 'Erro no upload'));
+      }
+      if (fileHash && result.server_hash && result.server_hash !== fileHash) {
+        this.markError(el, '❌ Falha na verificação de integridade');
+        throw new Error('HASH_MISMATCH:' + file.name);
+      }
+      this.updateFileProgress(el, 100, fileHash ? '✓ Arquivo salvo! Integridade verificada.' : '✓ Arquivo salvo!');
+      return { success: true };
+    }
+
+    async uploadChunk(chunk, idx, total, fileName, fileSize, uploadId, folderId, isGlobal, el, fileHash) {
+      const fd = new FormData();
+      fd.append('file', chunk);
+      fd.append('chunkIndex', idx);
+      fd.append('totalChunks', total);
+      fd.append('fileName', fileName);
+      fd.append('fileSize', fileSize);
+      fd.append('uploadId', uploadId);
+      fd.append('folder', folderId || '');
+      fd.append('is_global', isGlobal);
+      if (fileHash) fd.append('fileHash', fileHash);
+      fd.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+      const response = await fetch('{% url "upload_file" %}', { method: 'POST', body: fd });
+      const result = await this._parseJson(response, el);
+
+      if (!result.success) {
+        this.markError(el, '❌ ' + (result.error || 'Erro no chunk'));
+        throw new Error(result.error_type === 'HASH_MISMATCH' ? 'HASH_MISMATCH:' + fileName : (result.error || 'Erro no chunk'));
+      }
+      return result;
+    }
+
+    async _parseJson(response, el) {
+      const ct = response.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        this.markError(el, '❌ Erro do servidor (HTTP ' + response.status + ')');
+        throw new Error('Servidor retornou HTTP ' + response.status + ' sem JSON');
+      }
+      return response.json();
+    }
+
+    markError(el, msg) {
+      const bar = el.querySelector('.progress-bar');
+      bar.style.background = '#ff4444';
+      bar.style.width = '100%';
+      const st = el.querySelector('.upload-status');
+      st.textContent = msg;
+      st.style.color = '#ff6b6b';
+      this.updateGlobalProgress();
+    }
+
+    createFileProgressElement(fileName, fileSize, isChunked) {
+      const container = document.getElementById('fileProgressContainer');
+      const el = document.createElement('div');
+      el.className = 'file-upload-item mb-3 p-3 border rounded';
+      el.innerHTML =
+        '<div class="d-flex justify-content-between align-items-center">' +
+          '<span class="file-name">' + fileName + '</span>' +
+          '<span class="file-size">' + this.formatFileSize(fileSize) + (isChunked ? ' (Chunked)' : '') + '</span>' +
+        '</div>' +
+        '<div class="progress mt-2" style="height:20px;">' +
+          '<div class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%"></div>' +
+        '</div>' +
+        '<div class="upload-status mt-1 text-small"></div>';
+      container.appendChild(el);
+      return el;
+    }
+
+    updateFileProgress(el, progress, status) {
+      el.querySelector('.progress-bar').style.width = progress + '%';
+      el.querySelector('.upload-status').textContent = status;
+      this.updateGlobalProgress();
+    }
+
+    updateGlobalProgress() {
+      const items = document.querySelectorAll('.file-upload-item');
+      if (!items.length) return;
+      let total = 0;
+      items.forEach(function(item) { total += parseInt(item.querySelector('.progress-bar').style.width) || 0; });
+      const avg = total / items.length;
+      const bar  = document.getElementById('progressBar');
+      const text = document.getElementById('progressText');
+      if (bar)  bar.style.width = avg + '%';
+      if (text) text.textContent = Math.round(avg) + '%';
+    }
+
+    generateUploadId() {
+      return 'upload_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    formatFileSize(bytes) {
+      if (!bytes) return '0 Bytes';
+      const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const uploadForm        = document.getElementById('uploadForm');
+    const fileInput         = document.getElementById('{{ form.file.id_for_label }}');
+    const uploadButton      = document.getElementById('uploadButton');
+    const buttonText        = document.getElementById('buttonText');
+    const buttonSpinner     = document.getElementById('buttonSpinner');
+    const progressContainer = document.getElementById('progressContainer');
+    const fileList          = document.getElementById('file-name-list');
+    const fileInfo          = document.getElementById('fileInfo');
+    const isGlobalCheckbox  = document.getElementById('is_global');
+    const failedList        = document.getElementById('failedFilesList');
+    const retryFailedBtn    = document.getElementById('retryFailedBtn');
+
+    const uploader = new ChunkedUploader();
+    var pendingFailedFiles = [];
+    var currentFolderId = '';
+    var currentIsGlobal = false;
+
+    var failedModal = null;  // instância Bootstrap do modal de falhas
+
+    const fpc = document.createElement('div');
+    fpc.id = 'fileProgressContainer';
+    fpc.className = 'mt-3';
+    progressContainer.querySelector('.mb-3').after(fpc);
+
+    fileInput.addEventListener('change', function () {
+      fileList.innerHTML = '';
+      var totalSize = 0;
+      for (var i = 0; i < fileInput.files.length; i++) {
+        var f = fileInput.files[i];
+        var p = document.createElement('p');
+        p.textContent = (i + 1) + '. ' + f.name + ' (' + uploader.formatFileSize(f.size) + ')';
+        fileList.appendChild(p);
+        totalSize += f.size;
+      }
+      if (fileInput.files.length > 0) {
+        var tot = document.createElement('p');
+        tot.className = 'fw-bold';
+        tot.textContent = 'Total: ' + fileInput.files.length + ' arquivo(s) — ' + uploader.formatFileSize(totalSize);
+        fileList.appendChild(tot);
+      }
+    });
+
+    async function runUpload(files, folderId, isGlobal) {
+      uploadButton.disabled = true;
+      buttonText.textContent = 'Enviando...';
+      buttonSpinner.style.display = 'inline-block';
+      progressContainer.style.display = 'block';
+      document.getElementById('fileProgressContainer').innerHTML = '';
+
+      var totalSize = 0;
+      for (var f of files) totalSize += f.size;
+      fileInfo.textContent = 'Total: ' + files.length + ' arquivo(s) — ' + uploader.formatFileSize(totalSize) + (isGlobal ? ' — 🌍 GLOBAL' : '');
+
+      const results = await uploader.uploadFiles(Array.from(files), folderId, isGlobal);
+      const successful = results.filter(function(r) { return r.success; });
+      const failed     = results.filter(function(r) { return !r.success; });
+
+      // Limpar seleção de arquivos após upload para impedir reenvio acidental
+      fileInput.value = '';
+      fileList.innerHTML = '';
+
+      uploadButton.disabled = false;
+      buttonText.textContent = 'Enviar Arquivos';
+      buttonSpinner.style.display = 'none';
+      isGlobalCheckbox.checked = false;
+
+      if (failed.length === 0) {
+        // Tudo enviado com sucesso — modal de sucesso normal
+        document.getElementById('successMessage').textContent = successful.length + ' arquivo(s) enviado(s) com sucesso!';
+        var gc = successful.filter(function(r) { return r.isGlobal; }).length;
+        document.getElementById('globalStatus').innerHTML = gc > 0
+          ? '<i class="fas fa-globe-americas text-success me-2"></i>' + gc + ' arquivo(s) marcado(s) como GLOBAL'
+          : '<i class="fas fa-user-shield me-2"></i>Arquivos visíveis apenas para você';
+        new bootstrap.Modal(document.getElementById('successModal')).show();
+        pendingFailedFiles = [];
+      } else {
+        // Há falhas — mostrar modal de resultados com lista de sucesso e falha
+        pendingFailedFiles = failed.map(function(r) { return r.file; });
+        failedList.innerHTML = '';
+
+        // Linha de sucesso (se houver)
+        if (successful.length > 0) {
+          var liOk = document.createElement('li');
+          liOk.className = 'item-success';
+          liOk.innerHTML = '<span class="success-label">✅ ' + successful.length + ' arquivo(s) enviado(s) com sucesso</span>';
+          failedList.appendChild(liOk);
+        }
+
+        // Linhas de falha
+        failed.forEach(function(r) {
+          var li = document.createElement('li');
+          li.className = 'item-failed';
+          li.innerHTML =
+            '<span class="failed-file-name">❌ ' + r.fileName + '</span>' +
+            '<span class="failed-reason">⚠️ ' + r.reason + '</span>';
+          failedList.appendChild(li);
+        });
+
+        // Exibir modal de falhas (não o modal de sucesso)
+        if (!failedModal) {
+          failedModal = new bootstrap.Modal(document.getElementById('failedFilesModal'));
+        }
+        failedModal.show();
+      }
+    }
+
+    uploadForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (!fileInput.files.length) { alert('Selecione pelo menos um arquivo antes de enviar.'); return; }
+      currentFolderId = document.getElementById('folder').value;
+      currentIsGlobal = isGlobalCheckbox.checked;
+      await runUpload(fileInput.files, currentFolderId, currentIsGlobal);
+    });
+
+    retryFailedBtn.addEventListener('click', async function () {
+      if (!pendingFailedFiles.length) return;
+      var toRetry = pendingFailedFiles;
+      pendingFailedFiles = [];
+      if (failedModal) failedModal.hide();
+      await runUpload(toRetry, currentFolderId, currentIsGlobal);
+    });
+
+    window.formatFileSize = function(bytes) { return uploader.formatFileSize(bytes); };
+    window.formatTime = function(s) {
+      if (s < 60) return Math.round(s) + ' segundos';
+      if (s < 3600) { var m = Math.floor(s / 60); return m + ' min ' + Math.round(s % 60) + ' seg'; }
+      return Math.floor(s / 3600) + ' h ' + Math.round((s % 3600) / 60) + ' min';
+    };
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<link href="{% static 'css/notes.css' %}" rel="stylesheet">
+
+<style>
+.chat-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  color: #00ffc8;
+}
+
+.conversation-header-box {
+  border: 2px solid #00ffc8;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 0 10px #00ffc8;
+  background-color: transparent;
+}
+
+.conversation-header-box h2 {
+  text-align: center;
+  font-weight: bold;
+  color: #00ffc8;
+  text-shadow: 0 0 8px #00ffc8;
+  margin-bottom: 20px;
+}
+
+.back-link {
+  display: inline-block;
+  color: #00ffc8;
+  border: 2px solid #00ffc8;
+  padding: 8px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  box-shadow: 0 0 6px #00ffc8;
+  transition: 0.3s;
+}
+.back-link:hover {
+  box-shadow: 0 0 12px #00ffc8;
+  text-decoration: none;
+}
+
+.message-card {
+  border: 2px solid #00ffc8;
+  border-radius: 16px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: transparent;
+  color: #00ffc8;
+  box-shadow: 0 0 8px #00ffc8;
+  transition: box-shadow 0.3s ease;
+}
+.message-card:hover {
+  box-shadow: 0 0 12px #00ffc8;
+}
+.sender {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+.content {
+  margin-bottom: 8px;
+}
+.timestamp {
+  font-size: 0.85em;
+  color: #a0fff0;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .conversation-header-box h2 {
+    font-size: 1.5em;
+  }
+}
+</style>
+
+<div class="chat-container">
+  <div class="conversation-header-box">
+    <h2>Detalhes da Conversa</h2>
+    <p><strong>{{ conversation.title }}</strong></p>
+    <a href="{% url 'ai_assistant:conversation_list' %}" class="back-link">← Voltar para lista de conversas</a>
+  </div>
+
+  {% for msg in messages %}
+    <div class="message-card">
+      <div class="sender">{{ msg.get_sender_display }}:</div>
+      <div class="content">{{ msg.content|linebreaksbr }}</div>
+      <div class="timestamp">{{ msg.created_at|date:"d/m/Y H:i:s" }}</div>
+    </div>
+  {% empty %}
+    <p>Essa conversa ainda não possui mensagens.</p>
+  {% endfor %}
+</div>
+{% endblock %}

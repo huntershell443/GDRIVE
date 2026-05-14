@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Terminal Virtual</title>
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #000;
+      overflow: hidden;
+    }
+    #terminal {
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+    }
+    #special-keys {
+      width: 100vw;
+      min-height: 44px;
+      background: #222;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      position: sticky;
+      top: 0;
+      gap: 4px;
+    }
+    .spkey {
+      color: #fff;
+      background: #444;
+      border: none;
+      border-radius: 4px;
+      margin: 2px;
+      padding: 6px 10px;
+      font-size: 1.1em;
+      font-family: monospace;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .spkey:active {
+      background: #666;
+    }
+    @media (max-width: 600px) {
+      #terminal {
+        font-size: 26px !important;
+        min-height: 200px;
+      }
+      #special-keys {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        z-index: 1000;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        background: #222;
+        flex-wrap: wrap;
+        gap: 0;
+        justify-content: center;
+        align-items: stretch;
+        display: flex;
+        flex-direction: row;
+        height: 160px;
+      }
+      .spkey {
+        font-size: 2.2em;
+        flex: 0 0 20vw;
+        min-width: 20vw;
+        max-width: 20vw;
+        margin: 0;
+        box-sizing: border-box;
+        text-align: center;
+        border-radius: 8px;
+        height: 80px;
+        line-height: 1.1;
+        padding: 0;
+      }
+      #extra-keys {
+        width: 100vw;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        background: #222;
+      }
+    }
+    .spkey.selected {
+      background: #1e90ff;
+      color: #fff;
+      border: 2px solid #fff;
+    }
+  </style>
+</head>
+<body>
+  <div id="special-keys" style="display: flex; flex-wrap: wrap; justify-content: center; background: #222; padding: 4px 0;"></div>
+  <div id="terminal"></div>
+  <script>
+    // Todos os botões principais (14)
+    const allMainKeys = [
+      { label: 'CTRL', value: 'CTRL' },
+      { label: 'ALT', value: 'ALT' },
+      { label: 'SHIFT', value: 'SHIFT' },
+      { label: 'TAB', value: '\t' },
+      { label: 'ESC', value: '\x1b' },
+      { label: 'C', value: 'c' },
+      { label: 'Z', value: 'z' },
+      { label: 'D', value: 'd' },
+      { label: '←', value: '\x1b[D' },
+      { label: '→', value: '\x1b[C' },
+      { label: '↑', value: '\x1b[A' },
+      { label: '↓', value: '\x1b[B' },
+      { label: 'BKSP', value: '\u007F' },
+      { label: 'ENTER', value: '\r' }
+    ];
+    // Extras
+    const extraKeys = [
+      { label: '/', value: '/' },
+      { label: '-', value: '-' },
+      { label: '|', value: '|' },
+      { label: 'HOME', value: '\x1bOH' },
+      { label: 'END', value: '\x1bOF' },
+      { label: 'DEL', value: '\x1b[3~' }
+    ];
+    // Estado para teclas modificadoras
+    let modifierState = { shift: false, ctrl: false, alt: false };
+    function sendSpecialKey(val, btn) {
+      if (!window.inputBuffer) window.inputBuffer = '';
+      // Toggle seleção para modificadores
+      if (btn && (val === 'SHIFT' || val === 'CTRL' || val === 'ALT')) {
+        if (btn.classList.contains('selected')) {
+          btn.classList.remove('selected');
+          modifierState[val.toLowerCase()] = false;
+        } else {
+          btn.classList.add('selected');
+          modifierState[val.toLowerCase()] = true;
+        }
+        return;
+      }
+      // Backspace
+      if (val === '\u007F') {
+        if (window.inputBuffer.length > 0) {
+          window.inputBuffer = window.inputBuffer.slice(0, -1);
+          term.write('\b \b');
+        }
+        return;
+      }
+      // Sequências de escape (setas, etc)
+      if (val.startsWith("\x1b")) {
+        socket.send(val);
+        return;
+      }
+      // TAB
+      if (val === '\t') {
+        window.inputBuffer += '\t';
+        term.write('\t');
+        return;
+      }
+      // Combinação de modificadores
+      let charToSend = val;
+      let sendNow = false;
+      // Detecta Ctrl+letra (inclusive C, Z, D, etc.)
+      if (modifierState.ctrl && val.length === 1 && /^[a-zA-Z]$/.test(val)) {
+        // Envia como byte (Uint8Array) para garantir que o backend reconheça corretamente
+        const code = val.toLowerCase().charCodeAt(0) - 96;
+        socket.send(new Uint8Array([code]));
+        term.write('^' + val.toUpperCase());
+        window.inputBuffer = '';
+        // Após uso, desmarca modificadores (exceto shift se quiser manter pressionado)
+        document.querySelectorAll('.spkey.selected').forEach(b => {
+          if (b.innerText !== 'SHIFT') b.classList.remove('selected');
+        });
+        modifierState.ctrl = false;
+        modifierState.alt = false;
+        return;
+      } else {
+        if (modifierState.shift && val.length === 1) {
+          charToSend = val.toUpperCase();
+        }
+        if (modifierState.alt && val.length === 1) {
+          charToSend = '\x1b' + charToSend;
+        }
+      }
+      window.inputBuffer += charToSend;
+      term.write(charToSend);
+      // Após uso, desmarca modificadores (exceto shift se quiser manter pressionado)
+      document.querySelectorAll('.spkey.selected').forEach(b => {
+        if (b.innerText !== 'SHIFT') b.classList.remove('selected');
+      });
+      modifierState.ctrl = false;
+      modifierState.alt = false;
+      // Após uso, desmarca modificadores (exceto shift se quiser manter pressionado)
+      document.querySelectorAll('.spkey.selected').forEach(b => {
+        if (b.innerText !== 'SHIFT') b.classList.remove('selected');
+      });
+      modifierState.ctrl = false;
+      modifierState.alt = false;
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const bar = document.getElementById('special-keys');
+      let showingSet = 0; // 0: primeiros 10, 1: últimos 4 + extras
+      function renderKeys() {
+        bar.innerHTML = '';
+        // Mostra 10 principais (5x2) ou os extras
+        let keysToShow;
+        if (window.innerWidth <= 600) {
+          if (showingSet === 0) {
+            keysToShow = allMainKeys.slice(0, 10); // 0-9
+          } else {
+            keysToShow = allMainKeys.slice(10).concat(extraKeys); // 10-13 + extras
+          }
+        } else {
+          // Desktop: mostra todos os principais + botão mais
+          keysToShow = allMainKeys;
+        }
+        keysToShow.forEach(k => {
+          const btn = document.createElement('button');
+          btn.className = 'spkey';
+          btn.innerText = k.label;
+          btn.onclick = (e) => {
+            if (k.label === 'SHIFT' || k.label === 'CTRL' || k.label === 'ALT') {
+              sendSpecialKey(k.label, btn);
+            } else {
+              if (modifierState.ctrl && ['c','z','d'].includes(k.value)) {
+                sendSpecialKey(k.value, btn);
+              } else {
+                sendSpecialKey(k.value, btn);
+              }
+            }
+          };
+          btn.ondblclick = (e) => {
+            if (btn.classList.contains('selected')) {
+              btn.classList.remove('selected');
+              if (k.label === 'SHIFT') modifierState.shift = false;
+              if (k.label === 'CTRL') modifierState.ctrl = false;
+              if (k.label === 'ALT') modifierState.alt = false;
+            }
+          };
+          bar.appendChild(btn);
+        });
+        // Botão Mais/Menos
+        const moreBtn = document.createElement('button');
+        moreBtn.className = 'spkey';
+        moreBtn.innerText = (window.innerWidth <= 600 ? (showingSet === 0 ? 'Mais' : 'Menos') : 'Mais');
+        moreBtn.onclick = () => {
+          if (window.innerWidth <= 600) {
+            showingSet = showingSet === 0 ? 1 : 0;
+            renderKeys();
+          } else {
+            // Desktop: mostra extras embaixo
+            if (document.getElementById('extra-keys')) {
+              document.getElementById('extra-keys').remove();
+              moreBtn.innerText = 'Mais';
+            } else {
+              const extraDiv = document.createElement('div');
+              extraDiv.id = 'extra-keys';
+              extraDiv.style.display = 'flex';
+              extraDiv.style.flexWrap = 'wrap';
+              extraDiv.style.justifyContent = 'center';
+              extraDiv.style.width = '100vw';
+              extraKeys.forEach(k => {
+                const btn = document.createElement('button');
+                btn.className = 'spkey';
+                btn.innerText = k.label;
+                btn.onclick = () => sendSpecialKey(k.value, btn);
+                extraDiv.appendChild(btn);
+              });
+              bar.appendChild(extraDiv);
+              moreBtn.innerText = 'Menos';
+            }
+          }
+        };
+        bar.appendChild(moreBtn);
+      }
+      renderKeys();
+      window.addEventListener('resize', () => {
+        renderKeys();
+      });
+    });
+    const term = new Terminal({
+      cursorBlink: true,
+      theme: { background: '#000', foreground: '#fff' },
+      fontFamily: 'monospace',
+      fontSize: 16,
+      disableStdin: false,
+      allowTransparency: false,
+      rendererType: 'canvas',
+      convertEol: true
+    });
+    term.open(document.getElementById('terminal'));
+    term.focus();
+    let protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    let ws_url = `${protocol}://${window.location.host}/ws/terminal/{{ project_id }}/`;
+    const socket = new WebSocket(ws_url);
+
+    socket.onopen = function() {
+      term.write('Terminal conectado!\r\n');
+    };
+    socket.onmessage = function(event) {
+      term.write(event.data);
+    };
+    socket.onclose = function() {
+      term.write('\r\n[Conexão encerrada]\r\n');
+    };
+    term.onData(data => {
+      // Buffer local para armazenar o que o usuário digita
+      if (!window.inputBuffer) window.inputBuffer = '';
+      if (data === '\r' || data === '\n') {
+        // Enter pressionado: envia buffer ao backend
+        term.write('\r\n');
+        socket.send(window.inputBuffer + '\n');
+        window.inputBuffer = '';
+      } else if (data === '\u007F' || data === '\b') {
+        // Backspace pressionado
+        if (window.inputBuffer.length > 0) {
+          window.inputBuffer = window.inputBuffer.slice(0, -1);
+          // Apaga o último caractere na tela
+          term.write('\b \b');
+        }
+      } else {
+        // Adiciona caractere ao buffer e mostra na tela
+        window.inputBuffer += data;
+        term.write(data);
+      }
+    });
+  </script>
+</body>
+</html>

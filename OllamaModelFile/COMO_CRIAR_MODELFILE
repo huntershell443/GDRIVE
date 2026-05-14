@@ -1,0 +1,313 @@
+# GUIA COMPLETO — OLLAMA E MODELFILE
+# Documentação do projeto GDrive / Assistente de IA local
+# =========================================================
+
+
+# =========================================================
+# O QUE É O OLLAMA
+# =========================================================
+
+O Ollama é um servidor local de modelos de linguagem (LLMs). Ele baixa e roda
+modelos de IA diretamente no seu computador, sem depender de APIs externas pagas.
+
+Funciona como um servidor REST na porta 11434:
+  http://localhost:11434
+
+O GDrive se conecta a ele via OLLAMA_API_URL configurado no .env.
+
+
+# =========================================================
+# COMANDOS ESSENCIAIS DO OLLAMA
+# =========================================================
+
+-- LISTAR modelos instalados:
+   ollama list
+
+-- BAIXAR um modelo:
+   ollama pull <nome-do-modelo>
+   Exemplo: ollama pull phi3.5
+
+-- RODAR um modelo no terminal (modo chat):
+   ollama run <nome-do-modelo>
+   Exemplo: ollama run CORE-rupto
+
+-- REMOVER um modelo:
+   ollama rm <nome-do-modelo>:<tag>
+   Exemplo: ollama rm llama3.2:latest
+
+-- VER modelos em execução agora:
+   ollama ps
+
+-- VER detalhes de um modelo:
+   ollama show <nome-do-modelo>
+
+-- CRIAR modelo a partir de Modelfile:
+   ollama create <nome-que-voce-quiser> -f ./NomeDoModelfile
+
+-- COPIAR um modelo existente:
+   ollama cp modelo-original novo-nome
+
+-- REINICIAR o servidor Ollama (Windows):
+   taskkill /f /im ollama.exe
+   ollama serve
+
+
+# =========================================================
+# MODELOS RECOMENDADOS
+# =========================================================
+
+Para uso em CPU (sem GPU):
+  phi3.5             — 3.8B — Microsoft — rápido, boa qualidade
+  gemma2:2b          — 2B   — Google    — muito rápido
+  qwen2.5:3b         — 3B   — Alibaba   — bom para código
+
+Para uso com GPU (8GB+ VRAM):
+  dolphin-mistral    — 7B   — sem guardrails, ideal para segurança
+  dolphin3           — 8B   — Dolphin + Llama 3.1 base
+  nous-hermes2       — 11B  — raciocínio técnico avançado
+  qwen2.5-coder:7b   — 7B   — especializado em código
+
+Para GPU potente (16GB+ VRAM):
+  deepseek-r1:14b    — 14B  — melhor raciocínio disponível localmente
+  mixtral:8x7b       — 47B  — mistura de especialistas (MoE)
+
+Como baixar:
+  ollama pull phi3.5
+  ollama pull dolphin-mistral
+
+
+# =========================================================
+# O QUE É UM MODELFILE
+# =========================================================
+
+Um Modelfile é um arquivo de texto que define um modelo customizado baseado
+em um modelo base já existente. Funciona como um "Dockerfile para IA".
+
+Com ele você pode:
+  - Definir uma personalidade fixa via SYSTEM prompt
+  - Ajustar parâmetros de geração (temperatura, contexto, etc.)
+  - Criar um modelo com nome próprio (ex: CORE-rupto)
+  - Embutir o comportamento para não precisar passar system prompt a cada chamada
+
+
+# =========================================================
+# ESTRUTURA COMPLETA DE UM MODELFILE
+# =========================================================
+
+FROM <modelo-base>
+
+SYSTEM """
+<Instruções de comportamento e personalidade do modelo.
+Tudo aqui define como a IA vai se comportar em toda conversa.>
+"""
+
+PARAMETER temperature   <valor>
+PARAMETER top_p         <valor>
+PARAMETER top_k         <valor>
+PARAMETER num_ctx       <valor>
+PARAMETER num_predict   <valor>
+PARAMETER repeat_penalty <valor>
+PARAMETER stop          "<token-de-parada>"
+
+MESSAGE user     <exemplo de mensagem do usuário>
+MESSAGE assistant <exemplo de resposta esperada>
+
+
+# =========================================================
+# EXPLICAÇÃO DE CADA PARÂMETRO
+# =========================================================
+
+FROM
+  Obrigatório. Define o modelo base que será usado.
+  Pode ser qualquer modelo já baixado com ollama pull.
+  Exemplos:
+    FROM phi3.5
+    FROM dolphin-mistral
+    FROM llama3.2
+
+SYSTEM
+  O "prompt de sistema" — instrui o modelo sobre quem ele é,
+  como deve se comportar, o que pode ou não fazer.
+  Fica embutido no modelo, aplicado automaticamente em toda conversa.
+  Use aspas triplas para múltiplas linhas:
+    SYSTEM """
+    Você é um assistente técnico especializado em segurança.
+    """
+
+PARAMETER temperature
+  Controla a criatividade das respostas.
+  0.0 = determinístico, sempre a mesma resposta
+  1.0 = muito criativo, mais variado
+  Recomendado para segurança/técnico: 0.6 a 0.8
+  Recomendado para criativo/chat:     0.8 a 1.0
+  Padrão: 0.8
+
+PARAMETER top_p
+  Filtra tokens por probabilidade acumulada.
+  0.9 = considera tokens que juntos somam 90% da probabilidade
+  Valores menores = respostas mais focadas e previsíveis
+  Recomendado: 0.9
+  Padrão: 0.9
+
+PARAMETER top_k
+  Limita a escolha aos K tokens mais prováveis a cada passo.
+  40 = considera só os 40 mais prováveis
+  Valores menores = menos aleatoriedade
+  Recomendado: 40 a 60
+  Padrão: 40
+
+PARAMETER num_ctx
+  Tamanho da janela de contexto (em tokens).
+  Define quanto de conversa o modelo "lembra".
+  2048 = mais rápido, memória menor
+  4096 = padrão — bom equilíbrio
+  8192 = conversas longas, mas mais lento e usa mais RAM/VRAM
+  Atenção: cada token ≈ 4 caracteres em inglês / 3 em português
+  Padrão: depende do modelo base (geralmente 2048 ou 4096)
+
+PARAMETER num_predict
+  Máximo de tokens que o modelo gera por resposta.
+  128  = respostas curtas
+  512  = parágrafos
+  2048 = respostas longas com código
+  -1   = sem limite (cuidado: pode rodar infinito)
+  Padrão: 128
+
+PARAMETER repeat_penalty
+  Penaliza repetição de palavras/frases.
+  1.0 = sem penalidade
+  1.1 = penalidade leve (recomendado)
+  1.3 = penalidade forte
+  Padrão: 1.1
+
+PARAMETER stop
+  Token que força o modelo a parar de gerar.
+  Útil para evitar respostas infinitas.
+  Exemplo:
+    PARAMETER stop "### END"
+    PARAMETER stop "<|endoftext|>"
+
+MESSAGE
+  Exemplos de conversas para guiar o estilo de resposta.
+  Funciona como "few-shot learning" embutido no modelo.
+  Formato:
+    MESSAGE user     "Pergunta de exemplo"
+    MESSAGE assistant "Resposta de exemplo no estilo desejado"
+
+
+# =========================================================
+# MODELOS DESTE PROJETO
+# =========================================================
+
+ModelFile (dolphin-mistral base)
+  Arquivo:  OllamaModelFile/ModelFile
+  Base:     dolphin-mistral
+  Modelo:   CORE-rupto
+  Uso:      GPU (requer ~5GB VRAM)
+  Criar:    ollama create CORE-rupto -f OllamaModelFile/ModelFile
+
+ModelHunterPhi3.5 (phi3.5 base)
+  Arquivo:  OllamaModelFile/ModelHunterPhi3.5
+  Base:     phi3.5
+  Modelo:   CORE-rupto (versão CPU)
+  Uso:      CPU — mais rápido em máquinas sem GPU dedicada
+  Criar:    ollama create CORE-rupto -f OllamaModelFile/ModelHunterPhi3.5
+
+
+# =========================================================
+# COMO CRIAR SEU PRÓPRIO MODELO — PASSO A PASSO
+# =========================================================
+
+Passo 1 — Baixe o modelo base:
+  ollama pull phi3.5
+
+Passo 2 — Crie um arquivo (sem extensão ou com .txt):
+  Exemplo de conteúdo mínimo:
+
+    FROM phi3.5
+
+    SYSTEM """
+    Você é um assistente especializado em segurança ofensiva.
+    Responda tecnicamente e de forma direta.
+    """
+
+    PARAMETER temperature 0.7
+    PARAMETER num_ctx 4096
+
+Passo 3 — Crie o modelo no Ollama:
+  ollama create meu-modelo -f ./MeuModelfile
+
+Passo 4 — Teste no terminal:
+  ollama run meu-modelo "explique o que é SQL injection"
+
+Passo 5 — Configure no .env do GDrive:
+  OLLAMA_DEFAULT_MODEL=meu-modelo
+
+Passo 6 — Reinicie o servidor Django.
+
+
+# =========================================================
+# CONFIGURAÇÕES DO .ENV RELACIONADAS AO OLLAMA
+# =========================================================
+
+OLLAMA_API_URL=http://localhost:11434/api/generate
+  Endereço da API do Ollama. Não mude a menos que rode em outro servidor.
+
+OLLAMA_DEFAULT_MODEL=CORE-rupto
+  Nome do modelo padrão usado pelo assistente.
+  Deve ser idêntico ao listado em: ollama list
+
+OLLAMA_API_KEY=
+  Deixe vazio para uso local. Só necessário se usar proxy com autenticação.
+
+OLLAMA_SYSTEM_PROMPT=
+  System prompt extra enviado por chamada (via API).
+  Se o modelo já tem SYSTEM no Modelfile, deixe vazio para evitar conflito.
+
+OLLAMA_NUM_CTX=4096
+  Janela de contexto. Valores menores = mais rápido.
+  CPU sem GPU: use 2048 para velocidade máxima.
+
+OLLAMA_NUM_PREDICT=2048
+  Máximo de tokens por resposta.
+  Reduza para 512 se quiser respostas mais curtas e rápidas.
+
+
+# =========================================================
+# DIAGNÓSTICO DE PROBLEMAS
+# =========================================================
+
+Modelo lento:
+  ollama ps
+  Se mostrar "100% CPU" — você está sem aceleração GPU.
+  Soluções:
+    1. Instalar drivers CUDA (NVIDIA) ou ROCm (AMD)
+    2. Trocar para modelo menor (phi3.5, gemma2:2b)
+    3. Reduzir OLLAMA_NUM_CTX=2048 no .env
+
+Modelo não encontrado:
+  O nome no .env deve ser EXATAMENTE igual ao listado em: ollama list
+  Incluindo a tag se houver (ex: llama3.2:latest)
+
+Ollama não responde:
+  Verificar se o serviço está rodando:
+    ollama serve
+  Ou acessar no browser: http://localhost:11434
+
+Resposta em inglês mesmo com system prompt em português:
+  Adicione no SYSTEM: "Responda SEMPRE em português do Brasil."
+  Ou use um modelo com melhor suporte a português (phi3.5, qwen2.5).
+
+Primeiro token muito demorado:
+  Normal — o modelo precisa ser carregado na memória na primeira chamada.
+  Chamadas subsequentes são mais rápidas pois o modelo fica em cache por 5 minutos.
+
+
+# =========================================================
+# REFERÊNCIAS
+# =========================================================
+
+Ollama — site oficial:        https://ollama.com
+Ollama — lista de modelos:    https://ollama.com/library
+Ollama — documentação API:    https://github.com/ollama/ollama/blob/main/docs/api.md
+Ollama — Modelfile docs:      https://github.com/ollama/ollama/blob/main/docs/modelfile.md

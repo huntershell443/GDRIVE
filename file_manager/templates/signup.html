@@ -1,0 +1,62 @@
+{% extends "base_generic.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg p-4">
+                <h2 class="text-center mb-4">Cadastro</h2>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_username">Nome de Usuário</label>
+                        {{ form.username|add_class:"form-control" }}
+                        {% if form.username.errors %}
+                            <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_email">Email</label>
+                        {{ form.email|add_class:"form-control" }}
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_password1">Senha</label>
+                        {{ form.password1|add_class:"form-control" }}
+                        {% if form.password1.errors %}
+                            <div class="text-danger">{{ form.password1.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_password2">Confirmar Senha</label>
+                        {{ form.password2|add_class:"form-control" }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success btn-block">Cadastrar</button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p>Já tem uma conta? <a href="{% url 'login' %}">Faça login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

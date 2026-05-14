@@ -1,0 +1,988 @@
+[
+{
+"name": "hydra",
+"category": "Força bruta",
+"description": "Ferramenta de força bruta para serviços de rede",
+"homepage": "https://github.com/vanhauser-thc/thc-hydra",
+"user": ""
+},
+{
+"name": "nmap",
+"category": "Scanner de rede",
+"description": "Utilitário para varredura e descoberta de hosts e serviços em redes IP — realiza descoberta de hosts (ICMP/ARP/TCP), varredura de portas TCP/UDP, identificação de serviços/versões, fingerprinting de SO e scripts NSE; use apenas com autorização.",
+"homepage": "https://nmap.org",
+"user": ""
+},
+{
+"name": "metasploit",
+"category": "Framework de exploração",
+"description": "Framework modular para desenvolvimento, teste e execução de exploits, payloads e post-exploitation; inclui módulos de scanner e auxiliares.",
+"homepage": "https://www.metasploit.com",
+"user": ""
+},
+{
+"name": "burpsuite",
+"category": "Proxy/interceptador",
+"description": "Plataforma para teste de segurança de aplicações web com proxy HTTP(S), scanner de vulnerabilidades, repeater, intruder e extensões (BApp Store).",
+"homepage": "https://portswigger.net/burp",
+"user": ""
+},
+{
+"name": "owasp-zap",
+"category": "Scanner de aplicações web",
+"description": "Proxy e scanner de segurança de aplicações web mantido pela OWASP — varredura ativa/passiva, spiders, fuzzers e API para automação.",
+"homepage": "https://www.zaproxy.org",
+"user": ""
+},
+{
+"name": "sqlmap",
+"category": "Teste de injeção SQL",
+"description": "Ferramenta automatizada para detecção e exploração de injeção SQL e extração de dados de bancos; use apenas em testes autorizados.",
+"homepage": "http://sqlmap.org",
+"user": ""
+},
+{
+"name": "wireshark",
+"category": "Análise de tráfego",
+"description": "Analisador de pacotes de rede GUI para inspeção profunda de tráfego em vários protocolos; ideal para troubleshooting e análise forense de rede.",
+"homepage": "https://www.wireshark.org",
+"user": ""
+},
+{
+"name": "aircrack-ng",
+"category": "Segurança wireless",
+"description": "Conjunto de ferramentas para auditoria de redes Wi‑Fi: captura, cracking de WEP/WPA/WPA2, análise e ferramentas de monitoramento.",
+"homepage": "https://www.aircrack-ng.org",
+"user": ""
+},
+{
+"name": "hashcat",
+"category": "Quebra de hashes",
+"description": "Motor avançado de recuperação de senhas por GPU/CPU com múltiplos modos (brute-force, dictionary, rule-based) e suporte a muitos hashes.",
+"homepage": "https://hashcat.net/hashcat",
+"user": ""
+},
+{
+"name": "john",
+"category": "Quebra de senhas",
+"description": "John the Ripper — suite para auditoria de senhas que combina ataques de dicionário, regras e cracking por hash; extensões para formatos diversos.",
+"homepage": "https://www.openwall.com/john/",
+"user": ""
+},
+{
+"name": "nikto",
+"category": "Scanner web",
+"description": "Scanner de servidores web que detecta arquivos perigosos, versões desatualizadas, configurações inseguras e plugins vulneráveis.",
+"homepage": "https://cirt.net/Nikto2",
+"user": ""
+},
+{
+"name": "wpscan",
+"category": "Scanner CMS",
+"description": "Scanner para WordPress que identifica plugins, temas e vulnerabilidades conhecidas; ideal para auditorias autorizadas de sites WP.",
+"homepage": "https://wpscan.com",
+"user": ""
+},
+{
+"name": "openvas",
+"category": "Gestão de vulnerabilidades",
+"description": "Plataforma de scanner de vulnerabilidades (AGAINST Greenbone/ OpenVAS) para avaliação de host/serviço com base em assinaturas e plugins.",
+"homepage": "https://www.greenbone.net",
+"user": ""
+},
+{
+"name": "nessus",
+"category": "Scanner de vulnerabilidades",
+"description": "Scanner comercial e amplamente usado para descoberta e avaliação de vulnerabilidades em redes, hosts e aplicações.",
+"homepage": "https://www.tenable.com/products/nessus",
+"user": ""
+},
+{
+"name": "burp-suite-community",
+"category": "Proxy/interceptador",
+"description": "Versão gratuita do Burp Suite com funcionalidades básicas de interceptação e análise de aplicações web para pentesters.",
+"homepage": "https://portswigger.net/burp/communitydownload",
+"user": ""
+},
+{
+"name": "gobuster",
+"category": "Enumeração",
+"description": "Ferramenta de força bruta para diretórios e nomes de arquivos em sites, DNS e VHOST discovery, escrita em Go (rápida e eficiente).",
+"homepage": "https://github.com/OJ/gobuster",
+"user": ""
+},
+{
+"name": "dirb",
+"category": "Enumeração web",
+"description": "Scanner simples de diretórios e arquivos para aplicações web usando wordlists; útil para descobrir conteúdo oculto.",
+"homepage": "https://gitlab.com/kalilinux/packages/dirb",
+"user": ""
+},
+{
+"name": "feroxbuster",
+"category": "Enumeração web",
+"description": "Ferramenta rápida de brute-force de diretórios e arquivos web escrita em Rust, com bom desempenho e suporte a listas grandes.",
+"homepage": "https://github.com/epi052/feroxbuster",
+"user": ""
+},
+{
+"name": "masscan",
+"category": "Scanner de portas em larga escala",
+"description": "Scanner de portas extremamente rápido capaz de varrer grandes blocos de IPv4 em pouco tempo; ideal para reconhecimento em massa (use com autorização).",
+"homepage": "https://github.com/robertdavidgraham/masscan",
+"user": ""
+},
+{
+"name": "amass",
+"category": "Enumeração de subdomínios",
+"description": "Ferramenta para descoberta de subdomínios, coleta de dados DNS, enumeração de ativos e mapeamento de infraestrutura de internet.",
+"homepage": "https://github.com/OWASP/Amass",
+"user": ""
+},
+{
+"name": "recon-ng",
+"category": "Reconhecimento",
+"description": "Framework extensível para reconhecimento e coleta de inteligência em fontes públicas com módulos para integração e exportação.",
+"homepage": "https://github.com/lanmaster53/recon-ng",
+"user": ""
+},
+{
+"name": "cain-and-abel",
+"category": "Recuperação/Cracking (Windows)",
+"description": "Ferramenta histórica para recuperação de senhas e análise de redes Windows (sniffing, decodificação, brute-force).",
+"homepage": "https://sectools.org/tool/cain-and-abel/",
+"user": ""
+},
+{
+"name": "ettercap",
+"category": "Man-in-the-middle",
+"description": "Suite para ataques MITM em redes LAN: ARP spoofing, sniffing de conexões e injeção de conteúdo; use somente em testes autorizados.",
+"homepage": "https://www.ettercap-project.org",
+"user": ""
+},
+{
+"name": "aria2",
+"category": "Utilitário (download/testes)",
+"description": "Gerenciador de downloads que pode ser usado em scripts de pentest para transferência eficiente de arquivos de teste e payloads quando autorizado.",
+"homepage": "https://aria2.github.io",
+"user": ""
+},
+{
+"name": "tcpdump",
+"category": "Captura de pacotes",
+"description": "Ferramenta de linha de comando para captura e análise de pacotes de rede; útil para auditoria e troubleshooting de baixo nível.",
+"homepage": "https://www.tcpdump.org",
+"user": ""
+},
+{
+"name": "scapy",
+"category": "Manipulação de pacotes",
+"description": "Biblioteca Python poderosa para criação, envio, sniffing e manipulação personalizada de pacotes de rede para testes e exploração autorizada.",
+"homepage": "https://scapy.net",
+"user": ""
+},
+{
+"name": "nikto3",
+"category": "Scanner web",
+"description": "Versão atualizada do Nikto para auditoria de servidores web, detecção de arquivos perigosos, problemas de configuração e versões vulneráveis.",
+"homepage": "https://github.com/sullo/nikto",
+"user": ""
+},
+{
+"name": "beef-framework",
+"category": "Browser exploitation",
+"description": "Browser Exploitation Framework para testes de segurança focados em navegadores e clientes web, permitindo cenário de controle via hooks.",
+"homepage": "https://github.com/beefproject/beef",
+"user": ""
+},
+{
+"name": "sqlninja",
+"category": "Exploração SQL Server",
+"description": "Ferramenta específica para exploração de injeções SQL em Microsoft SQL Server; automatiza exploração e pós-exploração (quando autorizada).",
+"homepage": "https://sqlninja.sourceforge.net",
+"user": ""
+},
+{
+"name": "msfvenom",
+"category": "Geração de payloads",
+"description": "Ferramenta do Metasploit para criar e empacotar payloads em diversos formatos e encoders; usada em testes de intrusão autorizados.",
+"homepage": "https://github.com/rapid7/metasploit-framework",
+"user": ""
+},
+{
+"name": "ssh-audit",
+"category": "Auditoria SSH",
+"description": "Ferramenta para verificar configurações, algoritmos suportados e vulnerabilidades em servidores SSH.",
+"homepage": "https://github.com/jtesta/ssh-audit",
+"user": ""
+},
+{
+"name": "BloodHound",
+"category": "Escalação de privilégios",
+"description": "Ferramenta para mapear e analisar relações de privilégio em Active Directory, identificando caminhos de ataque e configurações inseguras.",
+"homepage": "https://bloodhound.readthedocs.io",
+"user": ""
+},
+{
+"name": "impacket",
+"category": "Bibliotecas/integração",
+"description": "Coleção de bibliotecas Python para interagir com protocolos Windows/SMB/PSExec/NTLM, útil em pentests de redes Microsoft.",
+"homepage": "https://github.com/SecureAuthCorp/impacket",
+"user": ""
+},
+{
+"name": "kerberos-tools",
+"category": "Autenticação/AD",
+"description": "Conjunto de utilitários para análise e exploração de Kerberos em ambientes Active Directory (ex.: Rubeus, Kekeo).",
+"homepage": "https://github.com/GhostPack/Impacket",
+"user": ""
+},
+{
+"name": "powershell-empire",
+"category": "Pós-exploração",
+"description": "Framework de pós-exploração em PowerShell (historicamente usado em Red Team); foco em persistência, coleta e movimentação lateral (uso autorizado apenas).",
+"homepage": "https://github.com/EmpireProject/Empire",
+"user": ""
+},
+{
+"name": "mimikatz",
+"category": "Credenciais/Windows",
+"description": "Ferramenta para extração de credenciais e hashes em sistemas Windows; muito usada em testes de intrusão de AD (uso restrito e autorizado).",
+"homepage": "https://github.com/gentilkiwi/mimikatz",
+"user": ""
+},
+{
+"name": "Responder",
+"category": "Poisoning/enumeração",
+"description": "Ferramenta para captura e spoofing de serviços de rede (LLMNR, NBT-NS, MDNS) com objetivo de obter hashes e credenciais em redes locais.",
+"homepage": "https://github.com/SpiderLabs/Responder",
+"user": ""
+},
+{
+"name": "volatility",
+"category": "Forense de memória",
+"description": "Framework para análise forense de memória RAM (memory forensics) permitindo extração de processos, credenciais e artefatos voláteis.",
+"homepage": "https://www.volatilityfoundation.org",
+"user": ""
+},
+{
+"name": "autopsy",
+"category": "Forense digital",
+"description": "Plataforma GUI para análise forense de discos, recuperação de arquivos, timeline e investigação de incidentes.",
+"homepage": "https://www.sleuthkit.org/autopsy",
+"user": ""
+},
+{
+"name": "apktool",
+"category": "Análise móvel",
+"description": "Ferramenta para desmontar (decompile) e reconstruir pacotes Android (APK) facilitando análise estática de aplicações móveis.",
+"homepage": "https://ibotpeaches.github.io/Apktool/",
+"user": ""
+},
+{
+"name": "mobSF",
+"category": "Análise móvel",
+"description": "Mobile Security Framework para análise estática e dinâmica de aplicações Android/iOS e avaliação de segurança automatizada.",
+"homepage": "https://mobsf.github.io",
+"user": ""
+},
+{
+"name": "frida",
+"category": "Instrumentação",
+"description": "Ferramenta de instrumentação dinâmica para injetar scripts em aplicações (desktop/móvel) para análise de comportamento e API hooking.",
+"homepage": "https://frida.re",
+"user": ""
+},
+{
+"name": "radare2",
+"category": "Engenharia reversa",
+"description": "Framework open-source para análise binária e engenharia reversa com ferramentas CLI e GUI ( Cutter é front-end popular).",
+"homepage": "https://rada.re/n/",
+"user": ""
+},
+{
+"name": "ghidra",
+"category": "Engenharia reversa",
+"description": "Suite de engenharia reversa da NSA com descompilador, análise de binários e suporte a múltiplas arquiteturas.",
+"homepage": "https://ghidra-sre.org",
+"user": ""
+},
+{
+"name": "cutter",
+"category": "Engenharia reversa",
+"description": "Front-end gráfico para radare2 que facilita análise estática e dinâmica de binários para reversers.",
+"homepage": "https://cutter.re",
+"user": ""
+},
+{
+"name": "strings",
+"category": "Análise rápida",
+"description": "Utilitário para extrair sequências de texto legíveis de binários e arquivos — útil em análise inicial de artefatos.",
+"homepage": "https://www.gnu.org/software/binutils/",
+"user": ""
+},
+{
+"name": "apk-mitm",
+"category": "Teste mobile",
+"description": "Ferramenta para re-assinar e modificar APKs para facilitar interceptação HTTPS em testes de aplicações Android (uso autorizado).",
+"homepage": "https://github.com/HTeamSecure/apk-mitm",
+"user": ""
+},
+{
+"name": "gpg",
+"category": "Criptografia",
+"description": "Implementação OpenPGP para criptografia, assinatura e verificação; útil para manipulação segura de chaves/artefatos durante testes.",
+"homepage": "https://gnupg.org",
+"user": ""
+},
+{
+"name": "ossfuzz",
+"category": "Fuzzing",
+"description": "Plataforma de fuzzing para descobrir falhas em software; integra diversas ferramentas de fuzz e sanitizers.",
+"homepage": "https://oss-fuzz.com",
+"user": ""
+},
+{
+"name": "afl-fuzz",
+"category": "Fuzzing",
+"description": "American Fuzzy Lop — fuzzer de mutação com cobertura-guided para encontrar bugs em aplicações binárias e fontes.",
+"homepage": "https://lcamtuf.coredump.cx/afl/",
+"user": ""
+},
+
+
+
+
+
+
+
+
+{
+"name": "pe-sieve",
+"category": "Detecção de injeção",
+"description": "Ferramenta para detectar in-jeções e módulos maliciosos em processos Windows (DLL hollowing, code hooks) — útil em análise de incidentes.",
+"homepage": "https://github.com/hasherezade/pe-sieve",
+"user": ""
+},
+{
+"name": "upnp-exploit-tools",
+"category": "Exposição de rede",
+"description": "Coleção de ferramentas para enumerar e testar serviços UPnP/SSDP que podem expor dispositivos na rede; use com autorização.",
+"homepage": "https://github.com/m0rtem/miniupnp",
+"user": ""
+},
+{
+"name": "ncat",
+"category": "Rede/auxiliar",
+"description": "Ferramenta de rede flexível (parte do Nmap) para transferência de dados, tunneling e debugging de serviços de rede.",
+"homepage": "https://nmap.org/ncat/",
+"user": ""
+},
+{
+"name": "socat",
+"category": "Rede/auxiliar",
+"description": "Ferramenta de encaminhamento e proxying de sockets bidirecionais para testes, tunelamento e depuração de serviços de rede.",
+"homepage": "http://www.dest-unreach.org/socat/",
+"user": ""
+},
+{
+"name": "netdiscover",
+"category": "Descoberta de rede",
+"description": "Ferramenta para descoberta de hosts em redes locais usando ARP; útil no reconhecimento inicial em ambientes LAN.",
+"homepage": "https://github.com/alexxy/netdiscover",
+"user": ""
+},
+{
+"name": "fping",
+"category": "Descoberta de rede",
+"description": "Ferramenta para ping massivo de múltiplos hosts de forma eficiente, usada em mapeamento rápido de rede.",
+"homepage": "https://fping.org",
+"user": ""
+},
+{
+"name": "zenmap",
+"category": "Scanner de rede",
+"description": "Interface gráfica oficial do Nmap para facilitar varreduras, comparações e geração de relatórios visuais.",
+"homepage": "https://nmap.org/zenmap/",
+"user": ""
+},
+{
+"name": "sqlsus",
+"category": "Exploração SQL",
+"description": "Ferramenta para exploração de SQL injection em bancos MySQL com automação de extração de dados (uso autorizado apenas).",
+"homepage": "https://github.com/sqlsus/sqlsus",
+"user": ""
+},
+{
+"name": "wpsploit",
+"category": "Exploits WordPress",
+"description": "Coleção e framework para explorar vulnerabilidades conhecidas em sites WordPress e plugins (uso autorizado).",
+"homepage": "https://github.com/m4ll0k/wordpressploit",
+"user": ""
+},
+{
+"name": "ctf-tools",
+"category": "Ferramentas gerais",
+"description": "Coleção organizada de ferramentas úteis para competições CTF e pentests: binutils, cryptotools, reversing e rede.",
+"homepage": "https://github.com/zardus/ctf-tools",
+"user": ""
+},
+{
+"name": "linpeas",
+"category": "Escalação de privilégios",
+"description": "Script para enumerar potenciais vetores de escalada de privilégios em sistemas Linux; fornece checagens rápidas automatizadas.",
+"homepage": "https://github.com/carlospolop/PEASS-ng",
+"user": ""
+},
+{
+"name": "winpeas",
+"category": "Escalação de privilégios",
+"description": "Equivalente Windows do linpeas para identificar configurações, serviços e vulnerabilidades que permitam escalada de privilégios.",
+"homepage": "https://github.com/carlospolop/PEASS-ng",
+"user": ""
+},
+{
+"name": "sharpHound",
+"category": "Coleta AD",
+"description": "Coleção de coletores utilizada pelo BloodHound para reunir dados de Active Directory e modelar relações de privilégio.",
+"homepage": "https://github.com/BloodHoundAD/SharpHound",
+"user": ""
+},
+{
+"name": "crackmapexec",
+"category": "Post-exploitation/AD",
+"description": "Ferramenta para auditoria de redes Windows/Active Directory que integra varredura, execução remota e enumeração de credenciais.",
+"homepage": "https://github.com/byt3bl33d3r/CrackMapExec",
+"user": ""
+},
+{
+"name": "subfinder",
+"category": "Enumeração de subdomínios",
+"description": "Ferramenta passiva/ativa para descoberta de subdomínios usando fontes públicas e serviços de terceiros.",
+"homepage": "https://github.com/projectdiscovery/subfinder",
+"user": ""
+},
+{
+"name": "httprint",
+"category": "Fingerprinting web",
+"description": "Ferramenta para identificar servidores web e tecnologias por meio de banners e respostas HTTP (fingerprinting).",
+"homepage": "https://sourceforge.net/projects/httprint/",
+"user": ""
+},
+{
+"name": "whatweb",
+"category": "Fingerprinting web",
+"description": "Detector de tecnologias web que informa CMS, frameworks, bibliotecas e plugins usados por um site.",
+"homepage": "https://github.com/urbanadventurer/WhatWeb",
+"user": ""
+},
+{
+"name": "wpsploit-scanner",
+"category": "Scanner CMS",
+"description": "Ferramenta complementar para detectar vulnerabilidades e configuração insegura em CMS populares (WordPress/Joomla/Drupal).",
+"homepage": "https://github.com/m4ll0k/wordpressploit",
+"user": ""
+},
+{
+"name": "gdb",
+"category": "Depuração/reversing",
+"description": "GNU Debugger — ferramenta essencial para depuração de programas nativos e análise de binários em engenharia reversa.",
+"homepage": "https://www.gnu.org/software/gdb/",
+"user": ""
+},
+{
+"name": "pwntools",
+"category": "Exploit development",
+"description": "Biblioteca Python para desenvolvimento de exploits, comunicação com processos remotos e automação em desafios de segurança.",
+"homepage": "https://pwntools.com",
+"user": ""
+},
+{
+"name": "ropgadget",
+"category": "Exploit development",
+"description": "Ferramenta para encontrar gadgets ROP em binários, útil ao construir exploits de controle de fluxo em ambientes sem execução direta de shellcode.",
+"homepage": "https://github.com/JonathanSalwan/ROPgadget",
+"user": ""
+},
+{
+"name": "binwalk",
+"category": "Firmware analysis",
+"description": "Utilitário para análise de firmware e extração de sistemas de arquivos embutidos em binários/firmwares embarcados.",
+"homepage": "https://github.com/ReFirmLabs/binwalk",
+"user": ""
+},
+{
+"name": "firmwalker",
+"category": "Firmware analysis",
+"description": "Ferramenta para automatizar varredura e análise de imagens de firmware, identificando arquivos, certificados e artefatos úteis.",
+"homepage": "https://github.com/firmwalker/firmwalker",
+"user": ""
+},
+{
+"name": "gobfuzz",
+"category": "Fuzzing",
+"description": "Conjunto de fuzzers e utilitários para testar robustez de aplicações, protocolos e parsers — inclui mutational e generational fuzzers.",
+"homepage": "https://github.com/dvyukov/go-fuzz",
+"user": ""
+},
+{
+"name": "jaeles",
+"category": "Scanner/automation",
+"description": "Motor de scanning e automação para testes de aplicações web com templates e módulos reutilizáveis para várias verificações.",
+"homepage": "https://github.com/jaeles-project/jaeles",
+"user": ""
+},
+{
+"name": "nuclei",
+"category": "Scanner de vulnerabilidades",
+"description": "Scanner de templates rápido e configurável para varrer grandes alvos em busca de problemas conhecidos usando templates YAML.",
+"homepage": "https://github.com/projectdiscovery/nuclei",
+"user": ""
+},
+{
+"name": "ffuf",
+"category": "Fuzzing/enumeração",
+"description": "Fast web fuzzer para descobrir endpoints, arquivos e diretórios por brute-force com alta performance e flexibilidade.",
+"homepage": "https://github.com/ffuf/ffuf",
+"user": ""
+},
+{
+"name": "patator",
+"category": "Força bruta/automation",
+"description": "Ferramenta multi-protocolo flexível para ataques de força bruta e automação de testes contra serviços variados.",
+"homepage": "https://github.com/lanjelot/patator",
+"user": ""
+},
+{
+"name": "veil",
+"category": "Evasão/geração",
+"description": "Framework para gerar payloads que tentam contornar AV/EDR durante testes de intrusão autorizados (uso responsável e ético).",
+"homepage": "https://www.veil-framework.com",
+"user": ""
+},
+{
+"name": "eaphammer",
+"category": "Wireless/rogue AP",
+"description": "Toolkit para avaliações de segurança Wi‑Fi e ataques a EAP/802.1X, criação de access points maliciosos para testes autorizados.",
+"homepage": "https://github.com/s0lst1c3/eaphammer",
+"user": ""
+},
+{
+"name": "bettercap",
+"category": "Man-in-the-middle",
+"description": "Framework de rede para ataques MITM, sniffing, injeção de tráfego e manipulação de protocolos em testes autorizados.",
+"homepage": "https://www.bettercap.org",
+"user": ""
+},
+{
+"name": "sslyze",
+"category": "Análise TLS/SSL",
+"description": "Scanner para avaliar configurações TLS/SSL de servidores, suportes de cipher suites, versões e problemas de segurança.",
+"homepage": "https://github.com/nabla-c0d3/sslyze",
+"user": ""
+},
+{
+"name": "testssl.sh",
+"category": "Análise TLS/SSL",
+"description": "Script para testar a segurança de implementações SSL/TLS em servidores, incluindo cipher suites, protocolos e vulnerabilidades conhecidas.",
+"homepage": "https://testssl.sh",
+"user": ""
+},
+{
+"name": "trufflehog",
+"category": "Detecção de segredos",
+"description": "Ferramenta para buscar segredos (chaves, tokens, senhas) em repositórios Git e histórico de commits.",
+"homepage": "https://github.com/trufflesecurity/trufflehog",
+"user": ""
+},
+{
+"name": "gitrob",
+"category": "Reconhecimento de código",
+"description": "Ferramenta para varredura de repositórios GitHub/organizações em busca de arquivos sensíveis e exposição de segredos.",
+"homepage": "https://github.com/michenriksen/gitrob",
+"user": ""
+},
+{
+"name": "docker-bench-security",
+"category": "Segurança de containers",
+"description": "Script que verifica configurações de segurança para Docker hosts e containers contra boas práticas e recomendações.",
+"homepage": "https://github.com/docker/docker-bench-security",
+"user": ""
+},
+
+
+
+
+
+
+
+
+{
+"name": "kube-bench",
+"category": "Segurança Kubernetes",
+"description": "Ferramenta que verifica configurações de clusters Kubernetes contra recomendações do CIS Benchmarks.",
+"homepage": "https://github.com/aquasecurity/kube-bench",
+"user": ""
+},
+{
+"name": "cloudgoat",
+"category": "Red Team Cloud",
+"description": "Plataforma para criar ambientes vulneráveis em nuvens públicas (AWS) para treinar cenários de ataque e defesa de forma controlada.",
+"homepage": "https://github.com/RhinoSecurityLabs/cloudgoat",
+"user": ""
+},
+{
+"name": "pacu",
+"category": "Auditoria Cloud",
+"description": "Framework para pentesting e avaliação de segurança em ambientes AWS com módulos para enumeração, privilégio e exploração (uso autorizado).",
+"homepage": "https://github.com/ethicalhackingplayground/pacu",
+"user": ""
+},
+{
+"name": "snyk",
+"category": "SCA / DevSecOps",
+"description": "Ferramenta para detecção de vulnerabilidades em dependências de projetos e integração CI/CD para corrigir problemas de segurança em código.",
+"homepage": "https://snyk.io",
+"user": ""
+},
+{
+"name": "bandit",
+"category": "Análise estática",
+"description": "Ferramenta de análise estática para encontrar vulnerabilidades em código Python antes do deploy.",
+"homepage": "https://github.com/PyCQA/bandit",
+"user": ""
+},
+{
+"name": "brakeman",
+"category": "Análise estática",
+"description": "Scanner de segurança para aplicações Ruby on Rails que detecta problemas comuns no código fonte.",
+"homepage": "https://brakemanscanner.org",
+"user": ""
+},
+{
+"name": "dependabot",
+"category": "SCA / DevSecOps",
+"description": "Ferramenta integrada (GitHub) para atualização automática de dependências e notificação de vulnerabilidades conhecidas.",
+"homepage": "https://github.com/dependabot",
+"user": ""
+},
+{
+"name": "yara",
+"category": "Detecção de malwares",
+"description": "Ferramenta para identificar e classificar amostras de malware por meio de regras textuais/hex que descrevem padrões e assinaturas.",
+"homepage": "https://virustotal.github.io/yara/",
+"user": ""
+},
+{
+"name": "clamav",
+"category": "Antivírus/forense",
+"description": "Motor de detecção de malware open-source usado para scan de arquivos e integração em pipelines de análise.",
+"homepage": "https://www.clamav.net",
+"user": ""
+},
+{
+"name": "sigma",
+"category": "Detecção/IR",
+"description": "Formato de regras genéricas para logs (como YARA para logs) que facilita a criação e compartilhamento de regras SIEM/EDR.",
+"homepage": "https://github.com/SigmaHQ/sigma",
+"user": ""
+},
+{
+"name": "osquery",
+"category": "Observabilidade/endpoints",
+"description": "Ferramenta que expõe o estado do sistema como tabelas SQL para investigação, auditoria e detecção de anomalias em endpoints.",
+"homepage": "https://osquery.io",
+"user": ""
+},
+{
+"name": "elk-stack",
+"category": "SIEM/logs",
+"description": "Conjunto (Elasticsearch, Logstash, Kibana) para ingestão, pesquisa e visualização de logs e eventos de segurança.",
+"homepage": "https://www.elastic.co/elastic-stack",
+"user": ""
+},
+{
+"name": "splunk",
+"category": "SIEM/logs",
+"description": "Plataforma comercial para ingestão, correlação e investigação de logs em larga escala com recursos avançados de busca e dashboards.",
+"homepage": "https://www.splunk.com",
+"user": ""
+},
+{
+"name": "mitmproxy",
+"category": "Proxy/interceptador",
+"description": "Proxy HTTP/HTTPS interativo com CLI e API para interceptação, modificação e inspeção de tráfego em testes de aplicações web e APIs.",
+"homepage": "https://mitmproxy.org",
+"user": ""
+},
+{
+"name": "httpie",
+"category": "Teste de APIs",
+"description": "Cliente HTTP de linha de comando amigável para testar APIs, automação de requisições e troubleshooting.",
+"homepage": "https://httpie.io",
+"user": ""
+},
+{
+"name": "postman",
+"category": "Teste de APIs",
+"description": "Plataforma GUI para desenvolvimento, teste e automação de APIs com coleções, ambientes e integração CI/CD.",
+"homepage": "https://www.postman.com",
+"user": ""
+},
+{
+"name": "wpscan-api",
+"category": "Scanner CMS",
+"description": "Serviço API que complementa o WPScan para consulta de vulnerabilidades conhecidas em plugins e temas de WordPress.",
+"homepage": "https://wpscan.com",
+"user": ""
+},
+{
+"name": "sshuttle",
+"category": "Tunneling",
+"description": "Ferramenta para criar VPN-over-SSH simples, útil para roteamento de tráfego de testes através de saltos autorizados.",
+"homepage": "https://sshuttle.readthedocs.io",
+"user": ""
+},
+{
+"name": "plexus",
+"category": "Automação",
+"description": "Coleção de scripts e utilitários para automatizar fluxos de trabalho de pentest e orquestração de ferramentas (ex.: pipelines de reconhecimento).",
+"homepage": "https://github.com/remoteit/plexus",
+"user": ""
+},
+{
+"name": "ratproxy",
+"category": "Proxy/interceptador",
+"description": "Proxy passivo para análise de aplicações web e identificação de possíveis problemas de segurança sem geração de tráfego ativo.",
+"homepage": "https://code.google.com/archive/p/ratproxy/",
+"user": ""
+},
+{
+"name": "smbclient",
+"category": "SMB/integração",
+"description": "Cliente SMB/CIFS para interagir com compartilhamentos Windows e realizar enumeração e transferência de arquivos em redes autorizadas.",
+"homepage": "https://www.samba.org/smbclient/",
+"user": ""
+},
+{
+"name": "nbtscan",
+"category": "Enumeração NetBIOS",
+"description": "Ferramenta para varredura e enumeração de hosts NetBIOS em redes Windows para descoberta inicial de ativos.",
+"homepage": "https://github.com/scipag/nbtscan",
+"user": ""
+},
+{
+"name": "w3af",
+"category": "Scanner web",
+"description": "Framework para encontrar e explorar vulnerabilidades em aplicações web com plugins para auditoria e exploração.",
+"homepage": "https://w3af.org",
+"user": ""
+},
+{
+"name": "arachni",
+"category": "Scanner web",
+"description": "Scanner de aplicações web projetado para encontrar falhas como SQLi, XSS e problemas de configuração em aplicações web.",
+"homepage": "https://github.com/Arachni/arachni",
+"user": ""
+},
+{
+"name": "fierce",
+"category": "DNS/reconhecimento",
+"description": "Ferramenta de reconhecimento DNS para mapear zonas, subdomínios e registrar informações de delegação.",
+"homepage": "https://github.com/mschwager/fierce",
+"user": ""
+},
+
+
+
+{
+"name": "dnsrecon",
+"category": "DNS/reconhecimento",
+"description": "Ferramenta para realizar enumeração e validação de registros DNS, transferência de zona e bruteforce de subdomínios.",
+"homepage": "https://github.com/darkoperator/dnsrecon",
+"user": ""
+},
+{
+"name": "dnscan",
+"category": "DNS/reconhecimento",
+"description": "Ferramenta de enumeração de subdomínios que usa técnicas de brute-force, permutações e fontes públicas para descoberta.",
+"homepage": "https://github.com/rbsec/dnscan",
+"user": ""
+},
+{
+"name": "msfconsole",
+"category": "Framework de exploração",
+"description": "Interface principal do Metasploit para gerenciamento de módulos, execução de exploits e controle de sessões de pós-exploração.",
+"homepage": "https://www.metasploit.com",
+"user": ""
+},
+{
+"name": "maltego",
+"category": "OSINT / Reconhecimento",
+"description": "Plataforma de link analysis e visualização para investigação OSINT — mapeamento de relações entre pessoas, dominios, IPs, redes sociais e infraestrutura.",
+"homepage": "https://www.maltego.com",
+"user": ""
+},
+{
+"name": "theHarvester",
+"category": "OSINT / Email & Host discovery",
+"description": "Ferramenta para coletar e enumerar emails, subdomínios, hosts e informações públicas a partir de fontes como motores de busca e serviços públicos.",
+"homepage": "https://github.com/laramies/theHarvester",
+"user": ""
+},
+{
+"name": "shodan",
+"category": "OSINT / Internet of Things",
+"description": "Motor de busca para dispositivos conectados à Internet (IoT) e serviços expostos — permite encontrar servidores, câmeras, SCADA e outros serviços por banners e metadados.",
+"homepage": "https://www.shodan.io",
+"user": ""
+},
+{
+"name": "censys",
+"category": "OSINT / Scanning",
+"description": "Plataforma de pesquisa de infraestrutura pública da Internet que indexa TLS, certificados, serviços expostos e auxilia em investigação de superfícies de ataque.",
+"homepage": "https://censys.io",
+"user": ""
+},
+{
+"name": "spiderfoot",
+"category": "OSINT / Automação",
+"description": "Ferramenta automatizada de OSINT que agrega dados de múltiplas fontes (WHOIS, DNS, Shodan, motores de busca, redes sociais) para reconhecimento extensivo.",
+"homepage": "https://www.spiderfoot.net",
+"user": ""
+},
+{
+"name": "wayback-machine",
+"category": "OSINT / Arquivo web",
+"description": "Serviço de arquivo (Internet Archive) que permite recuperar versões antigas de sites e páginas — útil para investigação de mudanças e exposição de dados históricos.",
+"homepage": "https://archive.org/web",
+"user": ""
+},
+{
+"name": "haveibeenpwned",
+"category": "OSINT / Breach lookup",
+"description": "Serviço para verificar se emails/contas foram expostos em vazamentos públicos — recurso valioso para investigações de comprometimento de credenciais.",
+"homepage": "https://haveibeenpwned.com",
+"user": ""
+},
+{
+"name": "opencorporates",
+"category": "OSINT / Dados corporativos",
+"description": "Maior base pública de informações de empresas do mundo — útil para obter dados cadastrais, filiais e relações entre entidades (inclui registros de vários países).",
+"homepage": "https://opencorporates.com",
+"user": ""
+},
+{
+"name": "twint",
+"category": "OSINT / Redes sociais",
+"description": "Ferramenta de coleta de dados do Twitter (meta e tweets) sem usar API oficial (sujeito a mudanças); útil para análise de contas e conteúdo público.",
+"homepage": "https://github.com/twintproject/twint",
+"user": ""
+},
+{
+"name": "intelx",
+"category": "OSINT / Arquivos & leaks",
+"description": "Plataforma de pesquisa para arquivos, pastas públicas, dumps e leaks indexados — usada em investigações sobre exposição de dados.",
+"homepage": "https://intelx.io",
+"user": ""
+},
+{
+"name": "brasil.io",
+"category": "Repositório de dados (Brasil)",
+"description": "Projeto brasileiro que coleta e disponibiliza datasets abertos (saúde, mobilidade, eleições, COVID etc.) com API e repositório público — muito útil para pesquisas e OSINT local.",
+"homepage": "https://brasil.io",
+"user": ""
+},
+{
+"name": "dados.gov.br",
+"category": "Portal de dados abertos (Brasil)",
+"description": "Portal oficial de dados abertos do governo brasileiro que reúne conjuntos de dados públicos federais, com APIs para consulta e download.",
+"homepage": "https://dados.gov.br",
+"user": ""
+},
+{
+"name": "portal-da-transparencia",
+"category": "Repositório de dados (Brasil)",
+"description": "Portal da Transparência federal com informações sobre gastos públicos, convênios, servidores e contratos — útil para investigação financeira e due diligence.",
+"homepage": "https://www.portaltransparencia.gov.br",
+"user": ""
+},
+{
+"name": "tse-dados-abertos",
+"category": "Repositório eleitoral (Brasil)",
+"description": "Portal de dados do Tribunal Superior Eleitoral com bases sobre candidaturas, resultados, financiamento de campanhas e estatísticas eleitorais.",
+"homepage": "https://www.tse.jus.br/eleicoes/estatisticas/repositorio-de-dados",
+"user": ""
+},
+{
+"name": "ibge-dados",
+"category": "Repositório estatístico (Brasil)",
+"description": "Instituto Brasileiro de Geografia e Estatística — repositório de dados demográficos, econômicos e geográficos do Brasil, útil para contexto socioeconômico de empresas/regiões.",
+"homepage": "https://www.ibge.gov.br",
+"user": ""
+},
+{
+"name": "cvm",
+"category": "Regulação / Dados de mercado (Brasil)",
+"description": "Comissão de Valores Mobiliários — fornece informações e bases sobre companhias abertas, demonstrações financeiras e atos societários de empresas listadas no Brasil.",
+"homepage": "https://www.gov.br/cvm",
+"user": ""
+},
+{
+"name": "b3",
+"category": "Mercado financeiro (Brasil)",
+"description": "Bolsa de valores brasileira (B3) — informações, documentos e bases de dados sobre companhias listadas, ofertas e negociações.",
+"homepage": "https://www.b3.com.br",
+"user": ""
+},
+{
+"name": "receita-federal-consulta-cnpj",
+"category": "Dados cadastrais (Brasil)",
+"description": "Consulta pública do CNPJ (Receita Federal) para verificar situação cadastral de empresas — útil em verificação básica de entidades (observação: algumas consultas exigem validação/limites).",
+"homepage": "https://www.gov.br/receitafederal",
+"user": ""
+},
+{
+"name": "jucesp-juntas-comerciais",
+"category": "Registros empresariais (Brasil)",
+"description": "Juntas Comerciais estaduais (ex.: JUCESP em São Paulo) onde constam atos societários e registros de empresas — usado para obtenção de contratos sociais e histórico legal.",
+"homepage": "https://www.jucesp.sp.gov.br",
+"user": ""
+},
+{
+"name": "receitaws",
+"category": "API / Consulta CNPJ (terceiro)",
+"description": "API pública não oficial (serviço de terceiros) que facilita consultas ao CNPJ para automação — útil em fluxos OSINT, verificar disponibilidade e limites antes do uso em produção.",
+"homepage": "https://www.receitaws.com.br",
+"user": ""
+},
+{
+"name": "serpro-dados",
+"category": "APIs governamentais (Brasil)",
+"description": "SERPRO e outros órgãos federais oferecem APIs e serviços para consulta de dados públicos/empresariais (várias integrações úteis em investigações corporativas).",
+"homepage": "https://www.serpro.gov.br",
+"user": ""
+},
+{
+"name": "openstreetmap",
+"category": "OSINT / Geolocalização",
+"description": "Mapa colaborativo com dados geográficos abertos — útil para geolocalização de ativos, filiais e verificação geográfica de informações públicas.",
+"homepage": "https://www.openstreetmap.org",
+"user": ""
+},
+{
+"name": "have-i-been-pwned-api",
+"category": "OSINT / Breach API",
+"description": "API pública para checagem de e-mails em vazamentos (consulte limites e termos) — integrada frequentemente em workstreams OSINT para validar comprometimentos.",
+"homepage": "https://haveibeenpwned.com/API/v3",
+"user": ""
+},
+{
+"name": "github-brasil-orgs",
+"category": "Repositórios / Código (Brasil)",
+"description": "Organizações e usuários GitHub brasileiros (p.ex. projetos de dados abertos e govtech) mantêm repositórios com datasets, scripts e APIs úteis para investigação — verifique GitHub para listas atualizadas.",
+"homepage": "https://github.com/search?q=topic%3Abrasil",
+"user": ""
+}
+
+]

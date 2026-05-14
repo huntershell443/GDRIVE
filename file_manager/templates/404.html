@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/style_404.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro 404 - Página Não Encontrada</title>
+</head>
+
+<body>
+
+    <!-- Fundo com partículas -->
+    <div class="particles"></div>
+
+    <div class="error-container">
+        <h1 class="glitch">4😨4</h1>
+
+        <h2 >Página Não Encontrada...</h2>
+
+        <p class="fade-in">
+            Desculpe, mas a página que você procura não existe ou foi movida.
+        </p>
+
+        <a href="{% url 'login' %}" class="btn-404">Voltar ao Início</a>
+    </div>
+
+</body>
+</html>

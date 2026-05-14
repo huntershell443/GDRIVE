@@ -1,0 +1,773 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Header com fundo transparente */
+header {
+    background-color:  transparent !important; /* transparente escuro */
+    box-shadow:  none !important; /* tira sombra sólida */
+    position: fixed; /* fixar no topo para o banner aparecer atrás */
+    width: 100%;
+    z-index: 1030; /* acima do conteúdo */
+    transition: background-color 0.3s ease;
+    margin-bottom: 12%;
+}
+
+/* Para o navbar (menu) */
+.navbar-dark .navbar-nav .nav-link {
+    color: #e0e0e0; /* texto claro */
+    text-shadow: 0 0 5px rgba(0, 255, 200, 0.7); /* leve sombra para destacar */
+    transition: color 0.3s ease;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: #00ffc8; /* cor neon ao passar o mouse */
+    text-shadow: 0 0 10px #00ffc8;
+}
+
+/* Logo do site */
+.logo {
+    color: #00ffc8;
+    font-weight: 700;
+    text-shadow: 0 0 8px #00ffc8;
+}
+
+/* Botão toggle do menu em dispositivos móveis */
+.navbar-toggler {
+    border-color: rgba(0, 255, 200, 0.5);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0,255,200,0.8)' stroke-width='3' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+
+/* Quando o menu colapsa e aparece */
+.navbar-collapse {
+    background-color: rgba(15, 17, 26, 0.8);
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+}
+.nav-link i {
+    color: #00ffc8; /* tom neon igual ao texto */
+    margin-right: 6px; /* espaçamento entre ícone e texto */
+    text-shadow: 0 0 8px #00ffc8; /* dá um glow legal */
+}
+
+body {
+    padding-top: clamp(72px, 12vw, 140px);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-image: url("/static/img/banner_gdrive.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #0f111a;
+}
+@media (max-width: 768px) {
+  body {
+    background-image: url("/static/img/banner_gdrive_mobile.png") !important;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: scroll; 
+  }
+}
+main {
+    margin-top: 5%;
+    flex-grow: 1;
+}
+
+
+
+h2 {
+    color: #00ffc8;
+    text-align: center;
+    font-weight: 600;
+    text-shadow: 0 0 8px #00ffc8;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.file-item {
+    background: rgba(10, 10, 30, 0.85);
+    border: 1px solid #00ffc8;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #00ffc8;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: #ccefff;
+}
+
+.file-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px #00ffc8, 0 0 10px #00ffc8 inset;
+}
+
+.file-item img, .file-item video {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.file-item .file-name {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #a0eaff;
+    word-wrap: break-word;
+}
+
+.file-icon img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .file-item {
+        padding: 15px;
+    }
+    .file-name {
+        font-size: 12px;
+    }
+    .card {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .file-item {
+        width: 100%;
+    }
+    .file-name {
+        font-size: 10px;
+    }
+    .card {
+        padding: 10px;
+    }
+}
+
+.card {
+    background-color: rgba(10, 10, 30, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px #00ffc8;
+    padding: 20px;
+    color: #ccefff;
+}
+
+.card .form-group {
+    margin-bottom: 20px;
+}
+
+.card .form-control {
+    border-radius: 8px;
+    border: 1px solid #00ffc8;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #121827;
+    color: #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.card .form-control:focus {
+    border-color: #00ffc8;
+    box-shadow: 0 0 8px #00ffc8;
+    background-color: #0f111a;
+    color: #e0e0e0;
+}
+
+.card .btn {
+    background-color: #00ffc8;
+    color: #0f111a;
+    border-radius: 8px;
+    font-size: 16px;
+    padding: 12px;
+    border: none;
+    transition: background-color 0.3s ease;
+    font-weight: 700;
+    box-shadow: 0 0 8px #00ffc8;
+}
+
+.card .btn:hover {
+    background-color: #00d4a8;
+    box-shadow: 0 0 12px #00d4a8;
+    color: #fff;
+}
+
+.card .text-center {
+    font-size: 14px;
+    color: #70c7bc;
+}
+
+.card .text-center a {
+    color: #00ffc8;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.card .text-center a:hover {
+    text-decoration: underline;
+    color: #00d4a8;
+}
+
+nav .nav-link {
+    color: #70c7bc;
+    margin: 0 15px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+nav .nav-link:hover {
+    color: #00ffc8;
+}
+
+button.btn {
+    background-color: #1abc9c;
+    border-color: #1abc9c;
+    transition: background-color 0.3s ease;
+    color: #121827;
+    font-weight: 700;
+    box-shadow: 0 0 8px #1abc9c;
+}
+
+button.btn:hover {
+    background-color: #16a085;
+    border-color: #16a085;
+    box-shadow: 0 0 12px #16a085;
+    color: #fff;
+}
+
+a {
+    color: #00ffc8;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #00d4a8;
+}
+
+footer {
+    background-color: #121827;
+    color: #70c7bc;
+    font-size: 14px;
+    padding: 20px 0;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    font-weight: 500;
+    box-shadow: 0 -4px 8px rgba(0, 255, 200, 0.15);
+}
+
+footer p {
+    margin: 0;
+}
+
+footer p, header h1, header nav .navbar-nav {
+    font-weight: 500;
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+}
+
+button, a, .nav-link {
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+form.card {
+    background-color: rgba(10, 10, 30, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px #00ffc8;
+    padding: 20px;
+    width: 100%;
+    color: #ccefff;
+}
+
+form .form-group label {
+    font-size: 16px;
+    color: #a0eaff;
+}
+
+form .form-control-file {
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #00ffc8;
+    font-size: 14px;
+    color: #ccefff;
+    background-color: #121827;
+    transition: border-color 0.3s ease;
+}
+
+form .form-control-file:focus {
+    border-color: #00ffc8;
+    box-shadow: 0 0 8px #00ffc8;
+    background-color: #0f111a;
+    color: #e0e0e0;
+}
+
+form .btn-primary {
+    background-color: #00ffc8;
+    color: #0f111a;
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    transition: background-color 0.3s ease;
+    font-weight: 700;
+    box-shadow: 0 0 8px #00ffc8;
+}
+
+form .btn-primary:hover {
+    background-color: #00d4a8;
+    box-shadow: 0 0 12px #00d4a8;
+    color: #fff;
+}
+
+#file-name-list p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #70c7bc;
+}
+
+h2 {
+    color: #00ffc8;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    form.card {
+        padding: 15px;
+    }
+    form .form-control-file {
+        font-size: 13px;
+    }
+    form .btn-primary {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    gap: 10px;
+}
+
+.search-form input[type="text"] {
+    padding: 10px 15px;
+    border: 1px solid #00ffc8;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 300px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    background-color: #121827;
+    color: #e0e0e0;
+}
+
+.search-form input[type="text"]:focus {
+    outline: none;
+    border-color: #00d4a8;
+    box-shadow: 0 0 8px #00d4a8;
+}
+
+.search-form button {
+    padding: 10px 20px;
+    background-color: #00ffc8;
+    color: #0f111a;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+    font-weight: 700;
+    box-shadow: 0 0 8px #00ffc8;
+}
+
+.search-form button:hover {
+    background-color: #00d4a8;
+    transform: scale(1.03);
+    color: #fff;
+}
+
+.search-form button:active {
+    transform: scale(0.98);
+}
+
+/* Fonte branca global */
+body, input, select, textarea, button, a, .card, .file-item {
+    color: #fff !important;
+}
+/* Força fonte preta em todos os <select> */
+select {
+    color: #ffffff !important;
+    background: transparent !important;
+}
+select:focus, select:active, select:valid {
+    background: #000000 !important;
+    color: #ffffff !important;
+}
+select:invalid {
+    background: transparent !important;
+    color: #000 !important;
+}
+    
+
+
+/* Containers transparentes */
+.container, .card, form.card, .file-item {
+    background-color: rgba(0, 0, 0, 0.3) !important; /* quase transparente */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: none !important;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Animação hover para destacar os containers */
+.container:hover, .card:hover, form.card:hover, .file-item:hover {
+    background-color: rgba(0, 255, 200, 0.15); /* leve glow */
+    border-color: #00ffc8;
+    box-shadow: 0 0 15px #00ffc8;
+    transform: translateY(-3px);
+}
+
+/* Inputs e campos com animação ao passar mouse */
+.card .form-control, .form-control-file, .search-form input[type="text"] {
+    background-color: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.card .form-control:hover, 
+.card .form-control:focus,
+.form-control-file:hover, 
+.form-control-file:focus,
+.search-form input[type="text"]:hover, 
+.search-form input[type="text"]:focus {
+    background-color: rgba(0, 255, 200, 0.1);
+    border-color: #00ffc8;
+    box-shadow: 0 0 8px #00ffc8;
+    color: #000000;
+}
+
+/* Botões com efeito glow */
+.card .btn, .search-form button, button.btn {
+    color: #000;
+    background-color: #00ffc8;
+    box-shadow: 0 0 8px #00ffc8;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}
+
+.card .btn:hover, .search-form button:hover, button.btn:hover {
+    background-color: #00d4a8;
+    box-shadow: 0 0 12px #00d4a8;
+    color: #fff;
+}
+
+/* Links com cor branca e destaque */
+a, .nav-link {
+    color: #fff;
+    transition: color 0.3s ease;
+}
+
+a:hover, .nav-link:hover {
+    color: #00ffc8;
+    text-decoration: underline;
+}
+
+/* Containers de notícias */
+.bg-light.p-3.rounded.shadow-sm {
+    background-color: rgba(15, 17, 26, 0.6) !important; /* fundo escuro translúcido */
+    border: 1px solid rgba(0, 255, 200, 0.3);
+    box-shadow: 0 0 8px rgba(0, 255, 200, 0.2);
+    color: #fff !important;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Hover para destaque */
+.bg-light.p-3.rounded.shadow-sm:hover {
+    background-color: rgba(0, 255, 200, 0.15);
+    border-color: #00ffc8;
+    box-shadow: 0 0 15px #00ffc8;
+    cursor: pointer;
+}
+
+/* Links dentro das notícias */
+.bg-light.p-3.rounded.shadow-sm a.fw-semibold.text-primary {
+    color: #00ffc8 !important;
+    transition: color 0.3s ease;
+}
+
+.bg-light.p-3.rounded.shadow-sm a.fw-semibold.text-primary:hover {
+    color: #00d4a8 !important;
+    text-decoration: underline;
+}
+
+/* Textos pequenos (datas) */
+.bg-light.p-3.rounded.shadow-sm small.text-muted {
+    color: #a0eaff !important;
+}
+
+header {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    position: fixed;
+    width: 100%;
+    z-index: 1030;
+    transition: background-color 0.3s ease;
+    padding: 10px 0;
+}
+
+header > div > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem; /* espaçamento entre logo e nav */
+}
+
+.logo {
+    margin-right: 1rem;
+    color: #00ffc8;
+    font-weight: 700;
+    text-shadow: 0 0 8px #00ffc8;
+}
+
+nav.navbar {
+    background-color: transparent !important;
+    width: auto;
+}
+
+.navbar-collapse {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0;
+}
+
+.navbar-nav {
+    margin: 0 auto;
+}
+
+.nav-link {
+    margin: 0 12px;
+    color: #70c7bc;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #00ffc8;
+}
+
+
+input{
+    color:white; 
+    background-color:transparent
+}
+
+/* 🔧 Ajustes extras para Android/mobiles */
+@media (max-width: 768px) {
+    h2, h4 {
+      font-size: 1.2rem;
+      text-align: center;
+    }
+  
+    .btn {
+      font-size: 14px;
+      padding: 10px 14px;
+    }
+  
+    .file-list {
+      grid-template-columns: 1fr !important;
+      gap: 12px;
+    }
+  
+    .container, .content-wrapper {
+      padding: 10px;
+    }
+  
+    table {
+      font-size: 12px;
+      overflow-x: auto;
+      display: block;
+    }
+  
+    .navbar-nav {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .navbar-collapse {
+      text-align: center;
+    }
+  
+    .filter-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .filter-section input,
+    .filter-section button {
+      width: 100%;
+    }
+  
+    .file-item .file-name {
+      font-size: 12px;
+    }
+  
+    input[type="text"], input[type="date"] {
+      font-size: 14px;
+      padding: 8px 12px;
+    }
+  
+    .btn {
+      width: 100%;
+    }
+  
+    .navbar-toggler {
+      margin-right: 10px;
+    }
+  
+    footer {
+      font-size: 12px;
+      padding: 15px 0;
+    }
+  }
+  
+
+
+
+.youtube-channel-box {
+    background-color: #2a2a3d;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}
+
+.youtube-channel-box h3 {
+    color: #fff;
+}
+
+.list-group-item {
+    background-color: transparent;
+    color: #ccc;
+    border-color: #3b3b3b;
+}
+
+
+
+.list-group-item a {
+    color: #64b5f6;
+    text-decoration: none;
+}
+
+
+
+.list-group-item a:hover {
+    text-decoration: underline;
+}
+
+.btn-outline-primary {
+    border-color: #64b5f6;
+    color: #64b5f6;
+}
+
+.btn-outline-primary:hover {
+    background-color: #64b5f6;
+    color: white;
+}
+
+
+.thinking-dots {
+    font-style: italic;
+    color: #888;
+}
+
+.bot-msg, .user-msg {
+    white-space: pre-wrap;
+    margin-bottom: 1em;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 90%;
+}
+
+.bot-msg {
+    background-color: #f1f1f1;
+    align-self: flex-start;
+}
+
+.user-msg {
+    background-color: #d1e7dd;
+    align-self: flex-end;
+    text-align: right;
+}
+
+#chat-messages {
+    overflow-y: auto;
+    max-height: 50vh;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+#chat-box.fullscreen #chat-messages {
+    max-height: 75vh;
+}
+
+
+
+/* 🌌 Fundo animado neon estilo sci-fi */
+.bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+
+    background: radial-gradient(circle at center,
+        rgba(0, 255, 200, 0.15) 0%,
+        rgba(15, 17, 26, 1) 70%
+    );
+
+    background-size: 200% 200%;
+    animation: bgMove 8s infinite alternate ease-in-out;
+    filter: blur(40px);
+}
+
+@keyframes bgMove {
+    0% {
+        background-position: 30% 30%;
+    }
+    100% {
+        background-position: 70% 70%;
+    }
+}

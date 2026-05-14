@@ -1,0 +1,315 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<style>
+  h2 {
+    color: #00ffc8;
+    text-shadow: 0 0 8px #00ffc8;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  ul.list-group {
+    padding-left: 0;
+  }
+
+  li.list-group-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 18px;
+    border: 2px solid #00ffc8;
+    background-color: transparent;
+    box-shadow: 0 0 8px #00ffc8;
+    color: #00ffc8;
+    transition: box-shadow 0.25s ease;
+  }
+
+  li.list-group-item:hover {
+    box-shadow: 0 6px 18px rgba(0, 255, 200, 0.12);
+  }
+
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .item-left {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .item-title {
+    font-weight: 700;
+    display: block;
+    color: #00ffc8;
+    word-break: break-word;
+  }
+
+  .item-sub {
+    color: #a0eaff;
+    font-size: 0.92rem;
+  }
+
+  .item-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+
+  .neon-border {
+    background: transparent;
+    color: #00ffc8;
+    border: 2px solid #00ffc8;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #00ffc8;
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .neon-border:active,
+  .neon-border:focus {
+    outline: none;
+    box-shadow: 0 0 12px #00ffc8;
+  }
+
+  .btn-sm.neon-border {
+    font-size: 0.78rem;
+  }
+
+  .item-details {
+    display: none;
+    margin-top: 0.75rem;
+    color: #d6fff6;
+    font-size: 0.95rem;
+    border-top: 1px dashed rgba(0,255,200,0.12);
+    padding-top: 0.75rem;
+  }
+
+  .list-group-item.expanded {
+    background-color: rgba(0,255,200,0.02);
+  }
+
+  .list-group-item.expanded .item-details {
+    display: block;
+  }
+
+  .meta {
+    color: #9ee7df;
+    font-size: 0.85rem;
+  }
+
+  .link-inline {
+    color: #00ffc8;
+    word-break: break-all;
+  }
+
+  .small-muted {
+    color: #9ee7df;
+    font-size: 0.85rem;
+  }
+
+  .pagination .page-link {
+    color: #00ffc8;
+    border-color: #00ffc8;
+    background-color: transparent;
+  }
+
+  .pagination .active .page-link {
+    background-color: #00ffc8;
+    color: #000;
+    border-color: #00ffc8;
+  }
+
+  @media (max-width: 576px) {
+    .item-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+    .item-header {
+      gap: 0.5rem;
+    }
+  }
+</style>
+
+<div class="container mt-5">
+  <h2>🔍 Resultados para: <strong>"{{ query }}"</strong></h2>
+
+  {% if platform %}
+    <p class="text-muted">Filtrado por plataforma: <strong>{{ platform }}</strong></p>
+  {% endif %}
+
+  {% if all_empty %}
+    <div class="alert alert-warning">Nenhum resultado encontrado.</div>
+  {% endif %}
+
+  {% for group, items in groups %}
+    {% if items %}
+      <h4 class="mt-5">{{ group }}</h4>
+      <ul class="list-group">
+        {% for item in items %}
+          <li class="list-group-item">
+            <div class="item-header">
+              <div class="item-left">
+                {% if group == '📂 Arquivos' %}
+                  <span class="item-title">{{ item.name }}</span>
+                  <span class="item-sub">Arquivo enviado por {{ item.user.username }} • {{ item.uploaded_at|date:"Y-m-d H:i" }}</span>
+                {% elif group == '📝 Notas' %}
+                  <span class="item-title">{{ item.title }}</span>
+                  <span class="item-sub">Criada por {{ item.user.username }} • {{ item.created_at|date:"Y-m-d H:i" }}</span>
+                {% elif group == '🛡️ CVEs' %}
+                  <span class="item-title">{{ item.cve_id }}</span>
+                  <span class="item-sub">Registrado por {{ item.user.username }}</span>
+                {% elif group == '📁 Projetos' %}
+                  <span class="item-title">{{ item.name }}</span>
+                  <span class="item-sub">Projeto de {{ item.user.username }}</span>
+                {% elif group == '🧠 Dorks' %}
+                  <span class="item-title">[{{ item.platform }}] {{ item.query|truncatechars:120 }}</span>
+                  <span class="item-sub">Criado por {{ item.user.username }} • {{ item.created_at|date:"Y-m-d H:i" }}</span>
+                {% elif group == '🧰 Ferramentas' %}
+                  <span class="item-title">{{ item.name }}</span>
+                  <span class="item-sub">{{ item.category|default:"Sem categoria" }}</span>
+                {% elif group == '🔗 Links úteis' %}
+                  <span class="item-title">{{ item.title }}</span>
+                  <span class="item-sub">Link salvo por {{ item.user.username }} • {{ item.created_at|date:"Y-m-d H:i" }}</span>
+                {% elif group == '📺 Canais YouTube' %}
+                  <span class="item-title">{{ item.name }}</span>
+                  <span class="item-sub">Canal adicionado por {{ item.user.username }}</span>
+                {% endif %}
+              </div>
+
+              <div class="item-actions">
+                {% if group == '📂 Arquivos' %}
+                  <a href="{{ item.file.url }}" target="_blank" class="btn btn-sm neon-border">Abrir</a>
+                  <!-- botão removido porque a view file_download não existe -->
+                {% endif %}
+
+                {% if group == '🧠 Dorks' %}
+                  <a href="https://www.google.com/search?q={{ item.query|urlencode }}" target="_blank" class="btn btn-sm neon-border">🔎 Google</a>
+                {% endif %}
+
+                {% if group == '🔗 Links úteis' %}
+                  <a href="{{ item.url }}" target="_blank" class="btn btn-sm neon-border">Abrir link</a>
+                {% endif %}
+
+                {% if group == '🛡️ CVEs' %}
+                  <a href="#" class="btn btn-sm neon-border">Ver fonte</a>
+                {% endif %}
+
+                <button type="button" class="btn btn-sm neon-border toggle-details">Ver mais</button>
+              </div>
+            </div>
+
+            <div class="item-details">
+              {% if group == '📂 Arquivos' %}
+                <p class="meta"><strong>Nome do arquivo:</strong> {{ item.name }}</p>
+                <p class="meta"><strong>Localização / Pasta:</strong> {% if item.folder %}{{ item.folder }}{% else %}Raiz{% endif %}</p>
+                <p class="meta"><strong>Enviado em:</strong> {{ item.uploaded_at|date:"Y-m-d H:i" }}</p>
+                <p class="meta"><strong>Usuário:</strong> {{ item.user.username }}</p>
+                <p class="small-muted"><strong>URL:</strong> <a class="link-inline" href="{{ item.file.url }}" target="_blank">{{ item.file.url }}</a></p>
+              {% elif group == '📝 Notas' %}
+                <p class="meta"><strong>Título:</strong> {{ item.title }}</p>
+                <p>{{ item.content|linebreaks }}</p>
+                <p class="meta"><strong>Tags:</strong> {{ item.tags }}</p>
+                <p class="meta"><strong>Criada:</strong> {{ item.created_at|date:"Y-m-d H:i" }}</p>
+              {% elif group == '🛡️ CVEs' %}
+                <p class="meta"><strong>CVE:</strong> {{ item.cve_id }}</p>
+                <p>{{ item.description|linebreaks }}</p>
+                {% if item.references %}
+                  <p class="meta"><strong>Referências:</strong></p>
+                  <p><a class="link-inline" href="{{ item.references }}" target="_blank">{{ item.references }}</a></p>
+                {% endif %}
+                {% if item.published_date %}
+                  <p class="meta"><strong>Publicado em:</strong> {{ item.published_date|date:"Y-m-d" }}</p>
+                {% endif %}
+              {% elif group == '📁 Projetos' %}
+                <p class="meta"><strong>Projeto:</strong> {{ item.name }}</p>
+                {% if item.projectitem_set.exists %}
+                  <p class="meta"><strong>Itens do projeto:</strong></p>
+                  <ul>
+                    {% for pi in item.projectitem_set.all %}
+                      <li>
+                        <strong>{{ pi.title }}</strong>
+                        {% if pi.link %} - <a class="link-inline" href="{{ pi.link }}" target="_blank">{{ pi.link }}</a>{% endif %}
+                        {% if pi.file %} - <a class="link-inline" href="{{ pi.file.url }}" target="_blank">arquivo</a>{% endif %}
+                        {% if pi.notes %}<div class="small-muted">{{ pi.notes|truncatechars:200 }}</div>{% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="small-muted">Nenhum item adicional.</p>
+                {% endif %}
+              {% elif group == '🧠 Dorks' %}
+                <p class="meta"><strong>Query:</strong> {{ item.query }}</p>
+                {% if item.description %}<p>{{ item.description|linebreaks }}</p>{% endif %}
+              {% elif group == '🧰 Ferramentas' %}
+                <p class="meta"><strong>Categoria:</strong> {{ item.category|default:"Sem categoria" }}</p>
+                <p>{{ item.description|linebreaks }}</p>
+                {% if item.user %}<p class="meta">Adicionado por {{ item.user.username }}</p>{% endif %}
+              {% elif group == '🔗 Links úteis' %}
+                <p class="meta"><strong>Título:</strong> {{ item.title }}</p>
+                {% if item.description %}<p>{{ item.description|linebreaks }}</p>{% endif %}
+                <p class="meta"><strong>URL:</strong> <a class="link-inline" href="{{ item.url }}" target="_blank">{{ item.url }}</a></p>
+              {% elif group == '📺 Canais YouTube' %}
+                <p class="meta"><strong>Canal:</strong> {{ item.name }}</p>
+                {% if item.description %}<p>{{ item.description|linebreaks }}</p>{% endif %}
+                <p class="meta"><a class="link-inline" href="{{ item.url }}" target="_blank">Abrir canal</a></p>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {% if items.has_other_pages %}
+        <div class="mt-3 mb-5 text-center">
+          <nav>
+            <ul class="pagination justify-content-center">
+              {% if items.has_previous %}
+                <li class="page-item">
+                  <a class="page-link neon-border" href="?page={{ items.previous_page_number }}&q={{ query }}&dork_platform={{ platform }}">Anterior</a>
+                </li>
+              {% endif %}
+
+              {% for num in items.paginator.page_range %}
+                {% if items.number == num %}
+                  <li class="page-item active"><span class="page-link neon-border">{{ num }}</span></li>
+                {% elif num > items.number|add:"-3" and num < items.number|add:"3" %}
+                  <li class="page-item">
+                    <a class="page-link neon-border" href="?page={{ num }}&q={{ query }}&dork_platform={{ platform }}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+
+              {% if items.has_next %}
+                <li class="page-item">
+                  <a class="page-link neon-border" href="?page={{ items.next_page_number }}&q={{ query }}&dork_platform={{ platform }}">Próxima</a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-4">← Voltar ao Dashboard</a>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toggle-details").forEach(btn => {
+      btn.addEventListener("click", function () {
+        const li = this.closest(".list-group-item");
+        li.classList.toggle("expanded");
+        this.textContent = li.classList.contains("expanded") ? "Ver menos" : "Ver mais";
+      });
+    });
+  });
+</script>
+{% endblock %}

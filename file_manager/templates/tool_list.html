@@ -1,0 +1,239 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<style>
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #00ffc8;
+  text-shadow: 0 0 8px #00ffc8;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+ul.list-group {
+  padding-left: 0;
+}
+
+li.list-group-item {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 18px;
+  border: 2px solid #00ffc8;
+  background-color: transparent;
+  box-shadow: 0 0 8px #00ffc8;
+  color: #00ffc8;
+  transition: box-shadow 0.3s ease;
+  position: relative;
+}
+
+li.list-group-item:hover {
+  box-shadow: 0 4px 8px #00ffc8;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.list-header div {
+  flex-grow: 1;
+  margin-right: 1rem;
+}
+
+.neon-border {
+  background: transparent;
+  color: #00ffc8;
+  border: 2px solid #00ffc8;
+  border-radius: 8px;
+  box-shadow: 0 0 8px #00ffc8;
+  transition: box-shadow 0.3s ease;
+  font-weight: bold;
+}
+
+.neon-border:hover {
+  box-shadow: 0 0 12px #00ffc8;
+}
+
+input.form-control.neon-border,
+select.form-control.neon-border {
+  background-color: transparent;
+  color: #00ffc8;
+  border: 2px solid #00ffc8;
+  box-shadow: 0 0 8px #00ffc8;
+}
+
+.tool-info {
+  padding-top: 0.75rem;
+  color: #a0eaff;
+  font-size: 0.95rem;
+}
+
+.toggle-info::after {
+  content: " ▼";
+}
+
+.toggle-info[aria-expanded="true"]::after {
+  content: " ▲";
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #00ffc880;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.tool-name {
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: #00ffc8;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .list-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .list-header button {
+    margin-top: 0.5rem;
+    align-self: flex-end;
+  }
+}
+</style>
+
+<div class="container mt-5">
+  <h2>Ferramentas Linux</h2>
+
+  <!-- Filtros de busca e categoria -->
+  <form method="get" class="mb-4 row">
+    <div class="col-md-6 mb-2">
+      <input type="text" name="q" placeholder="Buscar ferramenta..." class="form-control neon-border" value="{{ query }}">
+    </div>
+    <div class="col-md-4 mb-2">
+      <select name="category" class="form-control neon-border">
+        <option value="">Todas as categorias</option>
+        {% for cat in all_categories %}
+          <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat|default:"Sem categoria" }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 mb-2">
+      <button type="submit" class="btn neon-border w-100">Filtrar</button>
+    </div>
+  </form>
+
+  <!-- Upload de ferramentas -->
+  <div class="mb-5" style="padding-right:25%;padding-left:25%">
+    <h4 style="color:#00ffc8;">Importar ferramentas (JSON ou CSV)</h4>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.file }}
+      <button type="submit" class="btn neon-border btn-sm mt-2">Enviar</button>
+    </form>
+  </div>
+
+  <!-- Mensagens do sistema -->
+  {% if messages %}
+    <div>
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Lista de ferramentas -->
+  <ul class="list-group">
+    {% for tool in tools %}
+      <li class="list-group-item">
+        <div class="list-header">
+          <div>
+            {% if tool.homepage %}
+              <a href="{{ tool.homepage }}" target="_blank" class="tool-name">{{ tool.name }}</a><br>
+            {% else %}
+              <span class="tool-name">{{ tool.name }}</span><br>
+            {% endif %}
+            <small><em>{{ tool.category|default:"Sem categoria" }}</em></small><br>
+            <span>{{ tool.description|default:"Sem descrição"|truncatechars:80 }}</span>
+          </div>
+          <button type="button"
+                  class="btn neon-border btn-sm toggle-info"
+                  data-target="info-{{ tool.pk }}"
+                  aria-expanded="false">
+            Ver mais
+          </button>
+        </div>
+        <hr>
+        <div id="info-{{ tool.pk }}" class="tool-info" style="display: none;">
+          <p><strong>Descrição completa:</strong> {{ tool.description|default:"Sem descrição" }}</p>
+          {% if tool.homepage %}
+            <p><strong>Homepage:</strong> <a href="{{ tool.homepage }}" target="_blank" style="color:#00ffc8;">{{ tool.homepage }}</a></p>
+          {% endif %}
+        </div>
+      </li>
+    {% empty %}
+      <li class="list-group-item">Nenhuma ferramenta encontrada.</li>
+    {% endfor %}
+  </ul>
+
+  <!-- Paginação -->
+  <div class="mt-4 text-center">
+    <nav>
+      <ul class="pagination justify-content-center">
+        {% if tools.has_previous %}
+          <li class="page-item">
+            <a class="page-link neon-border" href="?page={{ tools.previous_page_number }}&q={{ query }}&category={{ selected_category }}">Anterior</a>
+          </li>
+        {% endif %}
+
+        {% for num in tools.paginator.page_range %}
+          {% if tools.number == num %}
+            <li class="page-item active"><span class="page-link neon-border">{{ num }}</span></li>
+          {% elif num > tools.number|add:"-3" and num < tools.number|add:"3" %}
+            <li class="page-item">
+              <a class="page-link neon-border" href="?page={{ num }}&q={{ query }}&category={{ selected_category }}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if tools.has_next %}
+          <li class="page-item">
+            <a class="page-link neon-border" href="?page={{ tools.next_page_number }}&q={{ query }}&category={{ selected_category }}">Próxima</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- JavaScript para expandir/ocultar descrição -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".toggle-info");
+
+    buttons.forEach(button => {
+      button.addEventListener("click", function () {
+        const targetId = this.getAttribute("data-target");
+        const target = document.getElementById(targetId);
+        const isVisible = target.style.display === "block";
+
+        target.style.display = isVisible ? "none" : "block";
+        this.setAttribute("aria-expanded", !isVisible);
+      });
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,822 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<link href="{% static 'css/notes.css' %}" rel="stylesheet">
+
+<div class="notes-list-container">
+    <!-- Header da Página -->
+    <div class="page-header fade-in-up">
+        <h1 class="page-title">📝 Gerenciador de Notas</h1>
+        <p class="page-subtitle">Organize suas notas em pastas e acesse recursos compartilhados</p>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="stats-grid fade-in-up">
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">📝</div>
+                <div class="stat-content">
+                    <h3>Total de Notas</h3>
+                    <div class="stat-value">{{ notes|length }}</div>
+                </div>
+            </div>
+            <p>Notas nesta pasta</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">📁</div>
+                <div class="stat-content">
+                    <h3>Pastas</h3>
+                    <div class="stat-value">{{ folders.count }}</div>
+                </div>
+            </div>
+            <p>Pastas de organização</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-content">
+                    <h3>Ações Rápidas</h3>
+                    <div class="stat-value">3</div>
+                </div>
+            </div>
+            <p>Criar, editar, organizar</p>
+        </div>
+    </div>
+
+    <!-- Criar Pasta -->
+    <div class="form-card fade-in-up">
+        <h3 style="color: var(--neon-cyan); margin-bottom: 16px;">➕ Nova Pasta</h3>
+        <form method="post" action="{% url 'create_folder' %}" class="form-grid">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Nome da Pasta</label>
+                <input type="text" name="folder_name" placeholder="Digite o nome da pasta" required class="input-modern">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Pasta Pai</label>
+                <select name="parent_folder" class="input-modern">
+                    <option value="">📁 Raiz</option>
+                    {% for folder in folders %}
+                        <option value="{{ folder.id }}" {% if selected_folder and folder.id == selected_folder.id %}selected{% endif %}>
+                            {% if folder.parent %}↳{% endif %} {{ folder.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-modern">Criar Pasta</button>
+        </form>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-modern fade-in-up">
+        <div class="breadcrumb-item">
+            <a href="{% url 'notes_list' %}" class="btn-modern secondary small">📁 Raiz</a>
+        </div>
+        {% if selected_folder %}
+            <div class="breadcrumb-separator">→</div>
+            {% with selected_folder.get_ancestors as ancestors %}
+                {% for ancestor in ancestors %}
+                    <div class="breadcrumb-item">
+                        <a href="{% url 'notes_list' %}?folder={{ ancestor.id }}" class="btn-modern secondary small">📁 {{ ancestor.name }}</a>
+                    </div>
+                    <div class="breadcrumb-separator">→</div>
+                {% endfor %}
+            {% endwith %}
+            <div class="breadcrumb-item active">
+                <span class="btn-modern small">📁 {{ selected_folder.name }}</span>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Subpastas -->
+    {% if subfolders %}
+    <div class="folders-section fade-in-up">
+        <h3 class="section-title">📂 Subpastas</h3>
+        <div class="folder-list">
+            {% for folder in subfolders %}
+                <div class="folder-item-modern">
+                    <div class="folder-info">
+                        <div class="folder-icon">📁</div>
+                        <div class="folder-details">
+                            <h4>{{ folder.name }}</h4>
+                            <div class="folder-path">
+                                {% with folder_notes_count=folder.note_set.count %}
+                                    {{ folder_notes_count }} nota{{ folder_notes_count|pluralize }}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="folder-actions-modern">
+                        <a href="{% url 'notes_list' %}?folder={{ folder.id }}" class="btn-modern secondary small">Abrir</a>
+                        {% if folder.user == user %}
+                            <a href="{% url 'edit_folder' pk=folder.pk %}" class="btn-modern secondary small">✏️</a>
+                            <button type="button" class="btn-modern danger small" 
+                                    onclick="confirmDeleteFolder({{ folder.id }}, '{{ folder.name|escapejs }}')">
+                                🗑️
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Busca -->
+    <div class="search-card fade-in-up">
+        <h3 style="color: var(--neon-cyan); margin-bottom: 16px;">🔍 Buscar Notas</h3>
+        <form method="get" action="{% url 'notes_list' %}" class="search-form">
+            <div class="search-input-wrapper">
+                <div class="search-icon">🔍</div>
+                <input type="text" name="q" placeholder="Buscar em todas as pastas..." value="{{ query|default:'' }}" class="input-modern search-input">
+            </div>
+            {% if selected_folder %}
+                <input type="hidden" name="folder" value="{{ selected_folder.id }}">
+            {% endif %}
+            <button type="submit" class="btn-modern">Buscar</button>
+        </form>
+        
+        {% if query %}
+        <div style="margin-top: 16px; padding: 12px; background: rgba(0, 255, 200, 0.1); border-radius: 8px; border: 1px solid var(--neon-cyan);">
+            <div style="display: flex; justify-content: between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="color: var(--neon-cyan); font-weight: 600;">
+                    🔍 Buscando: "{{ query }}"
+                </div>
+                <div style="color: var(--text-primary);">
+                    {{ notes|length }} resultado(s)
+                </div>
+                <a href="{% url 'notes_list' %}{% if selected_folder %}?folder={{ selected_folder.id }}{% endif %}" class="btn-modern secondary small">
+                    ✕ Limpar
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Ações e Notas -->
+    <div class="files-section">
+        <div class="actions-toolbar fade-in-up">
+            <div class="batch-actions">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="select-all-notes">
+                    Selecionar todas
+                </label>
+                <span id="selected-notes-count">0 notas selecionadas</span>
+            </div>
+            <div class="action-buttons">
+                <button type="button" class="btn-modern secondary" onclick="moveSelectedNotes()">
+                    📁 Mover para Pasta
+                </button>
+                <button type="button" class="btn-modern danger" onclick="deleteSelectedNotes()">
+                    🗑️ Excluir Selecionadas
+                </button>
+                <a href="{% url 'add_note' %}{% if selected_folder %}?folder={{ selected_folder.id }}{% endif %}" class="btn-modern">
+                    ➕ Nova Nota
+                </a>
+                <button type="button" class="btn-modern secondary" id="btn-open-import-txt">
+                    📄 Importar .txt
+                </button>
+                <a href="{% url 'download_notes' %}" class="btn-modern secondary">
+                    📥 Exportar Todas
+                </a>
+            </div>
+        </div>
+
+        {% if notes %}
+        <div class="files-grid">
+            {% for note in notes %}
+                <div class="file-card note-card fade-in-up" data-note-id="{{ note.id }}">
+                    <input type="checkbox" class="file-checkbox-modern note-checkbox" name="selected_notes" value="{{ note.id }}">
+                    
+                    <div class="file-preview note-preview">
+                        <div class="file-icon-large">📄</div>
+                    </div>
+
+                    <div class="file-info">
+                        <div class="file-name">{{ note.title }}</div>
+                        
+                        {% if note.folder %}
+                            <div class="file-meta">📁 {{ note.folder.name }}</div>
+                        {% endif %}
+                        
+                        <div class="file-meta">📅 {{ note.created_at|date:"d/m/Y H:i" }}</div>
+                        
+                        {% if note.tags %}
+                        <div class="note-tags">
+                            {% for tag in note.tags.split|slice:":3" %}
+                            <span class="tag">{{ tag }}</span>
+                            {% endfor %}
+                            {% if note.tags.split|length > 3 %}
+                            <span class="tag">+{{ note.tags.split|length|add:"-3" }}</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <div class="note-content-preview">
+                            {{ note.content|striptags|truncatewords:20 }}
+                        </div>
+                        
+                        <div class="file-badges">
+                            {% if note.user != user %}
+                                <div class="badge shared">👤 {{ note.user.username }}</div>
+                            {% endif %}
+                            {% if note.is_global %}
+                                <div class="badge global">🌍 Global</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="file-actions">
+                            <button class="btn-modern small secondary view-note"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#viewNoteModal"
+                                    data-title="{{ note.title|escape }}"
+                                    data-content="{{ note.content|escape }}"
+                                    data-id="{{ note.id }}"
+                                    data-folder="{{ note.folder.id|default_if_none:'null' }}">
+                                👀 Visualizar
+                            </button>
+                            <a href="{% url 'edit_note' pk=note.pk %}" class="btn-modern small secondary">
+                                ✏️ Editar
+                            </a>
+                            <a href="{% url 'download_single_note' note.id %}" class="btn-modern small secondary">
+                                📥 Baixar
+                            </a>
+                            {% if note.user == user %}
+                            <a href="{% url 'delete_note' pk=note.pk %}" class="btn-modern small danger"
+                               onclick="return confirm('Tem certeza que deseja excluir esta nota?')">
+                                🗑️ Excluir
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="empty-icon">📝</div>
+                <h3>Nenhuma nota encontrada</h3>
+                <p>
+                    {% if query %}
+                        Não encontramos resultados para "{{ query }}"
+                    {% elif selected_folder %}
+                        Esta pasta está vazia
+                    {% else %}
+                        Sua raiz está vazia
+                    {% endif %}
+                </p>
+                <a href="{% url 'add_note' %}{% if selected_folder %}?folder={{ selected_folder.id }}{% endif %}" class="btn-modern">
+                    ➕ Criar Primeira Nota
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de Visualização -->
+<div class="modal fade" id="viewNoteModal" tabindex="-1" aria-labelledby="viewNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-modern">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewNoteModalLabel">Título da Nota</h5>
+                <button type="button" class="btn-close btn-close-modern" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="note-content-modal" id="viewNoteContent"></div>
+                <div class="modal-actions mt-4">
+                    <a id="downloadNoteBtn" href="#" class="btn-modern small secondary" target="_blank">
+                        📥 Baixar Esta Nota
+                    </a>
+                    <a href="{% url 'download_notes' %}" class="btn-modern small secondary" target="_blank">
+                        📥 Baixar Todas as Notas
+                    </a>
+                </div>
+
+                <!-- Formulário para mover UMA nota individual -->
+                <form method="POST" action="{% url 'move_single_note_to_folder' %}" id="moveSingleNoteForm" class="move-folder-form mt-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="note_id" id="noteIdInput">
+                    <div class="form-group">
+                        <label class="form-label">📁 Mover para pasta:</label>
+                        <select class="input-modern" name="folder_id" id="folderSelect" required>
+                            <option value="">Pasta Raiz</option>
+                            {% for folder in folders %}
+                            <option value="{{ folder.id }}">{{ folder.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-modern small">📤 Mover Nota</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Mover MÚLTIPLAS Notas -->
+<div id="moveNotesModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: var(--card-bg); border: 2px solid var(--neon-cyan); border-radius: 16px; padding: 30px; max-width: 400px; width: 90%;">
+        <h3 style="color: var(--neon-cyan); margin-bottom: 20px;">📁 Mover Notas para Pasta</h3>
+        <select id="targetFolderSelect" class="input-modern" style="width: 100%; margin-bottom: 20px;">
+            <option value="">Pasta Raiz</option>
+            {% for folder in folders %}
+            <option value="{{ folder.id }}">{{ folder.name }}</option>
+            {% endfor %}
+        </select>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="button" class="btn-modern secondary" onclick="closeMoveModal()">Cancelar</button>
+            <button type="button" class="btn-modern" onclick="confirmMoveNotes()">Mover</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Funções JavaScript para gerenciamento de notas
+document.addEventListener('DOMContentLoaded', function() {
+    // Selecionar todos os checkboxes
+    const selectAllCheckbox = document.getElementById('select-all-notes');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.note-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateSelectedNotesCount();
+        });
+    }
+
+    // Atualizar contador de seleção
+    function updateSelectedNotesCount() {
+        const selected = document.querySelectorAll('.note-checkbox:checked');
+        document.getElementById('selected-notes-count').textContent = 
+            `${selected.length} nota${selected.length !== 1 ? 's' : ''} selecionada${selected.length !== 1 ? 's' : ''}`;
+    }
+
+    // Adicionar event listeners aos checkboxes
+    document.querySelectorAll('.note-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedNotesCount);
+    });
+
+    // Modal functionality
+    const modal = document.getElementById("viewNoteModal");
+    const titleEl = document.getElementById("viewNoteModalLabel");
+    const contentEl = document.getElementById("viewNoteContent");
+    const form = document.getElementById("moveSingleNoteForm");
+    const noteIdInput = document.getElementById("noteIdInput");
+    const downloadBtn = document.getElementById("downloadNoteBtn");
+
+    document.querySelectorAll(".view-note").forEach(button => {
+        button.addEventListener("click", () => {
+            const title = button.getAttribute("data-title");
+            const content = button.getAttribute("data-content");
+            const noteId = button.getAttribute("data-id");
+            const folderId = button.getAttribute("data-folder");
+
+            titleEl.textContent = title;
+            contentEl.innerHTML = content.replace(/\n/g, "<br>");
+            noteIdInput.value = noteId;
+            downloadBtn.href = `{% url 'download_single_note' 0 %}`.replace('0', noteId);
+
+            // Mostrar/ocultar formulário de mover pasta
+            if (folderId === "null") {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        });
+    });
+
+    // Fechar modal quando clicar no X
+    modal.addEventListener('hidden.bs.modal', function () {
+        form.style.display = 'none';
+    });
+
+    // Animações de entrada
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in-up').forEach(el => {
+        observer.observe(el);
+    });
+});
+
+// Funções globais
+function confirmDeleteFolder(folderId, folderName) {
+    if (confirm(`Tem certeza que deseja excluir a pasta "${folderName}" e todo seu conteúdo?`)) {
+        window.location.href = `{% url 'delete_folder' 0 %}`.replace('0', folderId);
+    }
+}
+
+function getSelectedNoteIds() {
+    const checkboxes = document.querySelectorAll('.note-checkbox:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function moveSelectedNotes() {
+    const selectedIds = getSelectedNoteIds();
+    if (selectedIds.length === 0) {
+        alert('Selecione pelo menos uma nota para mover.');
+        return;
+    }
+    document.getElementById('moveNotesModal').style.display = 'flex';
+}
+
+function closeMoveModal() {
+    document.getElementById('moveNotesModal').style.display = 'none';
+}
+
+function confirmMoveNotes() {
+    const selectedIds = getSelectedNoteIds();
+    const targetFolderId = document.getElementById('targetFolderSelect').value;
+    
+    // Criar um formulário temporário para enviar via POST
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = "{% url 'move_notes_to_folder' %}";
+    
+    const csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = 'csrfmiddlewaretoken';
+    csrfToken.value = '{{ csrf_token }}';
+    form.appendChild(csrfToken);
+    
+    const noteIdsInput = document.createElement('input');
+    noteIdsInput.type = 'hidden';
+    noteIdsInput.name = 'note_ids';
+    noteIdsInput.value = selectedIds.join(',');
+    form.appendChild(noteIdsInput);
+    
+    const folderIdInput = document.createElement('input');
+    folderIdInput.type = 'hidden';
+    folderIdInput.name = 'folder_id';
+    folderIdInput.value = targetFolderId;
+    form.appendChild(folderIdInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function deleteSelectedNotes() {
+    const selectedIds = getSelectedNoteIds();
+    if (selectedIds.length === 0) {
+        alert('Selecione pelo menos uma nota para excluir.');
+        return;
+    }
+    
+    if (confirm(`Tem certeza que deseja excluir ${selectedIds.length} nota${selectedIds.length !== 1 ? 's' : ''}?`)) {
+        // Criar um formulário temporário para enviar via POST
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'delete_notes' %}";
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = 'csrfmiddlewaretoken';
+        csrfToken.value = '{{ csrf_token }}';
+        form.appendChild(csrfToken);
+        
+        selectedIds.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_notes';
+            input.value = id;
+            form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Adicionar estilos inline para o modal moderno
+const style = document.createElement('style');
+style.textContent = `
+    .modal-modern {
+        background: var(--card-bg);
+        border: 2px solid var(--neon-cyan);
+        border-radius: 16px;
+        backdrop-filter: blur(15px);
+    }
+    .modal-modern .modal-header {
+        border-bottom: 1px solid var(--card-border);
+        background: rgba(0, 0, 0, 0.3);
+    }
+    .modal-modern .modal-title {
+        color: var(--neon-cyan);
+        font-weight: 600;
+    }
+    .btn-close-modern {
+        filter: invert(1);
+    }
+    .note-content-modal {
+        color: var(--text-primary);
+        line-height: 1.6;
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+    }
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .move-folder-form {
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+        border: 1px solid var(--card-border);
+    }
+    
+    /* Estilos específicos para notas */
+    .note-preview {
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+    }
+
+    .note-content-preview {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin: 10px 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .note-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin: 8px 0;
+    }
+
+    .tag {
+        background: rgba(185, 103, 255, 0.2);
+        color: var(--neon-purple);
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        border: 1px solid var(--neon-purple);
+    }
+
+    .note-card:hover .note-content-preview {
+        color: var(--text-primary);
+    }
+
+    /* Ajustes responsivos */
+    @media (max-width: 768px) {
+        .file-actions {
+            flex-direction: column;
+        }
+        
+        .file-actions .btn-modern {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .modal-actions {
+            flex-direction: column;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .action-buttons .btn-modern {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+<!-- ═══════════════════════════════════════════════════
+     MODAL: Importar .txt como notas
+════════════════════════════════════════════════════ -->
+<div id="import-txt-modal" style="display:none;position:fixed;inset:0;z-index:99999;">
+  <div id="import-txt-overlay" style="
+      position:absolute;inset:0;
+      background:rgba(0,0,0,.85);
+      backdrop-filter:blur(10px);
+      display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div style="
+        background:rgba(10,10,20,.97);
+        border:1px solid var(--neon-cyan);
+        border-radius:20px;
+        box-shadow:0 0 60px rgba(0,255,200,.2);
+        width:min(560px,95vw);
+        max-height:90vh;
+        display:flex;flex-direction:column;
+        overflow:hidden;
+        animation:scaleIn .22s cubic-bezier(.34,1.56,.64,1);">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(0,255,200,.2);">
+        <span style="color:var(--neon-cyan);font-size:1.1rem;font-weight:700;text-shadow:0 0 10px rgba(0,255,200,.4);">📄 Importar arquivos .txt como notas</span>
+        <button id="import-txt-close" style="background:rgba(255,68,68,.15);border:1px solid rgba(255,68,68,.5);color:#ff4444;border-radius:8px;width:34px;height:34px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>
+
+      <!-- Body -->
+      <div style="overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Zona de drop -->
+        <div id="txt-drop-zone" style="
+            border:2px dashed rgba(0,255,200,.4);border-radius:14px;
+            padding:32px 20px;text-align:center;cursor:pointer;
+            transition:all .2s ease;background:rgba(0,255,200,.03);">
+          <div style="font-size:2.4rem;margin-bottom:10px;">📂</div>
+          <p style="color:var(--neon-cyan);font-weight:600;margin:0 0 6px;">Arraste arquivos .txt aqui</p>
+          <p style="color:var(--text-secondary);font-size:.85rem;margin:0 0 14px;">ou clique para selecionar</p>
+          <input type="file" id="txt-file-input" accept=".txt" multiple style="display:none;">
+          <button type="button" onclick="document.getElementById('txt-file-input').click()" style="background:rgba(0,255,200,.12);border:1px solid rgba(0,255,200,.4);color:var(--neon-cyan);border-radius:8px;padding:8px 18px;cursor:pointer;font-size:.9rem;">Selecionar arquivos</button>
+        </div>
+
+        <!-- Lista de arquivos selecionados -->
+        <div id="txt-file-list" style="display:none;max-height:180px;overflow-y:auto;">
+          <p style="color:var(--text-secondary);font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Arquivos selecionados:</p>
+          <ul id="txt-file-items" style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;"></ul>
+        </div>
+
+        <!-- Pasta destino -->
+        <div>
+          <label style="color:var(--neon-cyan);font-size:.85rem;font-weight:600;display:block;margin-bottom:6px;">📁 Importar para pasta:</label>
+          <select id="txt-folder-select" class="input-modern" style="width:100%;">
+            <option value="">Pasta Raiz</option>
+            {% for folder in folders %}
+            <option value="{{ folder.id }}" {% if selected_folder and folder.id == selected_folder.id %}selected{% endif %}>{{ folder.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Resultado -->
+        <div id="txt-import-result" style="display:none;"></div>
+
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:14px 22px;border-top:1px solid rgba(0,255,200,.15);display:flex;justify-content:flex-end;gap:10px;">
+        <button type="button" id="import-txt-cancel" style="background:transparent;border:2px solid rgba(0,255,200,.3);color:var(--text-secondary);border-radius:10px;padding:10px 20px;cursor:pointer;font-size:.9rem;">Cancelar</button>
+        <button type="button" id="import-txt-submit" style="background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));border:none;border-radius:10px;padding:10px 24px;color:#000;font-weight:700;font-size:.9rem;cursor:pointer;" disabled>
+          ⬆️ Importar Notas
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const modal      = document.getElementById('import-txt-modal');
+  const overlay    = document.getElementById('import-txt-overlay');
+  const closeBtn   = document.getElementById('import-txt-close');
+  const cancelBtn  = document.getElementById('import-txt-cancel');
+  const submitBtn  = document.getElementById('import-txt-submit');
+  const dropZone   = document.getElementById('txt-drop-zone');
+  const fileInput  = document.getElementById('txt-file-input');
+  const fileList   = document.getElementById('txt-file-list');
+  const fileItems  = document.getElementById('txt-file-items');
+  const folderSel  = document.getElementById('txt-folder-select');
+  const resultBox  = document.getElementById('txt-import-result');
+  const openBtn    = document.getElementById('btn-open-import-txt');
+
+  let selectedFiles = [];
+
+  function openModal() {
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    resetState();
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function resetState() {
+    selectedFiles = [];
+    fileInput.value = '';
+    fileItems.innerHTML = '';
+    fileList.style.display = 'none';
+    resultBox.style.display = 'none';
+    resultBox.innerHTML = '';
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⬆️ Importar Notas';
+  }
+
+  function setFiles(files) {
+    selectedFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.txt'));
+    fileItems.innerHTML = '';
+    selectedFiles.forEach((f, i) => {
+      const li = document.createElement('li');
+      li.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(0,255,200,.06);border:1px solid rgba(0,255,200,.15);border-radius:8px;padding:7px 12px;font-size:.85rem;';
+      li.innerHTML = `
+        <span style="color:#e0e0e0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">📄 ${f.name}</span>
+        <span style="color:var(--text-secondary);white-space:nowrap;margin-left:10px;">${(f.size/1024).toFixed(1)} KB</span>
+        <button type="button" data-idx="${i}" style="background:none;border:none;color:#ff4444;cursor:pointer;margin-left:8px;font-size:.9rem;">✕</button>`;
+      fileItems.appendChild(li);
+    });
+
+    fileList.style.display = selectedFiles.length ? 'block' : 'none';
+    submitBtn.disabled = selectedFiles.length === 0;
+
+    fileItems.querySelectorAll('button[data-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedFiles.splice(+btn.dataset.idx, 1);
+        setFiles(selectedFiles);
+      });
+    });
+  }
+
+  // Drag-and-drop
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--neon-cyan)'; dropZone.style.background = 'rgba(0,255,200,.08)'; });
+  dropZone.addEventListener('dragleave', ()  => { dropZone.style.borderColor = 'rgba(0,255,200,.4)'; dropZone.style.background = 'rgba(0,255,200,.03)'; });
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.style.borderColor = 'rgba(0,255,200,.4)';
+    dropZone.style.background = 'rgba(0,255,200,.03)';
+    setFiles(e.dataTransfer.files);
+  });
+
+  fileInput.addEventListener('change', () => setFiles(fileInput.files));
+
+  // Submit
+  submitBtn.addEventListener('click', async () => {
+    if (!selectedFiles.length) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Importando…';
+    resultBox.style.display = 'none';
+
+    const fd = new FormData();
+    selectedFiles.forEach(f => fd.append('txt_files', f));
+    fd.append('folder_id', folderSel.value);
+    fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    try {
+      const res = await fetch('{% url "import_txt_notes" %}', { method: 'POST', body: fd });
+      const data = await res.json();
+
+      let html = '';
+      if (data.created && data.created.length) {
+        html += `<div style="background:rgba(0,255,200,.1);border:1px solid var(--neon-cyan);border-radius:10px;padding:12px 16px;margin-bottom:10px;">
+          <p style="color:var(--neon-cyan);font-weight:700;margin:0 0 6px;">✅ ${data.created.length} nota(s) criada(s):</p>
+          <ul style="margin:0;padding-left:18px;color:#e0e0e0;font-size:.85rem;">
+            ${data.created.map(t => `<li>${t}</li>`).join('')}
+          </ul></div>`;
+      }
+      if (data.skipped && data.skipped.length) {
+        html += `<div style="background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.5);border-radius:10px;padding:12px 16px;">
+          <p style="color:#ff6b6b;font-weight:700;margin:0 0 6px;">⚠️ Ignorados:</p>
+          <ul style="margin:0;padding-left:18px;color:#e0e0e0;font-size:.85rem;">
+            ${data.skipped.map(t => `<li>${t}</li>`).join('')}
+          </ul></div>`;
+      }
+
+      resultBox.innerHTML = html;
+      resultBox.style.display = 'block';
+
+      if (data.created && data.created.length) {
+        submitBtn.textContent = '✅ Concluído — recarregando…';
+        setTimeout(() => location.reload(), 1800);
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '⬆️ Importar Notas';
+      }
+    } catch (err) {
+      resultBox.innerHTML = `<div style="color:#ff4444;padding:10px;">Erro na requisição: ${err}</div>`;
+      resultBox.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = '⬆️ Importar Notas';
+    }
+  });
+
+  if (openBtn)    openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.style.display === 'block') closeModal(); });
+})();
+</script>
+
+{% endblock %}

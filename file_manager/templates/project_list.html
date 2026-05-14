@@ -1,0 +1,117 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+
+<style>
+  .project-card {
+    background-color: #1e1e2f;
+    border: 1px solid #00ffc8;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 255, 200, 0.4);
+    color: #00ffc8;
+    transition: all 0.3s ease;
+  }
+
+  .project-card:hover {
+    box-shadow: 0 0 18px rgba(0, 255, 200, 0.7);
+    transform: translateY(-3px);
+  }
+
+  .project-card h5, .project-card p, .project-card a {
+    color: #00ffc8;
+  }
+
+  .project-card a.btn {
+    border-color: #00ffc8;
+    color: #00ffc8;
+  }
+
+  .project-card a.btn:hover {
+    background-color: #00ffc8;
+    color: #000;
+  }
+
+  .badge-icon {
+    background-color: #00ffc8;
+    color: #000;
+    font-size: 0.75rem;
+    padding: 0.3em 0.6em;
+    border-radius: 0.5rem;
+    margin-left: 0.5rem;
+  }
+
+  .item-note {
+    font-size: 0.875rem;
+    color: #cccccc;
+  }
+
+  .hr-separator {
+    border-top: 1px solid #00ffc855;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+</style>
+
+<div class="container px-3 px-md-5">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 mt-4">
+    <h2 class="text-center text-light mb-3 mb-md-0 w-100">📁 Meus Projetos</h2>
+    <a href="{% url 'add_project' %}" class="btn btn-success ms-md-3">+ Novo Projeto</a>
+  </div>
+
+  <div class="row justify-content-center">
+    {% for project in projects %}
+      <div class="col-12 col-md-10 col-lg-8 mb-4">
+        <div class="project-card p-4">
+          <h5 class="text-center mb-3">
+            {{ project.name }}
+            {% if project.repo_link %}
+              <a href="{{ project.repo_link }}" target="_blank" class="badge-icon">🔗 Repo</a>
+            {% endif %}
+          </h5>
+          <p class="text-center">{{ project.description|default:"(Sem descrição)" }}</p>
+
+          <div class="project-actions">
+            <a href="{% url 'edit_project' pk=project.pk %}" class="btn btn-sm">✏️ Editar</a>
+            <a href="{% url 'delete_project' pk=project.pk %}" class="btn btn-sm">🗑️ Excluir</a>
+            <a href="{% url 'add_project_item' project_pk=project.pk %}" class="btn btn-sm">➕ Item</a>
+            <a href="{% url 'virtual_terminal' project.pk %}" class="btn btn-sm" target="_blank">🖥️ Terminal</a>
+            <a href="{% url 'virtual_gui' project.pk %}" class="btn btn-sm" target="_blank">🖼️ GUI</a>
+          </div>
+
+          {% if project.projectitem_set.all %}
+            <div class="hr-separator"></div>
+            <ul class="list-unstyled ps-2">
+              {% for item in project.projectitem_set.all %}
+                <li class="mb-3">
+                  <strong>{{ item.title }}</strong>
+                  {% if item.link %}
+                    <a href="{{ item.link }}" target="_blank" class="badge-icon">🌐 Link</a>
+                  {% endif %}
+                  {% if item.file %}
+                    <a href="{{ item.file.url }}" download class="badge-icon">⬇️ Arquivo</a>
+                  {% endif %}
+                  {% if item.notes %}
+                    <p class="item-note mt-1">{{ item.notes }}</p>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center text-muted">
+        <p>🚫 Nenhum projeto encontrado.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

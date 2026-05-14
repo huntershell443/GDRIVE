@@ -1,0 +1,96 @@
+/* Força fonte preta em todos os <select> */
+select {
+  color: #000 !important;
+  background: transparent !important;
+}
+select:focus, select:active, select:valid {
+  background: #fff !important;
+  color: #000 !important;
+}
+select:invalid {
+  background: transparent !important;
+  color: #000 !important;
+}
+.content-wrapper {
+  max-width: 900px;
+  padding-top: 120px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.filter-section {
+  margin-bottom: 1rem;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.filter-section input,
+.filter-section button {
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  color: white;
+  background-color: transparent;
+  min-width: 150px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  table-layout: fixed;
+  overflow-wrap: break-word;
+}
+
+thead th {
+  background-color: #007bff;
+  color: white;
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+}
+
+tbody tr:hover {
+  background-color: #0004ee;
+  color: white;
+}
+
+td, th {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  overflow-wrap: break-word;
+}
+
+.severity-Unknown { color: gray; }
+.severity-Low { color: green; }
+.severity-Medium { color: orange; }
+.severity-High { color: red; }
+.severity-Critical { color: darkred; font-weight: bold; }
+
+@media (max-width: 600px) {
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-section input,
+  .filter-section button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    min-width: unset;
+  }
+
+  /* Adiciona scroll horizontal na tabela */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

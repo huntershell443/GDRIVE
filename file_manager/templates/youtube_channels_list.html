@@ -1,0 +1,166 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Canais do YouTube</h1>
+        <div>
+            <a href="{% url 'add_youtube_channel' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Adicionar Canal
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Estatísticas</h6>
+                    <p class="mb-1">Seus canais: {{ user_channels_count }}</p>
+                    <p class="mb-0">Canais compartilhados: {{ shared_channels_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for channel in channels %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ channel.name }}</h5>
+                    <p class="card-text text-muted small">{{ channel.description|default:"Sem descrição"|truncatewords:20 }}</p>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ channel.url }}" target="_blank" class="btn btn-sm btn-outline-danger">
+                            <i class="fab fa-youtube"></i> Ver Canal
+                        </a>
+                        
+                        {% if channel.user == request.user %}
+                        <button class="btn btn-sm btn-outline-primary share-btn" 
+                                data-resource-type="youtube_channel" 
+                                data-resource-id="{{ channel.id }}"
+                                data-resource-name="{{ channel.name }}">
+                            <i class="fas fa-share-alt"></i> Compartilhar
+                        </button>
+                        {% else %}
+                        <span class="badge bg-info">Compartilhado por: {{ channel.user.username }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Nenhum canal do YouTube encontrado.
+                <a href="{% url 'add_youtube_channel' %}" class="alert-link">Adicione o primeiro canal</a>.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal de Compartilhamento (igual ao que você já tem) -->
+<div class="modal fade" id="shareModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Compartilhar Recurso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="shareForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="resourceType" name="resource_type">
+                    <input type="hidden" id="resourceId" name="resource_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Compartilhar com:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="shared_with_all" id="sharePublic" value="true">
+                            <label class="form-check-label" for="sharePublic">
+                                Todos os usuários (público)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="shared_with_all" id="shareSpecific" value="false" checked>
+                            <label class="form-check-label" for="shareSpecific">
+                                Usuários específicos
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3" id="usersSelect">
+                        <label class="form-label">Selecionar usuários:</label>
+                        <select class="form-select" multiple name="users" id="userSelect">
+                            <!-- Usuários serão carregados via AJAX -->
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Permissão:</label>
+                        <select class="form-select" name="permission" id="permissionSelect">
+                            <option value="view">Visualizar</option>
+                            <option value="edit">Editar</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmShare">Compartilhar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// JavaScript para o compartilhamento (use o mesmo que você já tem)
+$(document).ready(function() {
+    // Seu código JavaScript existente para compartilhamento
+    $('.share-btn').click(function() {
+        const resourceType = $(this).data('resource-type');
+        const resourceId = $(this).data('resource-id');
+        const resourceName = $(this).data('resource-name');
+        
+        $('#resourceType').val(resourceType);
+        $('#resourceId').val(resourceId);
+        $('.modal-title').text(`Compartilhar: ${resourceName}`);
+        
+        // Carregar usuários disponíveis
+        $.get('/get-shareable-users/', function(data) {
+            $('#userSelect').empty();
+            data.users.forEach(function(user) {
+                $('#userSelect').append(
+                    $('<option>', {
+                        value: user.id,
+                        text: user.username + ' (' + user.email + ')'
+                    })
+                );
+            });
+        });
+        
+        $('#shareModal').modal('show');
+    });
+    
+    $('#confirmShare').click(function() {
+        const formData = $('#shareForm').serialize();
+        
+        $.post('/share/', formData, function(response) {
+            if (response.success) {
+                $('#shareModal').modal('hide');
+                location.reload(); // Ou mostrar mensagem de sucesso
+            }
+        }).fail(function(xhr) {
+            alert('Erro ao compartilhar: ' + xhr.responseJSON.error);
+        });
+    });
+});
+</script>
+{% endblock %}

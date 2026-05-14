@@ -1,0 +1,163 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<style>
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #00ffc8;
+  text-shadow: 0 0 8px #00ffc8;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+ul.list-group {
+  padding-left: 0;
+}
+
+li.list-group-item {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 18px;
+  border: 2px solid #00ffc8;
+  background-color: transparent;
+  box-shadow: 0 0 8px #00ffc8;
+  color: #00ffc8;
+  transition: box-shadow 0.3s ease;
+  position: relative;
+}
+
+li.list-group-item:hover {
+  box-shadow: 0 4px 8px #00ffc8;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.list-header div {
+  flex-grow: 1;
+  margin-right: 1rem;
+}
+
+.neon-border {
+  background: transparent;
+  color: #00ffc8;
+  border: 2px solid #00ffc8;
+  border-radius: 8px;
+  box-shadow: 0 0 8px #00ffc8;
+  transition: box-shadow 0.3s ease;
+  font-weight: bold;
+}
+
+.neon-border:hover {
+  box-shadow: 0 0 12px #00ffc8;
+}
+
+.tool-info {
+  padding-top: 0.75rem;
+  color: #a0eaff;
+  font-size: 0.95rem;
+}
+
+.toggle-info::after {
+  content: " ▼";
+}
+
+.toggle-info[aria-expanded="true"]::after {
+  content: " ▲";
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #00ffc880;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .list-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .list-header button {
+    margin-top: 0.5rem;
+    align-self: flex-end;
+  }
+}
+@media (max-width: 768px) {
+  main {
+    padding-top: 15%;
+  }
+}
+</style>
+
+<div class="container mt-5">
+  <h2>Links de Ferramentas & Serviços</h2>
+
+  <div class="text-end mb-4">
+    <a href="{% url 'add_resource_link' %}" class="btn neon-border btn-sm">+ Novo Link</a>
+  </div>
+
+  {% if links %}
+  <ul class="list-group">
+    {% for link in links %}
+      <li class="list-group-item">
+        <div class="list-header">
+          <div>
+            <a href="{{ link.url }}" target="_blank" class="fw-bold text-decoration-none" style="color:#00ffc8">
+              {{ link.title }}
+            </a><br>
+            <small><em>{{ link.url }}</em></small>
+          </div>
+          {% if link.description %}
+          <button type="button"
+                  class="btn neon-border btn-sm toggle-info"
+                  data-target="info-{{ link.pk }}"
+                  aria-expanded="false">
+            Ver mais
+          </button>
+          {% endif %}
+        </div>
+        {% if link.description %}
+        <hr>
+        <div id="info-{{ link.pk }}" class="tool-info" style="display: none;">
+          <p><strong>Descrição:</strong> {{ link.description }}</p>
+        </div>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p class="text-muted">Nenhum link adicionado ainda.</p>
+  {% endif %}
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".toggle-info");
+
+    buttons.forEach(button => {
+      button.addEventListener("click", function () {
+        const targetId = this.getAttribute("data-target");
+        const target = document.getElementById(targetId);
+        const isVisible = target.style.display === "block";
+
+        target.style.display = isVisible ? "none" : "block";
+        this.setAttribute("aria-expanded", !isVisible);
+      });
+    });
+  });
+</script>
+{% endblock %}

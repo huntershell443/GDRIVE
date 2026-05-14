@@ -1,0 +1,53 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<style>
+@media (max-width: 768px) {
+  main {
+    padding-top: 15%;
+  }
+}
+</style>
+<div class="container mt-4">
+  <h2>Importar CVEs (JSON ou CSV)</h2>
+
+  <form method="post" enctype="multipart/form-data" id="uploadForm">
+    {% csrf_token %}
+    
+    <!-- Campo múltiplo para arquivos -->
+    <div class="mb-3">
+      <label for="id_files" class="form-label">Selecione múltiplos arquivos JSON/CSV:</label>
+      <input type="file" class="form-control" name="files" id="id_files" multiple accept=".json,.csv">
+      <div class="form-text">Selecione um ou mais arquivos JSON ou CSV.</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="submitBtn">Importar Arquivos</button>
+  </form>
+
+  <!-- Área para mostrar arquivos selecionados -->
+  <div id="fileList" class="mt-3"></div>
+
+  <a href="{% url 'cve_list' %}" class="btn btn-secondary mt-3">Voltar</a>
+</div>
+
+<script>
+// Mostrar arquivos selecionados
+document.getElementById('id_files').addEventListener('change', function(e) {
+  const fileList = document.getElementById('fileList');
+  fileList.innerHTML = '<h5>Arquivos selecionados:</h5>';
+  
+  Array.from(this.files).forEach(file => {
+    const fileItem = document.createElement('div');
+    fileItem.className = 'alert alert-info py-1 my-1';
+    fileItem.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+    fileList.appendChild(fileItem);
+  });
+});
+
+// Feedback durante o upload
+document.getElementById('uploadForm').addEventListener('submit', function() {
+  const btn = document.getElementById('submitBtn');
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Processando...';
+  btn.disabled = true;
+});
+</script>
+{% endblock %}

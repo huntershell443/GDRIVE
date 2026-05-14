@@ -1,0 +1,9 @@
+{% for conv in conversations %}
+    <div class="conversation-item">
+        <button class="btn btn-outline-info btn-sm open-conversation"
+                data-url="{% url 'ai_assistant:conversation_detail_ajax' conv.pk %}">
+            <strong>{{ conv.title|default:"Sem título" }}</strong><br>
+            <small>{{ conv.created_at|date:"d/m/Y H:i" }}</small>
+        </button>
+    </div>
+{% endfor %}

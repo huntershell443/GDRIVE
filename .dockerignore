@@ -1,0 +1,46 @@
+.git
+.gitignore
+.claude
+.vscode
+.idea
+
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info
+.Python
+*.log
+
+# Banco e dados locais (vão pra volume)
+cmbd.sqlite3
+chroma_db/
+
+# Mídia local (montada como volume)
+gdrive_users/
+staticfiles/
+
+# Binários e instaladores Windows
+nssm.exe
+fastapi-offline/
+*.exe
+*.dll
+
+# Datasets pesados (carregar via volume se precisar)
+COMPLEMENTOS/CVE/JSON/
+
+# Venv
+venv/
+.venv/
+env/
+
+# Logs e temp
+*.log
+tmp/
+temp_uploads/
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore

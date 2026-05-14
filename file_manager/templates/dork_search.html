@@ -1,0 +1,64 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<div class="container my-5">
+  <h2 style="color:#00ffc8;text-shadow:0 0 8px #00ffc8;">Pesquisa Avançada com Dorks</h2>
+  <form method="get">
+    <div class="mb-3">
+      <label for="dork" style="color:#00ffc8;">Dork:</label>
+      <select name="dork" id="dork" class="form-control" style="background:transparent;color:#00ffc8;border:2px solid #00ffc8;border-radius:18px;box-shadow:0 0 8px #00ffc8;" required onchange="setPlatformFromDork()">
+        <option value="">Selecione...</option>
+        {% for dork in dorks %}
+          <option value="{{ dork.id }}" data-platform="{{ dork.platform }}" {% if dork.id|stringformat:'s' == request.GET.dork %}selected{% endif %}>{{ dork.query }} ({{ dork.platform }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="platform" style="color:#00ffc8;">Plataforma:</label>
+      <input type="text" name="platform" id="platform" class="form-control" style="background:transparent;color:#00ffc8;border:2px solid #00ffc8;border-radius:18px;box-shadow:0 0 8px #00ffc8;" required readonly value="{% if request.GET.dork %}{% for dork in dorks %}{% if dork.id|stringformat:'s' == request.GET.dork %}{{ dork.platform }}{% endif %}{% endfor %}{% else %}{{ request.GET.platform }}{% endif %}">
+    </div>
+    <div class="mb-3">
+      <label for="argument" style="color:#00ffc8;">Argumento:</label>
+      <input type="text" name="argument" id="argument" class="form-control" style="background:transparent;color:#00ffc8;border:2px solid #00ffc8;border-radius:18px;box-shadow:0 0 8px #00ffc8;" required placeholder="Digite o argumento para a dork">
+    </div>
+    <button type="submit" class="btn" style="background:transparent;color:#00ffc8;border:2px solid #00ffc8;border-radius:18px;box-shadow:0 0 8px #00ffc8;font-weight:600;">Pesquisar na plataforma</button>
+  </form>
+
+  <script>
+    function setPlatformFromDork() {
+      var dorkSelect = document.getElementById('dork');
+      var platformInput = document.getElementById('platform');
+      var selected = dorkSelect.options[dorkSelect.selectedIndex];
+      platformInput.value = selected.getAttribute('data-platform') || '';
+    }
+  </script>
+
+  <hr>
+  <h4 style="color:#00ffc8;">Dorks principais por plataforma</h4>
+  <div class="row">
+    <div class="col-md-4">
+      <h5 style="color:#00ffc8;">DuckDuckGo</h5>
+      <ul>
+        <li style="color:#00ffc8;">site:{ARG} intitle:index.of</li>
+        <li style="color:#00ffc8;">filetype:pdf {ARG}</li>
+        <li style="color:#00ffc8;">inurl:login {ARG}</li>
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h5 style="color:#00ffc8;">Shodan</h5>
+      <ul>
+        <li style="color:#00ffc8;">port:22 {ARG}</li>
+        <li style="color:#00ffc8;">product:apache {ARG}</li>
+        <li style="color:#00ffc8;">country:BR {ARG}</li>
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h5 style="color:#00ffc8;">Wigle.net</h5>
+      <ul>
+        <li style="color:#00ffc8;">ssid:{ARG}</li>
+        <li style="color:#00ffc8;">netid:{ARG}</li>
+        <li style="color:#00ffc8;">city:{ARG}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

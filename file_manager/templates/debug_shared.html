@@ -1,0 +1,674 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-white">🔧 Debug - Sistema de Compartilhamento</h1>
+        <div>
+            <a href="{% url 'shared_with_me' %}" class="btn btn-outline-success me-2">
+                <i class="fas fa-share-alt me-1"></i>Compartilhados Comigo
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>Voltar ao Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Resumo Estatístico Completo -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card debug-card">
+                <div class="card-header debug-header bg-info">
+                    <h5 class="mb-0 text-white"><i class="fas fa-chart-bar me-2"></i>Estatísticas de Compartilhamento</h5>
+                </div>
+                <div class="card-body debug-body">
+                    <div class="row">
+                        <!-- Estatísticas do Sistema SharedResource -->
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="text-center p-3 border rounded debug-stat-card">
+                                <div class="h3 text-primary mb-1">{{ shared_with_user.count|add:shared_public.count }}</div>
+                                <small class="text-white">Total SharedResource</small>
+                                <div class="mt-1">
+                                    <span class="badge bg-primary">{{ shared_with_user.count }} específicos</span>
+                                    <span class="badge bg-success">{{ shared_public.count }} públicos</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Estatísticas dos Recursos Globais -->
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="text-center p-3 border rounded debug-stat-card">
+                                <div class="h3 text-success mb-1">{{ global_counts.total }}</div>
+                                <small class="text-white">Total Recursos Globais</small>
+                                <div class="mt-1">
+                                    {% for type, count in global_counts.types.items %}
+                                    <span class="badge bg-secondary d-block mb-1">{{ type }}: {{ count }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Estatísticas por Tipo -->
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="text-center p-3 border rounded debug-stat-card">
+                                <div class="h3 text-warning mb-1">{{ resource_counts.keys|length }}</div>
+                                <small class="text-white">Tipos de Recursos</small>
+                                <div class="mt-1">
+                                    {% for resource_type, count in resource_counts.items %}
+                                    <span class="badge bg-warning d-block mb-1">{{ resource_type }}: {{ count }}</span>
+                                    {% empty %}
+                                    <span class="text-white">Nenhum tipo</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Estatísticas do Usuário -->
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="text-center p-3 border rounded debug-stat-card">
+                                <div class="h3 text-info mb-1">{{ total_users }}</div>
+                                <small class="text-white">Usuários no Sistema</small>
+                                <div class="mt-1">
+                                    <span class="badge bg-dark d-block mb-1 text-white">Voc: {{ request.user.username }}</span>
+                                    <span class="badge bg-secondary">ID: {{ request.user.id }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sistema SharedResource -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 debug-card">
+                <div class="card-header debug-header bg-primary">
+                    <h5 class="mb-0 text-white">
+                        <i class="fas fa-database me-2"></i>
+                        Sistema SharedResource
+                        <span class="badge bg-light text-primary ms-2">{{ shared_with_user.count|add:shared_public.count }}</span>
+                    </h5>
+                </div>
+                <div class="card-body debug-body" style="max-height: 600px; overflow-y: auto;">
+                    
+                    <!-- Compartilhados Especificamente -->
+                    <div class="mb-4">
+                        <h6 class="text-primary">
+                            <i class="fas fa-user-friends me-1"></i>
+                            Compartilhados Comigo
+                            <span class="badge bg-primary ms-1">{{ shared_with_user.count }}</span>
+                        </h6>
+                        {% if shared_with_user %}
+                        <div class="list-group list-group-flush">
+                            {% for shared in shared_with_user %}
+                            <div class="list-group-item debug-list-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 text-white">
+                                            <span class="badge 
+                                                {% if shared.resource_type == 'file' %}bg-secondary
+                                                {% elif shared.resource_type == 'tool' %}bg-warning
+                                                {% elif shared.resource_type == 'dork' %}bg-info
+                                                {% elif shared.resource_type == 'note' %}bg-success
+                                                {% elif shared.resource_type == 'resource_link' %}bg-primary
+                                                {% elif shared.resource_type == 'youtube_channel' %}bg-danger
+                                                {% else %}bg-dark{% endif %} me-2">
+                                                {{ shared.resource_type|upper }}
+                                            </span>
+                                            ID: {{ shared.resource_id }}
+                                        </h6>
+                                        <p class="mb-1 text-white">
+                                            <strong>Compartilhado por:</strong> 
+                                            <span class="badge bg-dark">{{ shared.shared_by.username }} (ID: {{ shared.shared_by.id }})</span>
+                                        </p>
+                                        <p class="mb-1 text-white">
+                                            <strong>Permissão:</strong> 
+                                            <span class="badge {% if shared.permission == 'edit' %}bg-warning{% else %}bg-info{% endif %}">
+                                                {{ shared.permission|upper }}
+                                            </span>
+                                            <strong class="ms-2">Público:</strong>
+                                            <span class="badge {% if shared.shared_with_all %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ shared.shared_with_all|yesno:"Sim,Não" }}
+                                            </span>
+                                        </p>
+                                        <p class="mb-1 text-white">
+                                            <strong>Compartilhado com:</strong>
+                                            {% if shared.shared_with.all %}
+                                                {% for user in shared.shared_with.all %}
+                                                <span class="badge bg-primary">{{ user.username }}</span>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="badge bg-secondary">Nenhum usuário específico</span>
+                                            {% endif %}
+                                        </p>
+                                        <small class="text-light">
+                                            <strong>Criado em:</strong> {{ shared.created_at|date:"d/m/Y H:i" }}
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-success">Específico</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center text-light py-3">
+                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                            <p>Nenhum recurso compartilhado especificamente com você</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Compartilhados Publicamente -->
+                    <div>
+                        <h6 class="text-success">
+                            <i class="fas fa-globe me-1"></i>
+                            Compartilhados Publicamente
+                            <span class="badge bg-success ms-1">{{ shared_public.count }}</span>
+                        </h6>
+                        {% if shared_public %}
+                        <div class="list-group list-group-flush">
+                            {% for shared in shared_public %}
+                            <div class="list-group-item debug-list-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 text-white">
+                                            <span class="badge 
+                                                {% if shared.resource_type == 'file' %}bg-secondary
+                                                {% elif shared.resource_type == 'tool' %}bg-warning
+                                                {% elif shared.resource_type == 'dork' %}bg-info
+                                                {% elif shared.resource_type == 'note' %}bg-success
+                                                {% elif shared.resource_type == 'resource_link' %}bg-primary
+                                                {% elif shared.resource_type == 'youtube_channel' %}bg-danger
+                                                {% else %}bg-dark{% endif %} me-2">
+                                                {{ shared.resource_type|upper }}
+                                            </span>
+                                            ID: {{ shared.resource_id }}
+                                        </h6>
+                                        <p class="mb-1 text-white">
+                                            <strong>Compartilhado por:</strong> 
+                                            <span class="badge bg-dark">{{ shared.shared_by.username }} (ID: {{ shared.shared_by.id }})</span>
+                                        </p>
+                                        <p class="mb-1 text-white">
+                                            <strong>Permissão:</strong> 
+                                            <span class="badge {% if shared.permission == 'edit' %}bg-warning{% else %}bg-info{% endif %}">
+                                                {{ shared.permission|upper }}
+                                            </span>
+                                            <strong class="ms-2">Público:</strong>
+                                            <span class="badge bg-success">Sim</span>
+                                        </p>
+                                        <small class="text-light">
+                                            <strong>Criado em:</strong> {{ shared.created_at|date:"d/m/Y H:i" }}
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-info">Público</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center text-light py-3">
+                            <i class="fas fa-globe fa-2x mb-2"></i>
+                            <p>Nenhum recurso público compartilhado</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sistema de Recursos Globais -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 debug-card">
+                <div class="card-header debug-header bg-success">
+                    <h5 class="mb-0 text-white">
+                        <i class="fas fa-globe-americas me-2"></i>
+                        Sistema de Recursos Globais
+                        <span class="badge bg-light text-success ms-2">{{ global_counts.total }}</span>
+                    </h5>
+                </div>
+                <div class="card-body debug-body" style="max-height: 600px; overflow-y: auto;">
+                    
+                    {% for resource_type, resources in global_resources.items %}
+                    <div class="mb-4">
+                        <h6 class="text-success">
+                            <i class="fas 
+                                {% if resource_type == 'file' %}fa-file
+                                {% elif resource_type == 'note' %}fa-sticky-note
+                                {% elif resource_type == 'tool' %}fa-tools
+                                {% elif resource_type == 'dork' %}fa-search
+                                {% elif resource_type == 'resource_link' %}fa-link
+                                {% elif resource_type == 'youtube_channel' %}fa-youtube
+                                {% elif resource_type == 'cve' %}fa-shield-alt
+                                {% else %}fa-cube{% endif %} me-1">
+                            </i>
+                            {{ resource_type|title }}s Globais
+                            <span class="badge bg-success ms-1">{{ resources|length }}</span>
+                        </h6>
+                        
+                        {% if resources %}
+                        <div class="list-group list-group-flush">
+                            {% for resource in resources %}
+                            <div class="list-group-item debug-list-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 text-white">
+                                            <span class="badge 
+                                                {% if resource_type == 'file' %}bg-secondary
+                                                {% elif resource_type == 'tool' %}bg-warning
+                                                {% elif resource_type == 'dork' %}bg-info
+                                                {% elif resource_type == 'note' %}bg-success
+                                                {% elif resource_type == 'resource_link' %}bg-primary
+                                                {% elif resource_type == 'youtube_channel' %}bg-danger
+                                                {% elif resource_type == 'cve' %}bg-dark
+                                                {% else %}bg-dark{% endif %} me-2">
+                                                {{ resource_type|upper }}
+                                            </span>
+                                            {% if resource_type == 'file' %}{{ resource.name }}
+                                            {% elif resource_type == 'note' %}{{ resource.title }}
+                                            {% elif resource_type == 'tool' %}{{ resource.name }}
+                                            {% elif resource_type == 'dork' %}{{ resource.query|truncatewords:3 }}
+                                            {% elif resource_type == 'resource_link' %}{{ resource.title }}
+                                            {% elif resource_type == 'youtube_channel' %}{{ resource.name }}
+                                            {% elif resource_type == 'cve' %}{{ resource.cve_id }}
+                                            {% else %}{{ resource }}{% endif %}
+                                        </h6>
+                                        <p class="mb-1 text-white">
+                                            <strong>Criado por:</strong> 
+                                            <span class="badge bg-dark">
+                                                {% if resource.global_created_by %}
+                                                    {{ resource.global_created_by.username }} (ID: {{ resource.global_created_by.id }})
+                                                {% else %}
+                                                    {{ resource.user.username }} (ID: {{ resource.user.id }})
+                                                {% endif %}
+                                            </span>
+                                        </p>
+                                        <p class="mb-1 text-white">
+                                            <strong>Dono:</strong> 
+                                            <span class="badge bg-secondary">{{ resource.user.username }} (ID: {{ resource.user.id }})</span>
+                                        </p>
+                                        <small class="text-light">
+                                            <strong>Criado em:</strong> 
+                                            {% if resource_type == 'file' %}{{ resource.uploaded_at|date:"d/m/Y H:i" }}
+                                            {% elif resource_type == 'cve' %}{{ resource.published_date|date:"d/m/Y" }}
+                                            {% else %}{{ resource.created_at|date:"d/m/Y H:i" }}{% endif %}
+                                            • <strong>ID:</strong> {{ resource.id }}
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-success">Global</span>
+                                        <br>
+                                        <small class="text-light">is_global: {{ resource.is_global }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center text-light py-2">
+                            <p>Nenhum {{ resource_type }} global</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    {% if global_counts.total == 0 %}
+                    <div class="text-center text-light py-4">
+                        <i class="fas fa-globe-americas fa-3x mb-3"></i>
+                        <p>Nenhum recurso global encontrado</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informações Detalhadas do Sistema -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card debug-card">
+                <div class="card-header debug-header bg-dark">
+                    <h5 class="mb-0 text-white"><i class="fas fa-info-circle me-2"></i>Informações Detalhadas do Sistema</h5>
+                </div>
+                <div class="card-body debug-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-white">Usuário Atual:</h6>
+                            <ul class="list-unstyled text-light">
+                                <li><strong>ID:</strong> {{ request.user.id }}</li>
+                                <li><strong>Username:</strong> {{ request.user.username }}</li>
+                                <li><strong>Email:</strong> {{ request.user.email }}</li>
+                                <li><strong>Data de registro:</strong> {{ request.user.date_joined|date:"d/m/Y H:i" }}</li>
+                                <li><strong>Último login:</strong> {{ request.user.last_login|date:"d/m/Y H:i" }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-white">Estatísticas do Sistema:</h6>
+                            <ul class="list-unstyled text-light">
+                                <li><strong>Total SharedResource:</strong> {{ shared_with_user.count|add:shared_public.count }}</li>
+                                <li><strong>Total Recursos Globais:</strong> {{ global_counts.total }}</li>
+                                <li><strong>Total Geral:</strong> {{ shared_with_user.count|add:shared_public.count|add:global_counts.total }}</li>
+                                <li><strong>Usuários no sistema:</strong> {{ total_users }}</li>
+                                <li><strong>Tipos de recursos únicos:</strong> {{ resource_counts.keys|length }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações de Debug Avançadas -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card debug-card">
+                <div class="card-header debug-header bg-warning">
+                    <h5 class="mb-0 text-dark"><i class="fas fa-tools me-2"></i>Ações de Debug</h5>
+                </div>
+                <div class="card-body debug-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'file_list' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-folder me-1"></i>Arquivos
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'tool_list' %}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-tools me-1"></i>Ferramentas
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'dork_list' %}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-search me-1"></i>Dorks
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'notes_list' %}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-sticky-note me-1"></i>Notas
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'shared_with_me' %}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-share-alt me-1"></i>Compartilhados
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <button onclick="location.reload()" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-sync-alt me-1"></i>Atualizar
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/" target="_blank" class="btn btn-outline-dark w-100">
+                                <i class="fas fa-cog me-1"></i>Admin Django
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <button onclick="createTestData()" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-vial me-1"></i>Testar Dados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS Organizado e Separado -->
+<style>
+/* Container Principal */
+.container {
+    background: transparent;
+}
+
+/* Cards Principais */
+.debug-card {
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.debug-card:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Headers dos Cards */
+.debug-header {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+/* Corpos dos Cards */
+.debug-body {
+    background: rgba(0, 0, 0, 0.6) !important;
+    color: #ffffff;
+}
+
+/* Cards de Estatísticas */
+.debug-stat-card {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.3s ease;
+}
+
+.debug-stat-card:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: scale(1.02);
+}
+
+/* Itens da Lista */
+.debug-list-item {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
+}
+
+.debug-list-item:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(5px);
+}
+
+/* Textos */
+.text-white, h1, h2, h3, h4, h5, h6 {
+    color: #ffffff !important;
+}
+
+.text-light {
+    color: #e0e0e0 !important;
+}
+
+.text-muted {
+    color: #b0b0b0 !important;
+}
+
+/* Badges */
+.badge {
+    font-size: 0.75em;
+    font-weight: 600;
+    backdrop-filter: blur(5px);
+}
+
+/* Títulos */
+.h3 {
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Scrollbars Personalizadas */
+.debug-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.debug-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.debug-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.debug-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Botões */
+.btn {
+    backdrop-filter: blur(5px);
+    border-width: 2px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .debug-card {
+        margin-bottom: 1rem;
+    }
+    
+    .debug-stat-card {
+        margin-bottom: 1rem;
+    }
+    
+    .debug-body {
+        padding: 1rem;
+    }
+}
+
+/* Animações Suaves */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.debug-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Gradientes Suaves */
+.debug-header.bg-primary {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.7)) !important;
+}
+
+.debug-header.bg-success {
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.9), rgba(25, 135, 84, 0.7)) !important;
+}
+
+.debug-header.bg-info {
+    background: linear-gradient(135deg, rgba(13, 202, 240, 0.9), rgba(13, 202, 240, 0.7)) !important;
+}
+
+.debug-header.bg-warning {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.9), rgba(255, 193, 7, 0.7)) !important;
+}
+
+.debug-header.bg-dark {
+    background: linear-gradient(135deg, rgba(33, 37, 41, 0.9), rgba(33, 37, 41, 0.7)) !important;
+}
+</style>
+
+<script>
+// Funções de debug avançadas
+function createTestData() {
+    if (confirm('Deseja criar dados de teste? Isso criará recursos globais e compartilhamentos.')) {
+        fetch("{% url 'create_global_test_data' %}")
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Dados de teste criados: ' + data.messages.join(', '));
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    alert('❌ Erro: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao criar dados de teste');
+            });
+    }
+}
+
+// Executar automaticamente alguns testes
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DEBUG SESSION STARTED ===');
+    console.log('Usuário:', '{{ request.user.username }} (ID: {{ request.user.id }})');
+    console.log('SharedResources:', {{ shared_with_user.count|add:shared_public.count }});
+    console.log('Recursos Globais:', {{ global_counts.total }});
+    console.log('Tipos de recursos:', {{ resource_counts.keys|length }});
+    
+    // Log detalhado
+    console.log('--- SharedResources Específicos:', {{ shared_with_user.count }});
+    console.log('--- SharedResources Públicos:', {{ shared_public.count }});
+    console.log('--- Estatísticas Globais:', {{ global_counts.total }});
+    
+    {% for type, count in global_counts.types.items %}
+    console.log('------ {{ type }}:', {{ count }});
+    {% endfor %}
+});
+
+// Função para exportar dados de debug
+function exportDebugData() {
+    const debugData = {
+        user: {
+            id: {{ request.user.id }},
+            username: '{{ request.user.username }}',
+            email: '{{ request.user.email }}'
+        },
+        shared_resources: {
+            specific: {{ shared_with_user.count }},
+            public: {{ shared_public.count }},
+            total: {{ shared_with_user.count|add:shared_public.count }}
+        },
+        global_resources: {{ global_counts.total }},
+        resource_types: {{ resource_counts.keys|length }},
+        total_users: {{ total_users }}
+    };
+    
+    console.log('Dados de Debug:', debugData);
+    alert('Dados exportados para o console. Verifique o console do navegador (F12)');
+}
+
+// Efeitos visuais adicionais
+document.addEventListener('DOMContentLoaded', function() {
+    // Adicionar tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Efeito de digitação no título
+    const title = document.querySelector('h1');
+    if (title) {
+        title.style.opacity = '0';
+        setTimeout(() => {
+            title.style.transition = 'opacity 1s ease';
+            title.style.opacity = '1';
+        }, 500);
+    }
+});
+</script>
+{% endblock %}

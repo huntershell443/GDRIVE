@@ -1,0 +1,39 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3" style="padding-top:140px;">
+    <h2 style="color:#00ffc8;padding-left: 25%;text-shadow:0 0 8px #00ffc8;">Dorks</h2>
+    <div style="padding-right: 25%;">
+      <a href="{% url 'add_dork' %}" class="btn" style="background:transparent;color:#00ffc8;border:2px solid #00ffc8;border-radius:18px;box-shadow:0 0 8px #00ffc8;">Novo Dork</a>
+      <a href="{% url 'import_dorks' %}" class="btn" style="background:transparent;color:#00ffc8;border:2px solid #00ffc8;border-radius:18px;box-shadow:0 0 8px #00ffc8;">Importar CSV</a>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+    {% regroup dorks by platform as platform_groups %}
+    {% for group in platform_groups %}
+      <h4 style="color:#00ffc8;text-align:center;">{{ group.grouper }}</h4>
+      <ul class="list-group mb-3" style="max-width:600px;margin:0 auto;background:transparent;border:2px solid #00ffc8;border-radius:18px;box-shadow:0 0 8px #00ffc8;">
+        {% for dork in group.list %}
+          <li class="list-group-item" style="background:transparent;color:#00ffc8;border-bottom:1px solid #00ffc8;">
+            <code style="color:#00ffc8;">{{ dork.query }}</code>
+            <span class="float-end">
+              <a href="{% url 'edit_dork' pk=dork.pk %}" style="color:#00ffc8;">Editar</a> /
+              <a href="{% url 'delete_dork' pk=dork.pk %}" style="color:#ff3c3c;">Excluir</a> /
+              <a href="{% url 'add_dork_note' dork_pk=dork.pk %}" style="color:#00ffc8;">+ Nota</a> /
+              <a href="{% url 'dork_search' %}?platform={{ dork.platform }}&dork={{ dork.id }}" class="btn btn-sm" style="background:transparent;color:#00ffc8;border:2px solid #00ffc8;border-radius:8px;box-shadow:0 0 8px #00ffc8;">Pesquisar</a>
+            </span>
+            <p style="color:#00ffc8;">{{ dork.description }}</p>
+            {% if dork.dorknote_set.all %}
+              <ul class="mt-2">
+                {% for note in dork.dorknote_set.all %}
+                  <li style="color:#00ffc8;">{{ note.note }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% empty %}
+      <p style="color:#00ffc8;">Sem dorks cadastrados.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

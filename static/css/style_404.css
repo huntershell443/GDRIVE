@@ -1,0 +1,158 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: #0f111a;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e0e0e0;
+}
+
+/* --- PARTÍCULAS DO FUNDO --- */
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle, rgba(0,255,200,0.15) 2px, transparent 3px) 0 0,
+        radial-gradient(circle, rgba(0,255,200,0.15) 2px, transparent 3px) 50px 80px,
+        radial-gradient(circle, rgba(0,255,200,0.15) 2px, transparent 3px) 130px 200px;
+    background-size: 200px 200px;
+    animation: particlesMove 15s linear infinite;
+    z-index: -1;
+}
+
+@keyframes particlesMove {
+    0% { transform: translate(0,0); }
+    100% { transform: translate(-200px,-200px); }
+}
+
+/* --- CONTAINER CENTRAL --- */
+.error-container {
+    text-align: center;
+    padding: 40px;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(0,255,200,0.4);
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0,255,200,0.3);
+    animation: fadeUp 1s ease-out;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- EFEITO GLITCH NO TÍTULO --- */
+.glitch {
+    font-size: 5rem;
+    color: #00ffc8;
+    font-weight: 700;
+    text-shadow: 0 0 10px #00ffc8;
+    position: relative;
+    animation: glitch 1s infinite;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+}
+
+.glitch::before {
+    text-shadow: -2px 0 red;
+    animation: glitchTop 1s infinite;
+}
+
+.glitch::after {
+    text-shadow: 2px 0 blue;
+    animation: glitchBottom 1s infinite;
+}
+
+@keyframes glitch {
+    0% { transform: none; }
+    40% { transform: skew(0.5deg); }
+    60% { transform: skew(-0.5deg); }
+    100% { transform: none; }
+}
+
+@keyframes glitchTop {
+    0% { clip-path: inset(0 0 80% 0); transform: translate(-3px, -3px); }
+    100% { clip-path: inset(0 0 80% 0); transform: translate(3px, 3px); }
+}
+
+@keyframes glitchBottom {
+    0% { clip-path: inset(80% 0 0 0); transform: translate(3px, 3px); }
+    100% { clip-path: inset(80% 0 0 0); transform: translate(-3px, -3px); }
+}
+
+/* --- TEXTO DIGITANDO --- */
+.typing {
+    font-size: 1.5rem;
+    margin-top: 10px;
+    color: #00ffc8;
+    text-shadow: 0 0 8px #00ffc8;
+
+    /* Essencial */
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid #00ffc8;
+
+    /* Não some mais */
+    width: fit-content;
+
+    /* Número de steps = número de caracteres */
+    animation: typing 2.8s steps(28) forwards, blink .7s infinite step-end alternate;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: fit-content; }
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+
+/* --- TEXTO FADE-IN --- */
+.fade-in {
+    opacity: 0;
+    animation: fade 2s ease forwards;
+    animation-delay: 2s;
+}
+
+@keyframes fade {
+    to { opacity: 1; }
+}
+
+/* --- BOTÃO NEON --- */
+.btn-404 {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-weight: 700;
+    color: #0f111a;
+    background-color: #00ffc8;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 0 10px #00ffc8;
+    transition: 0.3s ease;
+}
+
+.btn-404:hover {
+    background-color: #00d4a8;
+    color: white;
+    box-shadow: 0 0 15px #00d4a8;
+    transform: scale(1.05);
+}

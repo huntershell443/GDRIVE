@@ -1,0 +1,495 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | KnowledgeVault Admin{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+/* ============================================================
+   KNOWLEDGEVAULT ADMIN — DARK CYBERPUNK THEME
+   ============================================================ */
+
+:root {
+  --cyan:      #00ffc8;
+  --cyan-dim:  rgba(0,255,200,.15);
+  --cyan-glow: rgba(0,255,200,.35);
+  --purple:    #b967ff;
+  --purple-dim:rgba(185,103,255,.15);
+  --bg:        #080810;
+  --bg2:       #0d0d1a;
+  --bg3:       #111120;
+  --card:      rgba(13,13,26,.85);
+  --border:    rgba(0,255,200,.22);
+  --border2:   rgba(0,255,200,.08);
+  --text:      #e0e8f0;
+  --text2:     #8a9bb0;
+  --danger:    #ff4466;
+  --warning:   #ffaa00;
+  --success:   #00ffc8;
+  --radius:    10px;
+  --font:      'Segoe UI', system-ui, sans-serif;
+}
+
+/* ── Reset base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  font-family: var(--font) !important;
+  font-size: 14px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: rgba(0,255,200,.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+/* ── Header ── */
+#header {
+  background: linear-gradient(135deg, #080818 0%, #0d0d22 100%) !important;
+  border-bottom: 1px solid var(--border) !important;
+  box-shadow: 0 2px 20px rgba(0,255,200,.12) !important;
+  padding: 10px 20px !important;
+}
+
+#header #branding h1,
+#header #branding h1 a,
+#header #branding a:link,
+#header #branding a:visited {
+  color: var(--cyan) !important;
+  text-shadow: 0 0 18px var(--cyan-glow) !important;
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  letter-spacing: .5px;
+  text-decoration: none !important;
+}
+
+#header #branding h1::before {
+  content: '⬡ ';
+  color: var(--purple);
+}
+
+#user-tools, #user-tools a {
+  color: var(--text2) !important;
+  font-size: 12px;
+}
+#user-tools a:hover { color: var(--cyan) !important; }
+
+/* ── Navigation sidebar ── */
+#nav-sidebar {
+  background: var(--bg2) !important;
+  border-right: 1px solid var(--border2) !important;
+}
+.toggle-nav-sidebar {
+  border-color: var(--border) !important;
+  color: var(--cyan) !important;
+}
+
+/* ── Breadcrumbs ── */
+.breadcrumbs {
+  background: rgba(0,255,200,.04) !important;
+  border-bottom: 1px solid var(--border2) !important;
+  color: var(--text2) !important;
+  font-size: 12px;
+  padding: 8px 20px !important;
+}
+.breadcrumbs a { color: var(--cyan) !important; text-decoration: none; }
+.breadcrumbs a:hover { text-shadow: 0 0 8px var(--cyan); }
+
+/* ── Main content ── */
+#content, #content-main {
+  background: transparent !important;
+}
+#content-main { padding: 0 !important; }
+
+#content > h1, .colM > h1 {
+  color: var(--cyan) !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 12px var(--cyan-glow) !important;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border) !important;
+  margin-bottom: 20px !important;
+}
+
+/* ── Modules / Cards ── */
+.module, fieldset.module {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,.4), 0 0 0 0 transparent;
+  margin-bottom: 20px !important;
+  overflow: hidden;
+  transition: box-shadow .25s;
+}
+.module:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,.4), 0 0 20px var(--cyan-dim) !important;
+}
+
+.module h2, .module caption, .inline-group h2 {
+  background: linear-gradient(90deg, rgba(0,255,200,.18) 0%, rgba(185,103,255,.10) 100%) !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--cyan) !important;
+  font-size: .85rem !important;
+  font-weight: 700 !important;
+  letter-spacing: .8px !important;
+  text-transform: uppercase !important;
+  padding: 10px 14px !important;
+}
+
+.module table { width: 100%; }
+
+/* ── App index (dashboard) ── */
+#content-main .app-file_manager > table > caption,
+#content-main .app-auth > table > caption {
+  background: linear-gradient(90deg, rgba(0,255,200,.2), rgba(185,103,255,.1)) !important;
+}
+
+/* ── Tables ── */
+table {
+  border-collapse: collapse !important;
+  width: 100%;
+}
+thead th {
+  background: rgba(0,255,200,.07) !important;
+  color: var(--cyan) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .6px !important;
+  text-transform: uppercase !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 10px 12px !important;
+}
+thead th a, thead th a:visited { color: var(--cyan) !important; }
+thead th a:hover { text-shadow: 0 0 8px var(--cyan); }
+
+.results tbody tr {
+  border-bottom: 1px solid var(--border2) !important;
+  transition: background .15s;
+}
+.results tbody tr:hover {
+  background: rgba(0,255,200,.05) !important;
+}
+.results tbody td {
+  color: var(--text) !important;
+  padding: 10px 12px !important;
+  border: none !important;
+}
+.results tbody td a { color: var(--cyan) !important; }
+.results tbody td a:hover { text-shadow: 0 0 8px var(--cyan); }
+
+tr.selected, tr.selected td { background: rgba(0,255,200,.08) !important; }
+
+/* ── Paginator ── */
+.paginator {
+  color: var(--text2) !important;
+  background: rgba(0,255,200,.04) !important;
+  border-top: 1px solid var(--border2) !important;
+  padding: 10px 14px !important;
+}
+.paginator a, .paginator .this-page {
+  color: var(--cyan) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 5px !important;
+  padding: 3px 10px !important;
+  margin: 0 2px !important;
+  text-decoration: none !important;
+  display: inline-block;
+  transition: background .15s;
+}
+.paginator a:hover { background: var(--cyan-dim) !important; }
+.paginator .this-page {
+  background: var(--cyan-dim) !important;
+  color: var(--cyan) !important;
+  font-weight: 700;
+}
+
+/* ── Links ── */
+a:link, a:visited { color: var(--cyan) !important; }
+a:hover { color: #fff !important; text-shadow: 0 0 8px var(--cyan); }
+
+/* ── Buttons ── */
+.button, input[type=submit], input[type=button],
+.submit-row input, a.button {
+  background: linear-gradient(135deg, rgba(0,255,200,.18), rgba(0,255,200,.08)) !important;
+  border: 1px solid var(--cyan) !important;
+  border-radius: 7px !important;
+  color: var(--cyan) !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 8px 18px !important;
+  transition: background .2s, box-shadow .2s !important;
+  text-decoration: none !important;
+}
+.button:hover, input[type=submit]:hover, input[type=button]:hover,
+.submit-row input:hover, a.button:hover {
+  background: linear-gradient(135deg, rgba(0,255,200,.35), rgba(0,255,200,.15)) !important;
+  box-shadow: 0 0 16px var(--cyan-glow) !important;
+  color: #fff !important;
+}
+
+.button.default, input[type=submit].default, .submit-row input.default {
+  background: linear-gradient(135deg, rgba(0,255,200,.35), rgba(0,255,200,.18)) !important;
+  box-shadow: 0 0 12px var(--cyan-glow) !important;
+}
+
+.deletelink, a.deletelink,
+.button.danger, input.danger {
+  background: linear-gradient(135deg, rgba(255,68,102,.2), rgba(255,68,102,.08)) !important;
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+.deletelink:hover, a.deletelink:hover {
+  background: rgba(255,68,102,.35) !important;
+  box-shadow: 0 0 14px rgba(255,68,102,.4) !important;
+  color: #fff !important;
+}
+
+/* ── Submit row ── */
+.submit-row {
+  background: rgba(0,255,200,.04) !important;
+  border-top: 1px solid var(--border) !important;
+  border-radius: 0 0 var(--radius) var(--radius) !important;
+  padding: 12px 16px !important;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── Form fields ── */
+input[type=text], input[type=password], input[type=email],
+input[type=number], input[type=url], input[type=search],
+textarea, select {
+  background: rgba(0,0,0,.5) !important;
+  border: 1px solid rgba(0,255,200,.3) !important;
+  border-radius: 6px !important;
+  color: var(--text) !important;
+  padding: 7px 10px !important;
+  font-family: var(--font) !important;
+  font-size: 13px !important;
+  transition: border-color .2s, box-shadow .2s;
+  outline: none !important;
+}
+input[type=text]:focus, input[type=password]:focus,
+input[type=email]:focus, textarea:focus, select:focus {
+  border-color: var(--cyan) !important;
+  box-shadow: 0 0 0 3px rgba(0,255,200,.12) !important;
+}
+select option { background: var(--bg2) !important; color: var(--text) !important; }
+
+.form-row {
+  border-bottom: 1px solid var(--border2) !important;
+  padding: 12px 16px !important;
+}
+.form-row:last-child { border-bottom: none !important; }
+
+label { color: var(--text2) !important; font-size: 13px !important; }
+
+.help, p.help, .help-block {
+  color: var(--text2) !important;
+  font-size: 11px !important;
+  margin-top: 4px !important;
+}
+
+.required label::after { color: var(--danger) !important; }
+.errors, ul.errorlist { color: var(--danger) !important; }
+.errorlist li {
+  background: rgba(255,68,102,.1) !important;
+  border: 1px solid rgba(255,68,102,.3) !important;
+  border-radius: 5px !important;
+  padding: 6px 10px !important;
+}
+
+/* ── Messages ── */
+ul.messagelist li {
+  border-radius: 7px !important;
+  padding: 10px 16px !important;
+  margin-bottom: 8px !important;
+  font-size: 13px !important;
+  border: none !important;
+}
+ul.messagelist li.success {
+  background: rgba(0,255,200,.12) !important;
+  border-left: 3px solid var(--cyan) !important;
+  color: var(--cyan) !important;
+}
+ul.messagelist li.warning {
+  background: rgba(255,170,0,.12) !important;
+  border-left: 3px solid var(--warning) !important;
+  color: var(--warning) !important;
+}
+ul.messagelist li.error {
+  background: rgba(255,68,102,.12) !important;
+  border-left: 3px solid var(--danger) !important;
+  color: var(--danger) !important;
+}
+
+/* ── Filters sidebar ── */
+#changelist-filter {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+}
+#changelist-filter h2 {
+  background: linear-gradient(90deg, rgba(0,255,200,.18), transparent) !important;
+  color: var(--cyan) !important;
+  border-bottom: 1px solid var(--border) !important;
+  font-size: .8rem !important;
+  letter-spacing: .8px !important;
+  text-transform: uppercase !important;
+  padding: 10px 14px !important;
+}
+#changelist-filter h3 { color: var(--text2) !important; font-size: 11px !important; }
+#changelist-filter ul { padding: 0 14px 10px !important; }
+#changelist-filter li { padding: 2px 0 !important; }
+#changelist-filter a { color: var(--text) !important; font-size: 13px; }
+#changelist-filter a:hover { color: var(--cyan) !important; }
+#changelist-filter li.selected a { color: var(--cyan) !important; font-weight: 700; }
+
+/* ── Search bar ── */
+#toolbar { background: transparent !important; border: none !important; }
+#searchbar {
+  background: rgba(0,0,0,.5) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 7px !important;
+  color: var(--text) !important;
+  padding: 7px 12px !important;
+  width: 280px;
+}
+#searchbar:focus { border-color: var(--cyan) !important; box-shadow: 0 0 0 3px rgba(0,255,200,.12) !important; }
+
+/* ── Actions bar ── */
+.actions {
+  background: rgba(0,255,200,.04) !important;
+  border: 1px solid var(--border2) !important;
+  border-radius: 7px !important;
+  padding: 8px 12px !important;
+  margin-bottom: 8px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.actions label { color: var(--text2) !important; }
+.actions select {
+  background: rgba(0,0,0,.5) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  color: var(--text) !important;
+}
+
+/* ── Object tools (add button top-right) ── */
+.object-tools a {
+  background: linear-gradient(135deg, rgba(185,103,255,.22), rgba(185,103,255,.08)) !important;
+  border: 1px solid var(--purple) !important;
+  border-radius: 7px !important;
+  color: var(--purple) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 7px 14px !important;
+  text-decoration: none !important;
+  transition: background .2s, box-shadow .2s !important;
+}
+.object-tools a:hover {
+  background: rgba(185,103,255,.35) !important;
+  box-shadow: 0 0 14px rgba(185,103,255,.4) !important;
+  color: #fff !important;
+}
+.object-tools a.viewsitelink,
+.object-tools a.addlink { }
+
+/* ── Inline groups ── */
+.inline-group {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  margin-top: 16px !important;
+  overflow: hidden;
+}
+.inline-related h3 {
+  background: rgba(0,255,200,.07) !important;
+  border-bottom: 1px solid var(--border2) !important;
+  color: var(--text) !important;
+  padding: 8px 14px !important;
+  font-size: 13px !important;
+}
+.add-row a {
+  color: var(--cyan) !important;
+  font-size: 12px;
+}
+
+/* ── Checkboxes ── */
+input[type=checkbox] {
+  accent-color: var(--cyan) !important;
+  width: 15px; height: 15px;
+}
+
+/* ── Dashboard recent actions ── */
+#recent-actions-module h2 { color: var(--cyan) !important; }
+.actionlist li { border-bottom: 1px solid var(--border2) !important; padding: 6px 0 !important; }
+.actionlist a { color: var(--cyan) !important; }
+.addlink::before { color: var(--success) !important; }
+.changelink::before { color: var(--warning) !important; }
+.deletelink::before { color: var(--danger) !important; }
+
+/* ── Dashboard app list ── */
+.app-list .section, table.model-list { margin-bottom: 12px !important; }
+
+/* ── Footer ── */
+#footer {
+  background: var(--bg2) !important;
+  border-top: 1px solid var(--border2) !important;
+  color: var(--text2) !important;
+  font-size: 11px !important;
+  text-align: center;
+  padding: 12px !important;
+}
+
+/* ── Related widget ── */
+.related-widget-wrapper { display: flex; align-items: center; gap: 6px; }
+a.related-lookup, a.add-related, a.change-related, a.delete-related {
+  background: rgba(0,255,200,.1) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 5px !important;
+  color: var(--cyan) !important;
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+}
+
+/* ── Calendar / DatePicker ── */
+.calendarbox, .clockbox {
+  background: var(--bg2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,.6) !important;
+  color: var(--text) !important;
+}
+.calendar td a:hover { background: var(--cyan-dim) !important; color: var(--cyan) !important; }
+.calendarnav-previous, .calendarnav-next { color: var(--cyan) !important; }
+
+/* ── Collapse toggle ── */
+.collapse .collapse-toggle { color: var(--cyan) !important; font-size: 12px; }
+fieldset.collapsed .collapse-toggle::before { color: var(--purple) !important; }
+
+/* ── Responsive ── */
+@media (max-width: 767px) {
+  #header { padding: 8px 12px !important; }
+  #content { padding: 12px !important; }
+}
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+  <a href="{% url 'admin:index' %}">⬡ KnowledgeVault</a>
+</h1>
+{% endblock %}
+
+{% block nav_global %}{% endblock %}

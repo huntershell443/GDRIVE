@@ -1,0 +1,53 @@
+<!-- import_dorks.html -->
+{% extends 'base_generic.html' %}
+{% block content %}
+<style>
+.global-option {
+    background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+    border-left: 4px solid #28a745;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border: 1px solid #00ffc8;
+}
+</style>
+
+<div class="container my-5">
+  <h2>Importar Dorks por CSV</h2>
+  
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <!-- Opção Global -->
+    <div class="global-option">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" name="is_global" id="is_global">
+            <label class="form-check-label" for="is_global">
+                <i class="fas fa-globe-americas me-2"></i>Tornar dorks importados globais
+            </label>
+            <div class="form-text text-muted">
+                Se ativado, todos os dorks importados ficarão visíveis para TODOS os usuários do sistema
+            </div>
+        </div>
+    </div>
+
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Importar</button>
+  </form>
+  
+  <hr>
+  <p>Formato do CSV: <code>query,description,platform</code></p>
+  <pre>
+query,description,platform
+site:{ARG} intitle:index.of,Busca diretórios públicos,DuckDuckGo
+filetype:pdf {ARG},Busca arquivos PDF,DuckDuckGo
+inurl:login {ARG},Busca páginas de login,DuckDuckGo
+port:22 {ARG},Busca servidores SSH,Shodan
+product:apache {ARG},Busca servidores Apache,Shodan
+country:BR {ARG},Busca serviços no Brasil,Shodan
+ssid:{ARG},Busca redes Wi-Fi,Wigle.net
+netid:{ARG},Busca por MAC Address,Wigle.net
+city:{ARG},Busca redes por cidade,Wigle.net
+  </pre>
+</div>
+{% endblock %}

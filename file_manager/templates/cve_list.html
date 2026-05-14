@@ -1,0 +1,79 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+{% load static %}
+
+<section style="margin-top: 120px;">
+  <link href="{% static 'css/cve.css' %}" rel="stylesheet">
+  <div class="content-wrapper">
+    <div class="header-section">
+      <h2>CVEs Registradas</h2>
+      <a href="{% url 'add_cve' %}" class="btn btn-success mb-3">Adicionar CVE</a>
+      <a href="{% url 'import_cves' %}" class="btn btn-info mb-3">Importar CVEs</a>
+    </div>
+
+    <form method="get" class="filter-section">
+      <input type="text" name="search" value="{{ request.GET.search }}" placeholder="Buscar por ID ou descrição">
+      <input type="date" name="start" value="{{ request.GET.start }}">
+      <input type="date" name="end" value="{{ request.GET.end }}">
+      <select name="year">
+        <option value="">Todos os anos</option>
+        {% for year in cve_years %}
+          <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-primary">Buscar</button>
+      <a href="{% url 'cve_list' %}" class="btn btn-secondary">Limpar</a>
+    </form>
+
+    <table id="cveTable">
+      <thead>
+        <tr>
+          <th>CVE ID</th>
+          <th>Data Publicação</th>
+          <th>Severidade</th>
+          <th>Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cve in cves_page %}
+        <tr>
+          <td><a href="{{ cve.link|default:'#' }}" target="_blank">{{ cve.cve_id }}</a></td>
+          <td>{{ cve.published_date|date:"d/m/Y" }}</td>
+          <td class="severity-{{ cve.severity|default:"Unknown" }}">{{ cve.severity|default:"Unknown" }}</td>
+          <td>{{ cve.description }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Nenhum CVE encontrado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 1rem;">
+      {% if cves_page.has_previous %}
+        <a class="btn btn-outline-primary"
+           href="?page={{ cves_page.previous_page_number }}
+           {% if request.GET.year %}&year={{ request.GET.year }}{% endif %}
+           {% if request.GET.search %}&search={{ request.GET.search }}{% endif %}
+           {% if request.GET.start %}&start={{ request.GET.start }}{% endif %}
+           {% if request.GET.end %}&end={{ request.GET.end }}{% endif %}">
+          « Anterior
+        </a>
+      {% endif %}
+
+      <span style="margin: 0 10px;">Página {{ cves_page.number }} de {{ cves_page.paginator.num_pages }}</span>
+
+      {% if cves_page.has_next %}
+        <a class="btn btn-outline-primary"
+           href="?page={{ cves_page.next_page_number }}
+           {% if request.GET.year %}&year={{ request.GET.year }}{% endif %}
+           {% if request.GET.search %}&search={{ request.GET.search }}{% endif %}
+           {% if request.GET.start %}&start={{ request.GET.start }}{% endif %}
+           {% if request.GET.end %}&end={{ request.GET.end }}{% endif %}">
+          Próxima »
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

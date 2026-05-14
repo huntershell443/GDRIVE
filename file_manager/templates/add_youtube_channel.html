@@ -1,0 +1,61 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<style>
+  .global-option {
+    background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+    border-left: 4px solid #28a745;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border: 1px solid #00ffc8;
+  }
+  .global-option .form-check-label {
+    color: #00ffc8 !important;
+    font-weight: bold;
+  }
+</style>
+
+<div class="container mt-5">
+    <h2>Adicionar Canal do YouTube</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Opção Global -->
+        <div class="global-option mb-4">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="is_global" id="is_global">
+                <label class="form-check-label" for="is_global">
+                    <i class="fas fa-globe-americas me-2"></i>Tornar canal global
+                </label>
+                <div class="form-text text-muted">
+                    Se ativado, este canal ficará visível para TODOS os usuários do sistema
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Nome do Canal</label>
+            <input type="text" class="form-control" id="name" name="name" required 
+                   style="background: transparent; color: white;">
+        </div>
+        
+        <div class="mb-3">
+            <label for="url" class="form-label">URL do Canal</label>
+            <input type="url" class="form-control" id="url" name="url" required 
+                   style="background: transparent; color: white;"
+                   placeholder="https://www.youtube.com/@canal">
+        </div>
+        
+        <div class="mb-3">
+            <label for="description" class="form-label">Descrição (opcional)</label>
+            <textarea class="form-control" id="description" name="description" rows="3"
+                      style="background: transparent; color: white;"></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Adicionar Canal</button>
+        <a href="{% url 'youtube_channels_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

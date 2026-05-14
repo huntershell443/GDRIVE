@@ -1,0 +1,3 @@
+name,category,description,homepage,user
+hydra,Força bruta,Ferramenta de força bruta para serviços de rede,https://github.com/vanhauser-thc/thc-hydra,
+nmap,Scanner de rede,Utilitário para varredura e descoberta de hosts e serviços,https://nmap.org,

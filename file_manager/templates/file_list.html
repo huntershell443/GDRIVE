@@ -1,0 +1,936 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% load file_extras %}
+
+{% block content %}
+<link href="{% static 'css/file_list.css' %}" rel="stylesheet">
+
+<main style="padding-top: 4%;padding-left: 8%;padding-right: 8%;">
+  <div class="container">
+    <!-- Header -->
+    <div class="page-header fade-in-up">
+      <h1 class="page-title">📁 Meus Arquivos</h1>
+      <p class="page-subtitle">Gerencie seus arquivos e pastas</p>
+    </div>
+  
+    <!-- Estatísticas -->
+    <div class="stats-grid fade-in-up">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <h3>Armazenamento</h3>
+            <div class="stat-value">{{ total_storage_used|filesizeformat }}</div>
+          </div>
+        </div>
+        <div class="progress-wrapper">
+          <div class="progress-info">
+            <span class="progress-label">Uso</span>
+            <span class="progress-percent">{{ percent_used|floatformat:1 }}%</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ percent_used }}%;"></div>
+          </div>
+        </div>
+        <div class="stat-details">
+          {{ remaining_storage|filesizeformat }} disponível de {{ max_storage|filesizeformat }}
+          {% if percent_used > 80 %}
+            <div style="color: var(--danger); margin-top: 8px;">⚠️ Armazenamento quase cheio!</div>
+          {% endif %}
+        </div>
+      </div>
+  
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">📁</div>
+          <div class="stat-content">
+            <h3>Meus Arquivos</h3>
+            <div class="stat-value">{{ user_files_count }}</div>
+          </div>
+        </div>
+        <div class="stat-details">Arquivos pessoais</div>
+      </div>
+  
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">🔗</div>
+          <div class="stat-content">
+            <h3>Compartilhados</h3>
+            <div class="stat-value">{{ shared_files_count }}</div>
+          </div>
+        </div>
+        <div class="stat-details">Arquivos compartilhados com você</div>
+      </div>
+    </div>
+  
+    <!-- Criar Pasta -->
+    <div class="form-card fade-in-up">
+      <h3 style="color: var(--neon-cyan); margin-bottom: 16px;">➕ Nova Pasta</h3>
+      <form method="post" action="{% url 'create_folder' %}" class="form-grid">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Nome da Pasta</label>
+          <input type="text" name="folder_name" placeholder="Digite o nome da pasta" required class="input-modern">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pasta Pai</label>
+          <select name="parent_folder" class="input-modern">
+            <option value="">📁 Raiz</option>
+            {% for folder in folders %}
+              <option value="{{ folder.id }}" {% if selected_folder and folder.id == selected_folder.id %}selected{% endif %}>
+                {% if folder.parent %}↳{% endif %} {{ folder.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn-modern">Criar Pasta</button>
+      </form>
+    </div>
+  
+    <!-- Pasta de Compartilhamentos -->
+    {% if shares_folder %}
+    <div class="shares-highlight fade-in-up">
+      <div class="shares-content">
+        <div class="shares-info">
+          <div class="shares-icon">🔗</div>
+          <div class="shares-text">
+            <h3>{{ shares_folder.name }}</h3>
+            <p>{{ shared_files_count }} arquivo(s) compartilhado(s) com você</p>
+          </div>
+        </div>
+        <a href="{% url 'file_list' %}?folder={{ shares_folder.id }}" class="btn-modern secondary">
+          👀 Ver Compartilhamentos
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  
+    <!-- Navegação -->
+    <div class="breadcrumb-modern fade-in-up">
+      <div class="breadcrumb-item">
+        <a href="{% url 'file_list' %}" class="btn-modern secondary small">📁 Raiz</a>
+      </div>
+      {% if selected_folder %}
+        <div class="breadcrumb-separator">→</div>
+        {% with selected_folder.get_ancestors as ancestors %}
+          {% for ancestor in ancestors %}
+            <div class="breadcrumb-item">
+              <a href="{% url 'file_list' %}?folder={{ ancestor.id }}" class="btn-modern secondary small">📁 {{ ancestor.name }}</a>
+            </div>
+            <div class="breadcrumb-separator">→</div>
+          {% endfor %}
+        {% endwith %}
+        <div class="breadcrumb-item active">
+          <span class="btn-modern small">📁 {{ selected_folder.name }}</span>
+        </div>
+      {% endif %}
+    </div>
+  
+    <!-- Subpastas -->
+    {% if subfolders %}
+    <div class="folders-section fade-in-up">
+      <h3 class="section-title">📂 Subpastas</h3>
+      <div class="folder-list">
+        {% for folder in subfolders %}
+          <div class="folder-item-modern" data-folder-id="{{ folder.id }}">
+            <div class="folder-info">
+              <div class="folder-icon">📁</div>
+              <div class="folder-details">
+                <h4 class="folder-name">{{ folder.name }}</h4> <!-- ✅ ADICIONADO class="folder-name" -->
+                <div class="folder-path">
+                  {% if folder.user != user %}
+                    <span style="color: var(--warning);">Compartilhada por {{ folder.user.username }}</span>
+                  {% else %}
+                    Minha pasta
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="folder-actions-modern">
+              <a href="{% url 'file_list' %}?folder={{ folder.id }}" class="btn-modern secondary small">Abrir</a>
+              {% if folder.user == user %}
+                <form method="post" action="{% url 'delete_folder' folder.id %}" class="delete-folder-form" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-modern danger small">
+                    🗑️
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  
+    <!-- Busca -->
+    <div class="search-card fade-in-up">
+      <h3 style="color: var(--neon-cyan); margin-bottom: 16px;">🔍 Buscar Arquivos</h3>
+      <form method="get" action="{% url 'file_list' %}" class="search-form">
+        <div class="search-input-wrapper">
+          <div class="search-icon">🔍</div>
+          <input type="text" name="q" placeholder="Buscar em todas as pastas..." value="{{ query|default:'' }}" class="input-modern search-input">
+        </div>
+        {% if selected_folder_id %}
+          <input type="hidden" name="folder" value="{{ selected_folder_id }}">
+        {% endif %}
+        <button type="submit" class="btn-modern">Buscar</button>
+      </form>
+      
+      {% if query %}
+      <div style="margin-top: 16px; padding: 12px; background: rgba(0, 255, 200, 0.1); border-radius: 8px; border: 1px solid var(--neon-cyan);">
+        <div style="display: flex; justify-content: between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div style="color: var(--neon-cyan); font-weight: 600;">
+            🔍 Buscando: "{{ query }}"
+          </div>
+          <div style="color: var(--text-primary);">
+            {{ files|length }} resultado(s)
+          </div>
+          <a href="{% url 'file_list' %}{% if selected_folder_id %}?folder={{ selected_folder_id }}{% endif %}" class="btn-modern secondary small">
+            ✕ Limpar
+          </a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  
+    <!-- Ações e Arquivos -->
+    <div class="files-section">
+      <div class="actions-toolbar fade-in-up">
+        <div class="batch-actions">
+          <label class="checkbox-label">
+            <input type="checkbox" id="select-all">
+            Selecionar todos
+          </label>
+          <div class="view-toggle" title="Alternar visualização">
+            <button type="button" class="view-toggle-btn active" id="btn-view-grid" title="Grade">⊞</button>
+            <button type="button" class="view-toggle-btn" id="btn-view-list" title="Lista">☰</button>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <!-- ✅ BOTÃO CORRIGIDO: Agora com ID correto -->
+          <button type="button" id="delete-files-btn" class="btn-modern danger">
+            🗑️ Excluir Selecionados
+          </button>
+          <button type="button" id="download-files-btn" class="btn-modern secondary">
+            ⬇️ Download Selecionados
+          </button>
+          <a href="{% url 'upload_file' %}{% if selected_folder_id %}?folder={{ selected_folder_id }}{% endif %}" class="btn-modern">
+            📤 Upload
+          </a>
+        </div>
+      </div>
+  
+      <!-- ✅ FORMULÁRIO REMOVIDO: Não é mais necessário -->
+      <div class="files-grid">
+        {% for file in files %}
+          <div class="file-card fade-in-up" data-file-id="{{ file.id }}">
+            <input type="checkbox" class="file-checkbox-modern select-checkbox" value="{{ file.id }}">
+            
+            <div class="file-preview">
+              {% with file.file|extension as ext %}
+                  {% if ext in "jpg jpeg png gif heic heif" %}
+                      <img src="{{ file.file.url }}" alt="{{ file.name }}" onerror="this.style.display='none'">
+                  {% elif ext in "mp4 webm m4v mov 3gp" %}
+                      {% if file.file.size > 104857600 %}
+                          {% if file.thumbnail %}
+                              <img src="{{ file.thumbnail.url }}" alt="{{ file.name }}" style="width:100%;border-radius:8px;">
+                          {% else %}
+                              <div class="file-icon-large">🎥</div>
+                          {% endif %}
+                      {% else %}
+                          <video controls poster="{% if file.thumbnail %}{{ file.thumbnail.url }}{% endif %}" onerror="this.style.display='none'">
+                              <source src="{{ file.file.url }}" type="{% if ext == 'mov' %}video/quicktime{% elif ext == '3gp' %}video/3gpp{% else %}video/mp4{% endif %}">
+                          </video>
+                      {% endif %}
+                  {% elif ext == "pdf" %}
+                      <div class="file-icon-large">📕</div>
+                  {% else %}
+                      <div class="file-icon-large">{{ file|icon_for_file }}</div>
+                  {% endif %}
+              {% endwith %}
+            </div>
+
+            <div class="file-info">
+              <div class="file-name">{{ file.name }}</div>
+              
+              {% if file.folder %}
+                <div class="file-meta">📁 {{ file.folder }}</div>
+              {% endif %}
+              
+              <div class="file-meta">{{ file.file.size|filesizeformat }}</div>
+              
+              <div class="file-badges">
+                {% if file.user != user %}
+                  <div class="badge shared">👤 {{ file.user.username }}</div>
+                {% endif %}
+                {% if file.is_global %}
+                  <div class="badge global">🌍 Global</div>
+                {% endif %}
+              </div>
+
+              <div class="file-actions">
+                {% with file.file|extension as ext %}
+                  {% if ext in "jpg jpeg png gif heic heif" or ext in "mp4 webm mov m4v 3gp" or ext == "pdf" or ext in "txt md py js ts json xml csv html css" %}
+                    <button class="btn-modern secondary small preview-btn"
+                            data-url="{{ file.file.url }}"
+                            data-type="{% if ext in 'mp4 webm mov m4v 3gp' %}video{% elif ext == 'pdf' %}pdf{% elif ext in 'txt md py js ts json xml csv html css' %}text{% else %}image{% endif %}"
+                            data-ext="{{ ext }}"
+                            data-name="{{ file.name }}"
+                            {% if file.thumbnail %}data-poster="{{ file.thumbnail.url }}"{% endif %}>
+                      👁 Preview
+                    </button>
+                  {% endif %}
+                {% endwith %}
+                <a href="{{ file.file.url }}" target="_blank" class="btn-modern secondary small">Abrir</a>
+                <a href="{{ file.file.url }}" download class="btn-modern secondary small">⬇️</a>
+                {% with name=file.name|lower %}
+                {% if name|slice:"-4:" == ".apk" or name|slice:"-4:" == ".exe" or name|slice:"-4:" == ".dll" or name|slice:"-4:" == ".sys" or name|slice:"-4:" == ".scr" %}
+                <a href="{% url 'binary_analyzer:report' file.id %}"
+                   class="btn-modern secondary small ba-analyze-btn"
+                   data-file-id="{{ file.id }}"
+                   title="Analisar este arquivo"
+                   style="background:rgba(185,103,255,.15);border-color:rgba(185,103,255,.4);color:#d49eff;">
+                  🔍
+                  <span class="ba-risk-badge" data-file-id="{{ file.id }}" style="display:none;margin-left:6px;font-size:.7rem;padding:1px 6px;border-radius:10px;font-weight:700;"></span>
+                </a>
+                {% endif %}
+                {% endwith %}
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-icon">📁</div>
+            <h3>Nenhum arquivo encontrado</h3>
+            <p>
+              {% if query %}
+                Não encontramos resultados para "{{ query }}"
+              {% elif selected_folder %}
+                Esta pasta está vazia
+              {% else %}
+                Sua raiz está vazia
+              {% endif %}
+            </p>
+            <a href="{% url 'upload_file' %}{% if selected_folder_id %}?folder={{ selected_folder_id }}{% endif %}" class="btn-modern">
+              📤 Fazer Upload
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if page_obj.paginator.num_pages > 1 %}
+      <div class="pagination-bar fade-in-up">
+        {% if page_obj.has_previous %}
+          <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if selected_folder_id %}&folder={{ selected_folder_id }}{% endif %}" class="btn-modern secondary small">« Primeira</a>
+          <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_folder_id %}&folder={{ selected_folder_id }}{% endif %}" class="btn-modern secondary small">‹ Anterior</a>
+        {% endif %}
+
+        <span class="pagination-info">
+          Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+          &nbsp;·&nbsp; {{ page_obj.paginator.count }} arquivo(s)
+        </span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_folder_id %}&folder={{ selected_folder_id }}{% endif %}" class="btn-modern secondary small">Próxima ›</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if selected_folder_id %}&folder={{ selected_folder_id }}{% endif %}" class="btn-modern secondary small">Última »</a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</main>
+
+<!-- CSRF Token disponível globalmente para fetch requests -->
+<input type="hidden" id="csrf-token-global" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function getCSRFToken() {
+    const match = document.cookie.match(/csrftoken=([^;]+)/);
+    if (match) return decodeURIComponent(match[1]);
+    const el = document.querySelector('[name=csrfmiddlewaretoken]');
+    return el ? el.value : '';
+  }
+
+  // ✅ Selecionar todos os checkboxes
+  const selectAllCheckbox = document.getElementById('select-all');
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+      const checkboxes = document.querySelectorAll('.select-checkbox');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+    });
+  }
+
+  // ✅ Verificação de arquivos
+  const fileItems = document.querySelectorAll('.file-card');
+  fileItems.forEach(item => {
+    const fileId = item.dataset.fileId;
+    if (fileId) {
+      checkFileExists(fileId, item);
+    }
+  });
+
+  function checkFileExists(fileId, element) {
+    fetch(`/GDriver/check-file-exists/${fileId}/`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro na requisição');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (!data.exists) {
+          element.style.opacity = '0.6';
+          element.style.borderColor = 'var(--danger)';
+          
+          const warning = document.createElement('div');
+          warning.innerHTML = '⚠️ Arquivo não encontrado';
+          warning.style.cssText = 'color: var(--danger); text-align: center; margin-top: 8px; font-size: 0.8rem;';
+          const fileInfo = element.querySelector('.file-info');
+          if (fileInfo) {
+            fileInfo.appendChild(warning);
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao verificar arquivo:', error);
+      });
+  }
+
+  // ✅ FUNÇÃO CORRIGIDA: Excluir arquivos selecionados
+  function deleteSelectedFiles() {
+    const selectedCheckboxes = document.querySelectorAll('.select-checkbox:checked');
+    const selectedFiles = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+    
+    if (selectedFiles.length === 0) {
+      alert('Selecione pelo menos um arquivo para excluir.');
+      return;
+    }
+    
+    if (!confirm(`Tem certeza que deseja excluir ${selectedFiles.length} arquivo(s)?`)) {
+      return;
+    }
+    
+    const formData = new FormData();
+    selectedFiles.forEach(fileId => {
+      formData.append('selected_files', fileId);
+    });
+    
+    const csrfToken = getCSRFToken();
+    formData.append('csrfmiddlewaretoken', csrfToken);
+    
+    fetch('/GDriver/delete-files/', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'X-CSRFToken': csrfToken },
+      body: formData
+    })
+    .then(response => {
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        console.error('Resposta inesperada do servidor (status ' + response.status + '). Possível problema de autenticação ou CSRF.');
+        location.reload();
+        return null;
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (!data) return;
+      if (data.errors && data.errors.length > 0) {
+        console.warn('Erros ao excluir:', data.errors);
+      }
+      location.reload();
+    })
+    .catch(error => {
+      console.error('Erro ao excluir:', error);
+      location.reload();
+    });
+  }
+
+  // ✅ Event Listener para o botão de excluir arquivos
+  const deleteFilesBtn = document.getElementById('delete-files-btn');
+  if (deleteFilesBtn) {
+    deleteFilesBtn.addEventListener('click', deleteSelectedFiles);
+  }
+
+  // ✅ Download de arquivos selecionados como ZIP
+  function downloadSelectedFiles() {
+    const selectedCheckboxes = document.querySelectorAll('.select-checkbox:checked');
+    const selectedFiles = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+    if (selectedFiles.length === 0) {
+      alert('Selecione pelo menos um arquivo para baixar.');
+      return;
+    }
+
+    const btn = document.getElementById('download-files-btn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Preparando ZIP…';
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/GDriver/download-files/';
+    form.style.display = 'none';
+
+    const csrf = document.createElement('input');
+    csrf.type = 'hidden';
+    csrf.name = 'csrfmiddlewaretoken';
+    csrf.value = getCSRFToken();
+    form.appendChild(csrf);
+
+    selectedFiles.forEach(id => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'selected_files';
+      input.value = id;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }, 3000);
+  }
+
+  const downloadFilesBtn = document.getElementById('download-files-btn');
+  if (downloadFilesBtn) {
+    downloadFilesBtn.addEventListener('click', downloadSelectedFiles);
+  }
+
+  // ─── Toggle de visualização (grade / lista) ───
+  const grid       = document.querySelector('.files-grid');
+  const btnGrid    = document.getElementById('btn-view-grid');
+  const btnList    = document.getElementById('btn-view-list');
+  const PREF_KEY   = 'gdrive_view_mode';
+
+  function applyView(mode) {
+    if (!grid) return;
+    if (mode === 'list') {
+      grid.classList.add('list-view');
+      btnGrid.classList.remove('active');
+      btnList.classList.add('active');
+    } else {
+      grid.classList.remove('list-view');
+      btnGrid.classList.add('active');
+      btnList.classList.remove('active');
+    }
+    localStorage.setItem(PREF_KEY, mode);
+  }
+
+  // Restaura preferência salva
+  applyView(localStorage.getItem(PREF_KEY) || 'grid');
+
+  if (btnGrid) btnGrid.addEventListener('click', () => applyView('grid'));
+  if (btnList) btnList.addEventListener('click', () => applyView('list'));
+
+  // ✅ DELEÇÃO DE PASTAS COM AJAX - CORRIGIDA
+  document.querySelectorAll('.delete-folder-form').forEach(form => {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      
+      const folderItem = this.closest('.folder-item-modern');
+      const folderNameElement = folderItem ? folderItem.querySelector('.folder-name') : null;
+      const folderName = folderNameElement ? folderNameElement.textContent : 'esta pasta';
+      
+      if (!confirm(`Tem certeza que deseja excluir a pasta "${folderName}" e todo seu conteúdo?`)) return;
+
+      const url = this.action;
+      const formData = new FormData(this);
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCSRFToken(),
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro na resposta do servidor');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          showMessage(data.message, 'success');
+          setTimeout(() => {
+            if (folderItem) {
+              folderItem.remove();
+            } else {
+              location.reload();
+            }
+          }, 1000);
+        } else {
+          showMessage('Erro ao excluir a pasta: ' + data.message, 'error');
+        }
+      })
+      .catch((error) => {
+        console.error('Erro:', error);
+        showMessage('Erro na requisição: ' + error.message, 'error');
+      });
+    });
+  });
+
+  // ✅ FUNÇÃO PARA MOSTRAR MENSAGENS
+  function showMessage(message, type) {
+    const existingMessage = document.querySelector('.custom-message');
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `custom-message alert alert-${type}`;
+    messageDiv.textContent = message;
+    messageDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      padding: 15px 20px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      max-width: 400px;
+      animation: slideInRight 0.3s ease;
+    `;
+
+    if (type === 'success') {
+      messageDiv.style.background = 'var(--success)';
+    } else if (type === 'error') {
+      messageDiv.style.background = 'var(--danger)';
+    } else {
+      messageDiv.style.background = 'var(--warning)';
+      messageDiv.style.color = 'black';
+    }
+
+    document.body.appendChild(messageDiv);
+
+    setTimeout(() => {
+      if (messageDiv.parentNode) {
+        messageDiv.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => messageDiv.remove(), 300);
+      }
+    }, 5000);
+  }
+
+  // ✅ Adicionar CSS para animações
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  `;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- Modal de Preview de Mídia -->
+<div id="media-preview-modal" style="display:none;" aria-modal="true" role="dialog">
+  <div class="preview-overlay" id="preview-overlay">
+    <div class="preview-container">
+      <div class="preview-header">
+        <span class="preview-title" id="preview-title"></span>
+        <button class="preview-close" id="preview-close" aria-label="Fechar">✕</button>
+      </div>
+      <div class="preview-body" id="preview-body"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #media-preview-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+  }
+  .preview-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeInOverlay .2s ease;
+  }
+  @keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .preview-container {
+    background: rgba(10, 10, 10, 0.95);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 20px;
+    box-shadow: 0 0 60px rgba(0, 255, 200, 0.25);
+    max-width: 92vw;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: scaleIn .22s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes scaleIn {
+    from { transform: scale(.88); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(0,255,200,0.2);
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .preview-title {
+    color: var(--neon-cyan);
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70vw;
+    text-shadow: 0 0 10px rgba(0,255,200,.4);
+  }
+  .preview-close {
+    background: rgba(255,68,68,.15);
+    border: 1px solid rgba(255,68,68,.5);
+    color: #ff4444;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .18s, box-shadow .18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .preview-close:hover {
+    background: rgba(255,68,68,.35);
+    box-shadow: 0 0 14px rgba(255,68,68,.4);
+  }
+  .preview-body {
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    max-height: calc(92vh - 70px);
+  }
+  .preview-body img {
+    max-width: 100%;
+    max-height: calc(88vh - 70px);
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 0 40px rgba(0,255,200,.15);
+  }
+  .preview-body video {
+    max-width: 100%;
+    max-height: calc(88vh - 70px);
+    border-radius: 12px;
+    outline: none;
+    background: #000;
+  }
+</style>
+
+<script>
+(function () {
+  const modal  = document.getElementById('media-preview-modal');
+  const body   = document.getElementById('preview-body');
+  const title  = document.getElementById('preview-title');
+  const closeBtn = document.getElementById('preview-close');
+  const overlay  = document.getElementById('preview-overlay');
+
+  const mimeTypes = {
+    mp4: 'video/mp4', m4v: 'video/mp4', webm: 'video/webm',
+    mov: 'video/quicktime', '3gp': 'video/3gpp'
+  };
+
+  function openPreview(url, type, name, poster, ext) {
+    body.innerHTML = '';
+    title.textContent = name;
+
+    if (type === 'pdf') {
+      const iframe = document.createElement('iframe');
+      iframe.src = url;
+      iframe.style.cssText = 'width:min(860px,90vw);height:75vh;border:none;border-radius:8px;background:#fff;';
+      body.appendChild(iframe);
+    } else if (type === 'text') {
+      body.innerHTML = '<div style="color:var(--neon-cyan);padding:8px 0 16px;">Carregando…</div>';
+      fetch(url)
+        .then(r => {
+          if (!r.ok) throw new Error('Erro ao carregar');
+          return r.text();
+        })
+        .then(text => {
+          body.innerHTML = '';
+          const pre = document.createElement('pre');
+          pre.textContent = text;
+          pre.style.cssText = 'max-width:min(900px,90vw);max-height:70vh;overflow:auto;text-align:left;background:rgba(0,0,0,.6);color:#e0e0e0;padding:20px;border-radius:10px;font-size:.85rem;line-height:1.6;border:1px solid rgba(0,255,200,.2);white-space:pre-wrap;word-break:break-word;';
+          body.appendChild(pre);
+        })
+        .catch(() => {
+          body.innerHTML = `<div style="text-align:center;padding:32px;color:var(--warning);">⚠️ Não foi possível carregar o arquivo.<br><a href="${url}" download class="btn-modern secondary small" style="margin-top:16px;">⬇️ Baixar</a></div>`;
+        });
+    } else if (type === 'image') {
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = name;
+      body.appendChild(img);
+    } else {
+      const video = document.createElement('video');
+      video.controls = true;
+      video.autoplay = false;
+      video.style.width = '100%';
+      if (poster) video.poster = poster;
+      const source = document.createElement('source');
+      source.src = url;
+      source.type = mimeTypes[ext] || 'video/mp4';
+      video.appendChild(source);
+
+      video.addEventListener('error', function () {
+        body.innerHTML = `
+          <div style="text-align:center;padding:32px;color:var(--text-secondary);">
+            <div style="font-size:3rem;margin-bottom:16px;">🎥</div>
+            <p style="margin-bottom:16px;color:var(--warning);">Este navegador não suporta reprodução de <strong style="color:#fff;">.${ext}</strong> diretamente.</p>
+            <a href="${url}" download class="btn-modern secondary small">⬇️ Baixar arquivo</a>
+            <a href="${url}" target="_blank" class="btn-modern secondary small" style="margin-left:8px;">🔗 Abrir</a>
+          </div>`;
+      }, true);
+
+      body.appendChild(video);
+    }
+
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+
+  function closePreview() {
+    const video = body.querySelector('video');
+    if (video) { video.pause(); video.src = ''; }
+    body.innerHTML = '';
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closePreview);
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closePreview();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && modal.style.display === 'block') closePreview();
+  });
+
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.preview-btn');
+    if (!btn) return;
+    openPreview(
+      btn.dataset.url,
+      btn.dataset.type,
+      btn.dataset.name,
+      btn.dataset.poster || '',
+      btn.dataset.ext || ''
+    );
+  });
+})();
+</script>
+
+<script>
+// ── Badges de risco da análise binária + VirusTotal ──────────────────────
+(function () {
+  const badges = document.querySelectorAll('.ba-risk-badge[data-file-id]');
+  if (!badges.length) return;
+  const ids = Array.from(badges).map(b => b.dataset.fileId);
+  fetch('/binary_analyzer/badges/?ids=' + encodeURIComponent(ids.join(',')))
+    .then(r => r.json())
+    .then(d => {
+      const data = (d && d.badges) || {};
+      badges.forEach(b => {
+        const info = data[b.dataset.fileId];
+        if (!info) return;
+        let bg, color, txt;
+        if (info.status === 'analyzing' || info.status === 'pending') {
+          bg = 'rgba(0,255,200,.18)'; color = '#00ffc8'; txt = '⏳';
+        } else if (info.status === 'error') {
+          bg = 'rgba(255,68,68,.2)'; color = '#ff8888'; txt = 'erro';
+        } else if (info.status === 'done') {
+          if (info.risk_color === 'danger')      { bg = 'rgba(255,68,68,.25)';  color = '#ff8888'; }
+          else if (info.risk_color === 'warning'){ bg = 'rgba(255,193,7,.25)';  color = '#ffd966'; }
+          else                                    { bg = 'rgba(40,167,69,.25)'; color = '#7ddd9b'; }
+          txt = (info.risk_score != null ? info.risk_score : '?') + '/100';
+        } else {
+          return;
+        }
+        b.style.background = bg;
+        b.style.color = color;
+        b.textContent = txt;
+        b.title = `Análise: ${info.status} · ${info.risk_label || ''}`;
+        b.style.display = 'inline-block';
+
+        // Badge extra de VirusTotal — adicionado ao lado do botão 🔍
+        if (info.vt) {
+          const btn = b.closest('.ba-analyze-btn');
+          if (btn && !btn.parentElement.querySelector('.ba-vt-badge')) {
+            const vt = document.createElement('span');
+            vt.className = 'ba-vt-badge';
+            vt.style.cssText = 'display:inline-flex;align-items:center;gap:3px;margin-left:4px;padding:1px 6px;border-radius:10px;font-size:.7rem;font-weight:700;border:1px solid;';
+            if (info.vt.unknown) {
+              vt.textContent = '🦠 ?';
+              vt.style.background = 'rgba(255,255,255,.06)';
+              vt.style.color = '#999';
+              vt.style.borderColor = 'rgba(255,255,255,.15)';
+              vt.title = 'VirusTotal: hash desconhecido';
+            } else {
+              const m = info.vt.malicious || 0, t = info.vt.total || 0;
+              if (m >= 5)      { vt.style.background='rgba(255,68,68,.22)'; vt.style.color='#ff8888'; vt.style.borderColor='rgba(255,68,68,.55)'; }
+              else if (m >= 1) { vt.style.background='rgba(255,193,7,.18)'; vt.style.color='#ffd966'; vt.style.borderColor='rgba(255,193,7,.45)'; }
+              else             { vt.style.background='rgba(40,167,69,.15)'; vt.style.color='#7ddd9b'; vt.style.borderColor='rgba(40,167,69,.4)'; }
+              vt.textContent = '🦠 ' + m + '/' + t;
+              vt.title = 'VirusTotal: ' + m + ' malicious de ' + t + (info.vt.label ? ' · ' + info.vt.label : '');
+              if (info.vt.permalink) {
+                const a = document.createElement('a');
+                a.href = info.vt.permalink;
+                a.target = '_blank';
+                a.rel = 'noopener';
+                a.style.cssText = 'margin-left:4px;color:inherit;text-decoration:none;opacity:.85;font-weight:700';
+                a.textContent = '↗';
+                a.title = 'Abrir no VirusTotal';
+                a.addEventListener('click', e => e.stopPropagation());
+                vt.appendChild(a);
+              }
+            }
+            btn.insertAdjacentElement('afterend', vt);
+          }
+        }
+      });
+    })
+    .catch(() => {});
+})();
+</script>
+
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base_generic.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg p-4">
+                <h2 class="text-center mb-4">Verificação de Email</h2>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="alert alert-info">
+                    <p>Enviamos um código de verificação de 6 dígitos para: <strong>{{ email }}</strong></p>
+                    <p>Verifique sua caixa de entrada e spam.</p>
+                    
+                    {% if attempts > 0 %}
+                    <div class="alert alert-warning mt-2">
+                        Tentativas falhas: {{ attempts }}/5
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_code">Código de Verificação</label>
+                        {{ form.code|add_class:"form-control" }}
+                        {% if form.code.errors %}
+                            <div class="text-danger">{{ form.code.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Verificar e Completar Cadastro</button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p>Não recebeu o código? 
+                        <a href="{% url 'resend_verification' %}" class="btn btn-link">Reenviar código</a>
+                    </p>
+                    <p><a href="{% url 'signup' %}">Voltar para cadastro</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

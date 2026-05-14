@@ -1,0 +1,579 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  :root {
+    --c-bg: #0a0a12; --c-card: #12121e; --c-border: rgba(0,255,200,.18);
+    --c-cyan: #00ffc8; --c-purple: #b967ff; --c-warn: #ffc107; --c-danger: #ff4444;
+    --c-ok: #28a745; --c-text: #e0e0e0; --c-muted: #777;
+  }
+  body { background: var(--c-bg); color: var(--c-text); }
+
+  .report-header {
+    background: linear-gradient(135deg, rgba(0,255,200,.12), rgba(185,103,255,.12));
+    border: 1px solid var(--c-border);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+  .report-header h2 { color: var(--c-cyan); margin: 0 0 8px; font-size: 1.4rem; }
+  .report-header .meta { color: var(--c-muted); font-size: .85rem; }
+
+  .risk-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  .risk-danger  { background: rgba(255,68,68,.2);   color: var(--c-danger); border: 1px solid var(--c-danger); }
+  .risk-warning { background: rgba(255,193,7,.15);  color: var(--c-warn);   border: 1px solid var(--c-warn); }
+  .risk-success { background: rgba(40,167,69,.15);  color: var(--c-ok);     border: 1px solid var(--c-ok); }
+  .risk-secondary { background: rgba(255,255,255,.1); color: #aaa; border: 1px solid #555; }
+
+  .score-bar-wrap { background: rgba(255,255,255,.08); border-radius: 8px; height: 12px; overflow: hidden; margin: 10px 0; }
+  .score-bar      { height: 100%; border-radius: 8px; transition: width .8s ease; }
+
+  .panel {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 12px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .panel-header {
+    background: linear-gradient(90deg, rgba(0,255,200,.08), transparent);
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--c-border);
+    font-weight: 700;
+    color: var(--c-cyan);
+    font-size: .9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-body { padding: 16px 18px; }
+
+  .perm-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: .75rem;
+    margin: 3px;
+  }
+  .perm-danger { background: rgba(255,68,68,.2);  color: #ff8888; border: 1px solid rgba(255,68,68,.4); }
+  .perm-normal { background: rgba(0,255,200,.07); color: #aaa;    border: 1px solid rgba(0,255,200,.2); }
+
+  .finding-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .finding-row:last-child { border-bottom: none; }
+  .finding-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .finding-label { font-weight: 600; color: #f88; font-size: .88rem; }
+  .finding-samples { color: var(--c-muted); font-size: .78rem; font-family: monospace; }
+
+  .import-row { display: flex; align-items: center; gap: 10px; padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,.04); }
+  .import-row:last-child { border-bottom: none; }
+  .import-api { font-family: monospace; font-size: .82rem; color: #f0c070; }
+  .import-dll { font-size: .72rem; color: var(--c-muted); }
+  .import-risk { font-size: .72rem; color: #ff9999; margin-left: auto; }
+
+  .section-row { display: grid; grid-template-columns: 120px 1fr 80px 80px; gap: 8px;
+    align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+  .section-row:last-child { border-bottom: none; }
+  .ent-bar { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--c-cyan), var(--c-purple)); }
+
+  .strings-box {
+    background: rgba(0,0,0,.5);
+    border: 1px solid rgba(0,255,200,.15);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: .78rem;
+    color: #a8ff78;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .status-spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(0,255,200,.2);
+    border-top-color: var(--c-cyan);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--c-cyan);
+    text-decoration: none;
+    font-size: .88rem;
+    margin-bottom: 18px;
+    opacity: .8;
+    transition: opacity .15s;
+  }
+  .back-btn:hover { opacity: 1; color: var(--c-cyan); }
+</style>
+
+<div class="container my-4" style="max-width: 900px;">
+  <a href="{% url 'file_list' %}" class="back-btn">← Voltar para arquivos</a>
+
+  <!-- Header do relatório -->
+  <div class="report-header">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+      <div>
+        <h2>🔍 Relatório de Análise</h2>
+        <div class="meta">
+          <strong style="color:#fff">{{ file.name }}</strong>
+          {% if analysis %}
+            &nbsp;·&nbsp;
+            {% if analysis.file_type == 'apk' %}📱 APK Android{% else %}💻 EXE/PE Windows{% endif %}
+            &nbsp;·&nbsp; Analisado em {{ analysis.updated_at|date:"d/m/Y H:i" }}
+          {% endif %}
+        </div>
+      </div>
+      {% if analysis %}
+      <div class="text-end">
+        {% if analysis.status == 'done' %}
+          <div class="risk-badge risk-{{ analysis.risk_color }}">
+            Risco {{ analysis.risk_label }} ({{ analysis.risk_score }}/100)
+          </div>
+          <div class="score-bar-wrap mt-2" style="width:180px">
+            <div class="score-bar"
+                 style="width:{{ analysis.risk_score }}%;
+                        background: {% if analysis.risk_score >= 75 %}var(--c-danger){% elif analysis.risk_score >= 40 %}var(--c-warn){% else %}var(--c-ok){% endif %}">
+            </div>
+          </div>
+        {% elif analysis.status == 'analyzing' or analysis.status == 'pending' %}
+          <span class="status-spinner"></span>
+          <span id="status-label" style="color:var(--c-cyan)">Analisando…</span>
+        {% elif analysis.status == 'error' %}
+          <span style="color:var(--c-danger)">❌ Erro na análise</span>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    {% if not analysis %}
+    <div class="mt-3">
+      <span style="color:var(--c-muted)">Análise ainda não iniciada.</span>
+      <form method="post" action="{% url 'binary_analyzer:trigger' file.id %}" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-info ms-3">▶ Iniciar Análise</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if stale %}
+  <div class="panel">
+    <div class="panel-header">⚠️ Análise possivelmente travada</div>
+    <div class="panel-body">
+      <span style="color:var(--c-muted)">
+        Esta análise está marcada como em andamento há mais de 10 minutos —
+        provavelmente o servidor reiniciou no meio da execução.
+      </span>
+      <form method="post" action="{% url 'binary_analyzer:trigger' file.id %}" class="mt-3">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-warning">🔄 Retomar análise</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if analysis and analysis.status == 'error' %}
+  <div class="panel">
+    <div class="panel-header">❌ Erro</div>
+    <div class="panel-body">
+      <code style="color:var(--c-danger)">{{ analysis.error_message }}</code>
+      <form method="post" action="{% url 'binary_analyzer:trigger' file.id %}" class="mt-3">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-warning">🔄 Reanalisar</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if analysis and analysis.status == 'done' and analysis.report %}
+  {% with r=analysis.report %}
+
+  <!-- Info geral -->
+  <div class="panel">
+    <div class="panel-header">📄 Informações do Arquivo</div>
+    <div class="panel-body">
+      <table class="table table-sm" style="color:var(--c-text);margin:0">
+        <tr><td style="color:var(--c-muted);width:160px">SHA-256</td>
+            <td><code style="font-size:.75rem;word-break:break-all">{{ r.sha256 }}</code></td></tr>
+        <tr><td style="color:var(--c-muted)">Tamanho</td>
+            <td>{% widthratio r.size_bytes 1048576 1 %} MB ({{ r.size_bytes|filesizeformat }})</td></tr>
+        {% if r.package %}<tr><td style="color:var(--c-muted)">Pacote</td><td><code>{{ r.package }}</code></td></tr>{% endif %}
+        {% if r.version_name %}<tr><td style="color:var(--c-muted)">Versão</td><td>{{ r.version_name }} (code {{ r.version_code }})</td></tr>{% endif %}
+        {% if r.min_sdk %}<tr><td style="color:var(--c-muted)">SDK mín/alvo</td><td>{{ r.min_sdk }} / {{ r.target_sdk }}</td></tr>{% endif %}
+        {% if r.architecture %}<tr><td style="color:var(--c-muted)">Arquitetura</td><td>{{ r.architecture }}</td></tr>{% endif %}
+        {% if r.compile_timestamp %}<tr><td style="color:var(--c-muted)">Compilado em</td><td>{{ r.compile_timestamp }}</td></tr>{% endif %}
+        {% if r.subsystem %}<tr><td style="color:var(--c-muted)">Subsistema</td><td>{{ r.subsystem }}</td></tr>{% endif %}
+        <tr><td style="color:var(--c-muted)">Entropy geral</td>
+            <td>
+              {{ r.overall_entropy }}
+              {% if r.is_packed %}<span class="badge bg-warning text-dark ms-2">⚠ Possível packing/cifração</span>{% endif %}
+            </td></tr>
+        {% if r.method %}<tr><td style="color:var(--c-muted)">Método</td><td><small>{{ r.method }}</small></td></tr>{% endif %}
+      </table>
+    </div>
+  </div>
+
+  <!-- VirusTotal — sem dados ainda: oferece consulta sob demanda -->
+  {% if not r.virustotal %}
+  <div class="panel">
+    <div class="panel-header">🦠 VirusTotal · <span style="color:var(--c-muted)">não consultado</span></div>
+    <div class="panel-body">
+      <span style="color:var(--c-muted);font-size:.85rem">
+        Esta análise foi feita sem o lookup do VirusTotal (chave não configurada na época
+        ou enriquecimento desativado). Você pode consultar agora pelo SHA-256 — o arquivo
+        <strong>não</strong> é enviado, apenas o hash.
+      </span>
+      <form method="post" action="{% url 'binary_analyzer:recheck_vt' file.id %}" class="mt-3" style="margin:0">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-info">🦠 Consultar VirusTotal agora</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- VirusTotal -->
+  {% if r.virustotal %}
+  <div class="panel">
+    <div class="panel-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <span>🦠 VirusTotal
+        {% if r.virustotal.known %}
+          ·
+          {% if r.virustotal.malicious >= 5 %}
+            <span style="color:var(--c-danger)">{{ r.virustotal.malicious }}/{{ r.virustotal.total }} malicious</span>
+          {% elif r.virustotal.malicious >= 1 %}
+            <span style="color:var(--c-warn)">{{ r.virustotal.malicious }}/{{ r.virustotal.total }} malicious</span>
+          {% else %}
+            <span style="color:var(--c-ok)">limpo ({{ r.virustotal.total }} scanners)</span>
+          {% endif %}
+        {% else %}
+          · <span style="color:var(--c-muted)">desconhecido (não submetido)</span>
+        {% endif %}
+      </span>
+      <form method="post" action="{% url 'binary_analyzer:recheck_vt' file.id %}" style="margin:0">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-info"
+                style="font-size:.75rem;padding:3px 10px"
+                title="Consultar VirusTotal novamente — útil se o sample foi catalogado depois da análise">
+          🔄 Re-verificar VT
+        </button>
+      </form>
+    </div>
+    <div class="panel-body">
+      {% if r.virustotal.error %}
+        <span style="color:var(--c-danger)">{{ r.virustotal.error }}</span>
+      {% elif r.virustotal.known %}
+        <table class="table table-sm" style="color:var(--c-text);margin:0">
+          {% if r.virustotal.suggested_label %}
+          <tr><td style="color:var(--c-muted);width:160px">Threat label</td>
+              <td><strong style="color:#ff8888">{{ r.virustotal.suggested_label }}</strong></td></tr>
+          {% endif %}
+          {% if r.virustotal.family %}
+          <tr><td style="color:var(--c-muted)">Família</td>
+              <td>{% for f in r.virustotal.family %}<span class="perm-tag perm-danger">{{ f.value|default:f }}</span>{% endfor %}</td></tr>
+          {% endif %}
+          {% if r.virustotal.common_names %}
+          <tr><td style="color:var(--c-muted)">Nomes vistos</td>
+              <td><code style="font-size:.78rem">{{ r.virustotal.common_names|join:", " }}</code></td></tr>
+          {% endif %}
+          <tr><td style="color:var(--c-muted)">Reputação</td><td>{{ r.virustotal.reputation }}</td></tr>
+          <tr><td style="color:var(--c-muted)">Stats</td>
+              <td>
+                <span style="color:#ff8888">malicious:{{ r.virustotal.malicious }}</span> ·
+                <span style="color:#ffd966">suspicious:{{ r.virustotal.suspicious }}</span> ·
+                <span style="color:#7ddd9b">harmless:{{ r.virustotal.harmless }}</span> ·
+                <span style="color:var(--c-muted)">undetected:{{ r.virustotal.undetected }}</span>
+              </td></tr>
+          <tr><td style="color:var(--c-muted)">VT</td>
+              <td><a href="{{ r.virustotal.permalink }}" target="_blank" style="color:var(--c-cyan)">Abrir no VirusTotal ↗</a></td></tr>
+        </table>
+      {% else %}
+        <span style="color:var(--c-muted)">Hash não conhecido pelo VirusTotal — pode ser binário inédito ou interno.</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- YARA matches -->
+  {% if r.yara_matches %}
+  <div class="panel">
+    <div class="panel-header">🎯 YARA — {{ r.yara_matches|length }} regra(s) batidas</div>
+    <div class="panel-body">
+      {% for y in r.yara_matches %}
+      <div class="finding-row">
+        <span class="finding-icon">⚡</span>
+        <div style="flex:1">
+          <div class="finding-label">{{ y.rule }}
+            {% for t in y.tags %}<span class="perm-tag perm-normal" style="font-size:.65rem">{{ t }}</span>{% endfor %}
+          </div>
+          {% if y.description %}<div style="color:#ddd;font-size:.82rem">{{ y.description }}</div>{% endif %}
+          <div class="finding-samples">
+            {% if y.author %}autor: {{ y.author }} · {% endif %}
+            {% if y.severity %}severidade: {{ y.severity }} · {% endif %}
+            strings batidas: {{ y.strings_hit }}
+            {% if y.reference %}· <a href="{{ y.reference }}" target="_blank" style="color:var(--c-cyan)">ref</a>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Credenciais hardcoded -->
+  {% if r.secrets %}
+  <div class="panel">
+    <div class="panel-header">🔑 Credenciais / Segredos hardcoded ({{ r.secrets|length }})</div>
+    <div class="panel-body">
+      <p style="color:var(--c-muted);font-size:.78rem;margin-bottom:8px">
+        Segredos detectados em strings do binário. Valores são parcialmente ocultados aqui.
+        Em <strong style="color:#ff8888">HIGH</strong>, confirme manualmente — se válido, vire crítico do relatório.
+      </p>
+      {% for s in r.secrets %}
+      <div class="finding-row">
+        <span class="finding-icon">{% if s.severity == 'HIGH' %}🚨{% else %}🔍{% endif %}</span>
+        <div style="flex:1">
+          <div class="finding-label" style="color:{% if s.severity == 'HIGH' %}#ff8888{% else %}#f0c070{% endif %}">
+            [{{ s.severity }}] {{ s.label }}
+          </div>
+          <div class="finding-samples"><code>{{ s.sample }}</code></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Infraestrutura referenciada -->
+  {% if r.infra %}
+  <div class="panel">
+    <div class="panel-header">🌐 Infraestrutura referenciada ({{ r.infra|length }})</div>
+    <div class="panel-body">
+      {% for i in r.infra %}
+      <div class="import-row">
+        <span class="import-api">{{ i.label }}</span>
+        <code style="font-size:.78rem;color:#a8ff78;flex:1;word-break:break-all">{{ i.value }}</code>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- capa -->
+  {% if r.capa and r.capa.capabilities %}
+  <div class="panel">
+    <div class="panel-header">🧠 capa — Capabilities ({{ r.capa.total }})</div>
+    <div class="panel-body">
+      {% for ns, items in r.capa.capabilities.items %}
+      <p style="color:var(--c-cyan);font-size:.82rem;margin:8px 0 4px"><strong>{{ ns }}</strong></p>
+      {% for c in items %}
+        <div style="padding:4px 0 4px 12px;border-left:2px solid rgba(0,255,200,.2);margin-bottom:4px">
+          <code style="font-size:.78rem;color:#f0c070">{{ c.name }}</code>
+          {% if c.description %}<div style="font-size:.76rem;color:#ddd">{{ c.description }}</div>{% endif %}
+          {% if c.attack %}<div style="font-size:.7rem;color:var(--c-muted)">ATT&CK: {{ c.attack|join:", " }}</div>{% endif %}
+        </div>
+      {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Achados suspeitos -->
+  {% if r.suspicious_findings %}
+  <div class="panel">
+    <div class="panel-header">⚠️ Achados Suspeitos ({{ r.suspicious_findings|length }})</div>
+    <div class="panel-body">
+      {% for f in r.suspicious_findings %}
+      <div class="finding-row">
+        <span class="finding-icon">🚨</span>
+        <div>
+          <div class="finding-label">{{ f.label }}</div>
+          <div class="finding-samples">{{ f.samples|join:", " }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Imports suspeitos (EXE) -->
+  {% if r.suspicious_imports %}
+  <div class="panel">
+    <div class="panel-header">🔴 APIs Suspeitas ({{ r.suspicious_imports|length }})</div>
+    <div class="panel-body">
+      {% for imp in r.suspicious_imports %}
+      <div class="import-row">
+        <span class="import-api">{{ imp.api }}</span>
+        <span class="import-dll">{{ imp.dll }}</span>
+        <span class="import-risk">{{ imp.risk }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Permissões (APK) -->
+  {% if r.permissions %}
+  <div class="panel">
+    <div class="panel-header">🔐 Permissões ({{ r.permissions|length }} total,
+      {{ r.dangerous_permissions|length }} perigosas)</div>
+    <div class="panel-body">
+      {% for p in r.dangerous_permissions %}
+        <span class="perm-tag perm-danger">⚠ {{ p }}</span>
+      {% endfor %}
+      {% for p in r.permissions %}
+        {% if p not in r.dangerous_permissions %}
+          <span class="perm-tag perm-normal">{{ p }}</span>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Sections (EXE) -->
+  {% if r.sections %}
+  <div class="panel">
+    <div class="panel-header">📦 Seções PE ({{ r.sections|length }})</div>
+    <div class="panel-body">
+      <div class="section-row" style="color:var(--c-muted);font-size:.78rem;font-weight:600">
+        <span>Nome</span><span>Entropy</span><span>V.Size</span><span>R.Size</span>
+      </div>
+      {% for s in r.sections %}
+      <div class="section-row">
+        <code style="font-size:.8rem;color:{% if s.high_entropy %}var(--c-danger){% else %}var(--c-cyan){% endif %}">
+          {{ s.name }}{% if s.high_entropy %} ⚠{% endif %}
+        </code>
+        <div>
+          <div class="ent-bar" style="width:{% widthratio s.entropy 8 100 %}%"></div>
+          <small style="color:var(--c-muted)">{{ s.entropy }}</small>
+        </div>
+        <small style="color:var(--c-muted)">{{ s.virtual_size }}</small>
+        <small style="color:var(--c-muted)">{{ s.raw_size }}</small>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Componentes (APK) -->
+  {% if r.activities or r.services or r.receivers %}
+  <div class="panel">
+    <div class="panel-header">📱 Componentes do App</div>
+    <div class="panel-body">
+      {% if r.activities %}
+      <p style="color:var(--c-muted);font-size:.8rem;margin-bottom:6px">
+        <strong style="color:#fff">Activities ({{ r.activities|length }})</strong>
+      </p>
+      {% for a in r.activities|slice:":10" %}
+        <div><code style="font-size:.75rem">{{ a }}</code></div>
+      {% endfor %}
+      {% endif %}
+      {% if r.services %}
+      <p style="color:var(--c-muted);font-size:.8rem;margin:10px 0 6px">
+        <strong style="color:#fff">Services ({{ r.services|length }})</strong>
+      </p>
+      {% for s in r.services %}
+        <div><code style="font-size:.75rem">{{ s }}</code></div>
+      {% endfor %}
+      {% endif %}
+      {% if r.receivers %}
+      <p style="color:var(--c-muted);font-size:.8rem;margin:10px 0 6px">
+        <strong style="color:#fff">Receivers ({{ r.receivers|length }})</strong>
+      </p>
+      {% for rec in r.receivers %}
+        <div><code style="font-size:.75rem">{{ rec }}</code></div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Certificado -->
+  {% if r.certificate %}
+  <div class="panel">
+    <div class="panel-header">🔏 Certificado</div>
+    <div class="panel-body">
+      <table class="table table-sm" style="color:var(--c-text);margin:0">
+        {% for k, v in r.certificate.items %}
+        <tr>
+          <td style="color:var(--c-muted);width:140px">{{ k }}</td>
+          <td><code style="font-size:.78rem;word-break:break-all">{{ v }}</code></td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Strings / URLs extraídas -->
+  {% if r.strings_sample %}
+  <div class="panel">
+    <div class="panel-header">🔗 URLs/IPs Extraídos</div>
+    <div class="panel-body">
+      <div class="strings-box">
+        {% for s in r.strings_sample %}{{ s }}<br>{% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Ação: reanalisar -->
+  <div class="d-flex justify-content-end mt-3 gap-3">
+    <a href="{% url 'binary_analyzer:list' %}" class="btn btn-outline-secondary btn-sm">
+      📋 Todas as Análises
+    </a>
+    <form method="post" action="{% url 'binary_analyzer:trigger' file.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-warning btn-sm">🔄 Reanalisar</button>
+    </form>
+  </div>
+
+  {% endwith %}
+  {% endif %}
+
+  <!-- Polling quando análise ainda está rodando -->
+  {% if analysis and analysis.status in 'pending,analyzing' %}
+  <div class="panel">
+    <div class="panel-header"><span class="status-spinner"></span> Análise em progresso…</div>
+    <div class="panel-body" style="color:var(--c-muted)">
+      A análise está rodando em background. Esta página será atualizada automaticamente.
+    </div>
+  </div>
+  <script>
+    (function poll() {
+      fetch("{% url 'binary_analyzer:status' file.id %}")
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'done' || data.status === 'error') {
+            location.reload();
+          } else {
+            setTimeout(poll, 3000);
+          }
+        })
+        .catch(() => setTimeout(poll, 5000));
+    })();
+  </script>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+<div class="modal fade" id="shareModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Compartilhar Recurso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="shareForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="resource_type" id="shareResourceType">
+                    <input type="hidden" name="resource_id" id="shareResourceId">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Compartilhar com:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="share_scope" value="public" id="sharePublic">
+                            <label class="form-check-label" for="sharePublic">
+                                Todos os usuários (Público)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="share_scope" value="specific" id="shareSpecific" checked>
+                            <label class="form-check-label" for="shareSpecific">
+                                Usuários específicos
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3" id="usersSelection">
+                        <label class="form-label">Selecionar usuários:</label>
+                        <select multiple class="form-select" name="users" id="shareUsers">
+                            <!-- Preenchido via JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Permissão:</label>
+                        <select class="form-select" name="permission">
+                            <option value="view">Apenas visualizar</option>
+                            <option value="edit">Visualizar e editar</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="submitShare()">Compartilhar</button>
+            </div>
+        </div>
+    </div>
+</div>

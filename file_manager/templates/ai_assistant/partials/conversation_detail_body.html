@@ -1,0 +1,16 @@
+<div class="chat-container">
+  <div class="conversation-header-box">
+    <h2>Detalhes da Conversa</h2>
+    <p><strong>{{ conversation.title }}</strong></p>
+  </div>
+
+  {% for msg in messages %}
+    <div class="message-card">
+      <div class="sender">{{ msg.get_sender_display }}:</div>
+      <div class="content">{{ msg.content|linebreaksbr }}</div>
+      <div class="timestamp">{{ msg.created_at|date:"d/m/Y H:i:s" }}</div>
+    </div>
+  {% empty %}
+    <p>Essa conversa ainda não possui mensagens.</p>
+  {% endfor %}
+</div>

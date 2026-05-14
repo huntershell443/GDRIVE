@@ -8,6 +8,21 @@
 
 **GDriver** — Plataforma Django auto-hospedada de gestão de arquivos + segurança ofensiva. Inclui IA assistente local (Ollama/phi3.5) com painel de thinking em tempo real, análise estática de APK/EXE, gestão de CVEs e dorks, projetos com terminal WebSocket e RAG sobre arquivos. Stack: Django, Postgres/SQLite, Docker.
 
+### Capturas de Tela
+
+| | | |
+|:-:|:-:|:-:|
+| ![Screenshot 1](docs/screenshots/1.png) | ![Screenshot 2](docs/screenshots/2.png) | ![Screenshot 3](docs/screenshots/3.png) |
+| **Screenshot 1** | **Screenshot 2** | **Screenshot 3** |
+| ![Screenshot 4](docs/screenshots/4.png) | ![Screenshot 5](docs/screenshots/5.png) | ![Screenshot 6](docs/screenshots/6.png) |
+| **Screenshot 4** | **Screenshot 5** | **Screenshot 6** |
+| ![Screenshot 7](docs/screenshots/7.png) | ![Screenshot 8](docs/screenshots/8.png) | ![Screenshot 9](docs/screenshots/9.png) |
+| **Screenshot 7** | **Screenshot 8** | **Screenshot 9** |
+| ![Screenshot 10](docs/screenshots/10.png) | ![Screenshot 11](docs/screenshots/11.png) | ![Screenshot 12](docs/screenshots/12.png) |
+| **Screenshot 10** | **Screenshot 11** | **Screenshot 12** |
+| ![Screenshot 13](docs/screenshots/13.png) | ![Screenshot 14](docs/screenshots/14.png) | ![Screenshot 15](docs/screenshots/15.png) |
+| **Screenshot 13** | **Screenshot 14** | **Screenshot 15** |
+
 ### Requisitos
 
 | Componente | Versão mínima |
@@ -379,6 +394,21 @@ docker compose exec db psql -U gdrive -d gdrive -c "\dt"
 ## 🇺🇸 English Version
 
 **GDriver** — Self-hosted Django platform for file management + offensive security. Features local AI assistant (Ollama/phi3.5) with real-time thinking panel, static APK/EXE analysis, CVE & dork management, projects with WebSocket terminal, and RAG over files. Stack: Django, Postgres/SQLite, Docker.
+
+### Screenshots
+
+| | | |
+|:-:|:-:|:-:|
+| ![Screenshot 1](docs/screenshots/1.png) | ![Screenshot 2](docs/screenshots/2.png) | ![Screenshot 3](docs/screenshots/3.png) |
+| **Screenshot 1** | **Screenshot 2** | **Screenshot 3** |
+| ![Screenshot 4](docs/screenshots/4.png) | ![Screenshot 5](docs/screenshots/5.png) | ![Screenshot 6](docs/screenshots/6.png) |
+| **Screenshot 4** | **Screenshot 5** | **Screenshot 6** |
+| ![Screenshot 7](docs/screenshots/7.png) | ![Screenshot 8](docs/screenshots/8.png) | ![Screenshot 9](docs/screenshots/9.png) |
+| **Screenshot 7** | **Screenshot 8** | **Screenshot 9** |
+| ![Screenshot 10](docs/screenshots/10.png) | ![Screenshot 11](docs/screenshots/11.png) | ![Screenshot 12](docs/screenshots/12.png) |
+| **Screenshot 10** | **Screenshot 11** | **Screenshot 12** |
+| ![Screenshot 13](docs/screenshots/13.png) | ![Screenshot 14](docs/screenshots/14.png) | ![Screenshot 15](docs/screenshots/15.png) |
+| **Screenshot 13** | **Screenshot 14** | **Screenshot 15** |
 
 ### Requirements
 

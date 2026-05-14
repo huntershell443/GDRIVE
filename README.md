@@ -241,11 +241,118 @@ server {
 
 ### Rodar com Docker
 
+Stack pronto: **PostgreSQL 16** + **Django (uvicorn)** na porta **8787**. O serviço `gdrive` faz `migrate` + `collectstatic` + boot do servidor automaticamente via `entrypoint.sh`.
+
+#### 1. Pré-requisitos
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/macOS) ou Docker Engine + Compose Plugin (Linux)
+- Arquivo `drive_simulator/.env` configurado (ver passo 4 da instalação local)
+
+#### 2. Subir o stack
+
 ```bash
-docker compose up --build
+docker compose build gdrive
+docker compose up -d
+docker compose logs -f gdrive   # acompanhar o boot; Ctrl+C para sair dos logs
 ```
 
-Sobe Postgres + Django na porta **8787**. Volumes persistentes: `pg_data`, `media_data`, `static_data`.
+Acesse: http://127.0.0.1:8787
+
+#### 3. Criar superusuário
+
+```bash
+docker compose exec gdrive python manage.py createsuperuser
+```
+
+#### 4. Comandos úteis
+
+```bash
+docker compose ps                                       # status dos serviços
+docker compose restart gdrive                           # reinicia Django sem rebuild
+docker compose exec gdrive python manage.py <comando>   # qualquer manage.py
+docker compose exec db psql -U gdrive -d gdrive         # console SQL do Postgres
+docker compose down                                     # para os containers
+docker compose down -v                                  # para + apaga volumes (zera DB!)
+```
+
+#### 5. Volumes persistentes
+
+| Volume        | Conteúdo                                    |
+|---------------|---------------------------------------------|
+| `pg_data`     | Banco PostgreSQL                            |
+| `media_data`  | Uploads dos usuários (`/app/gdrive_users`)  |
+| `static_data` | Arquivos estáticos coletados                |
+
+### Migrar dados de SQLite para PostgreSQL
+
+Se você já usou o sistema com SQLite (`DEBUG=True`) e quer mover os dados para o Postgres do Docker, faça pelo container — o Django alterna entre os bancos apenas pela env `DEBUG`.
+
+#### 1. Backup da SQLite
+
+```bash
+cp cmbd.sqlite3 cmbd.sqlite3.bak
+```
+
+> No PowerShell: `Copy-Item .\cmbd.sqlite3 .\cmbd.sqlite3.bak`
+
+#### 2. Dump dos dados (com `DEBUG=True` para ler a SQLite)
+
+Em `drive_simulator/.env`:
+
+```env
+DEBUG=True
+```
+
+```bash
+docker compose restart gdrive
+docker compose exec gdrive python manage.py dumpdata \
+    --natural-foreign --natural-primary \
+    --exclude=contenttypes \
+    --exclude=auth.permission \
+    --exclude=admin.logentry \
+    --exclude=sessions.session \
+    --indent=2 -o /app/db_dump.json
+```
+
+O `db_dump.json` aparece na raiz do projeto (via volume `./:/app`).
+
+#### 3. Trocar para PostgreSQL
+
+Em `drive_simulator/.env`:
+
+```env
+DEBUG=False
+```
+
+```bash
+docker compose restart gdrive
+```
+
+O `entrypoint.sh` cria o schema no Postgres automaticamente (`migrate`).
+
+#### 4. Carregar os dados no Postgres
+
+```bash
+docker compose exec gdrive python manage.py loaddata /app/db_dump.json
+```
+
+Pode levar de 5 a 30 min em bases grandes — `loaddata` insere linha-a-linha via ORM.
+
+#### 5. Verificar
+
+```bash
+docker compose exec gdrive python manage.py shell -c "from django.contrib.auth.models import User; print('Users:', User.objects.count())"
+docker compose exec db psql -U gdrive -d gdrive -c "\dt"
+```
+
+#### Erros comuns
+
+| Sintoma | Solução |
+|---|---|
+| `IntegrityError: duplicate key value` no loaddata | Faltou `--natural-foreign --natural-primary` no dump, ou esqueceu de excluir `contenttypes`/`auth.permission` |
+| `ContentType matching query does not exist` | Idem ↑ |
+| Loaddata estoura memória | Quebre por app: `dumpdata file_manager -o fm.json` etc, e carregue em ordem |
+| Zerar o Postgres e recomeçar | `docker compose down -v` apaga o volume `pg_data`; depois refaça do passo 3 |
 
 ### Solução de Problemas
 
@@ -506,11 +613,118 @@ server {
 
 ### Run with Docker
 
+Ready-to-go stack: **PostgreSQL 16** + **Django (uvicorn)** on port **8787**. The `gdrive` service auto-runs `migrate` + `collectstatic` + server boot via `entrypoint.sh`.
+
+#### 1. Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/macOS) or Docker Engine + Compose Plugin (Linux)
+- `drive_simulator/.env` file configured (see step 4 of local install)
+
+#### 2. Bring up the stack
+
 ```bash
-docker compose up --build
+docker compose build gdrive
+docker compose up -d
+docker compose logs -f gdrive   # follow the boot logs; Ctrl+C to exit
 ```
 
-Brings up Postgres + Django on port **8787**. Persistent volumes: `pg_data`, `media_data`, `static_data`.
+Visit: http://127.0.0.1:8787
+
+#### 3. Create a superuser
+
+```bash
+docker compose exec gdrive python manage.py createsuperuser
+```
+
+#### 4. Useful commands
+
+```bash
+docker compose ps                                       # service status
+docker compose restart gdrive                           # restart Django (no rebuild)
+docker compose exec gdrive python manage.py <command>   # any manage.py command
+docker compose exec db psql -U gdrive -d gdrive         # Postgres SQL console
+docker compose down                                     # stop containers
+docker compose down -v                                  # stop + remove volumes (wipes DB!)
+```
+
+#### 5. Persistent volumes
+
+| Volume        | Content                                    |
+|---------------|--------------------------------------------|
+| `pg_data`     | PostgreSQL data                            |
+| `media_data`  | User uploads (`/app/gdrive_users`)         |
+| `static_data` | Collected static files                     |
+
+### Migrate data from SQLite to PostgreSQL
+
+If you've been using SQLite (`DEBUG=True`) and want to move the data to Docker's Postgres, do it through the container — Django swaps databases purely via the `DEBUG` env var.
+
+#### 1. Back up the SQLite file
+
+```bash
+cp cmbd.sqlite3 cmbd.sqlite3.bak
+```
+
+> On PowerShell: `Copy-Item .\cmbd.sqlite3 .\cmbd.sqlite3.bak`
+
+#### 2. Dump the data (with `DEBUG=True` so Django reads SQLite)
+
+In `drive_simulator/.env`:
+
+```env
+DEBUG=True
+```
+
+```bash
+docker compose restart gdrive
+docker compose exec gdrive python manage.py dumpdata \
+    --natural-foreign --natural-primary \
+    --exclude=contenttypes \
+    --exclude=auth.permission \
+    --exclude=admin.logentry \
+    --exclude=sessions.session \
+    --indent=2 -o /app/db_dump.json
+```
+
+`db_dump.json` appears at the project root (via the `./:/app` volume).
+
+#### 3. Switch to PostgreSQL
+
+In `drive_simulator/.env`:
+
+```env
+DEBUG=False
+```
+
+```bash
+docker compose restart gdrive
+```
+
+`entrypoint.sh` auto-creates the schema on Postgres (`migrate`).
+
+#### 4. Load the data into Postgres
+
+```bash
+docker compose exec gdrive python manage.py loaddata /app/db_dump.json
+```
+
+Can take 5–30 min on large databases — `loaddata` inserts row-by-row through the ORM.
+
+#### 5. Verify
+
+```bash
+docker compose exec gdrive python manage.py shell -c "from django.contrib.auth.models import User; print('Users:', User.objects.count())"
+docker compose exec db psql -U gdrive -d gdrive -c "\dt"
+```
+
+#### Common errors
+
+| Symptom | Fix |
+|---|---|
+| `IntegrityError: duplicate key value` on loaddata | Missing `--natural-foreign --natural-primary` in the dump, or didn't exclude `contenttypes`/`auth.permission` |
+| `ContentType matching query does not exist` | Same as above |
+| Loaddata runs out of memory | Split by app: `dumpdata file_manager -o fm.json` etc, and load in order |
+| Reset Postgres and start over | `docker compose down -v` wipes the `pg_data` volume; then redo from step 3 |
 
 ### Troubleshooting
 

@@ -10,18 +10,23 @@
 
 ### Capturas de Tela
 
-| | | |
-|:-:|:-:|:-:|
-| ![Screenshot 1](docs/screenshots/1.png) | ![Screenshot 2](docs/screenshots/2.png) | ![Screenshot 3](docs/screenshots/3.png) |
-| **Screenshot 1** | **Screenshot 2** | **Screenshot 3** |
-| ![Screenshot 4](docs/screenshots/4.png) | ![Screenshot 5](docs/screenshots/5.png) | ![Screenshot 6](docs/screenshots/6.png) |
-| **Screenshot 4** | **Screenshot 5** | **Screenshot 6** |
-| ![Screenshot 7](docs/screenshots/7.png) | ![Screenshot 8](docs/screenshots/8.png) | ![Screenshot 9](docs/screenshots/9.png) |
-| **Screenshot 7** | **Screenshot 8** | **Screenshot 9** |
-| ![Screenshot 10](docs/screenshots/10.png) | ![Screenshot 11](docs/screenshots/11.png) | ![Screenshot 12](docs/screenshots/12.png) |
-| **Screenshot 10** | **Screenshot 11** | **Screenshot 12** |
-| ![Screenshot 13](docs/screenshots/13.png) | ![Screenshot 14](docs/screenshots/14.png) | ![Screenshot 15](docs/screenshots/15.png) |
-| **Screenshot 13** | **Screenshot 14** | **Screenshot 15** |
+| | |
+|:-:|---|
+| <img src="docs/screenshots/1.png" width="420" alt="Screenshot 1"> | **Screenshot 1**<br>Descrição em breve. |
+| <img src="docs/screenshots/2.png" width="420" alt="Screenshot 2"> | **Screenshot 2**<br>Descrição em breve. |
+| <img src="docs/screenshots/3.png" width="420" alt="Screenshot 3"> | **Screenshot 3**<br>Descrição em breve. |
+| <img src="docs/screenshots/4.png" width="420" alt="Screenshot 4"> | **Screenshot 4**<br>Descrição em breve. |
+| <img src="docs/screenshots/5.png" width="420" alt="Screenshot 5"> | **Screenshot 5**<br>Descrição em breve. |
+| <img src="docs/screenshots/6.png" width="420" alt="Screenshot 6"> | **Screenshot 6**<br>Descrição em breve. |
+| <img src="docs/screenshots/7.png" width="420" alt="Screenshot 7"> | **Screenshot 7**<br>Descrição em breve. |
+| <img src="docs/screenshots/8.png" width="420" alt="Screenshot 8"> | **Screenshot 8**<br>Descrição em breve. |
+| <img src="docs/screenshots/9.png" width="420" alt="Screenshot 9"> | **Screenshot 9**<br>Descrição em breve. |
+| <img src="docs/screenshots/10.png" width="420" alt="Screenshot 10"> | **Screenshot 10**<br>Descrição em breve. |
+| <img src="docs/screenshots/11.png" width="420" alt="Screenshot 11"> | **Screenshot 11**<br>Descrição em breve. |
+| <img src="docs/screenshots/12.png" width="420" alt="Screenshot 12"> | **Screenshot 12**<br>Descrição em breve. |
+| <img src="docs/screenshots/13.png" width="420" alt="Screenshot 13"> | **Screenshot 13**<br>Descrição em breve. |
+| <img src="docs/screenshots/14.png" width="420" alt="Screenshot 14"> | **Screenshot 14**<br>Descrição em breve. |
+| <img src="docs/screenshots/15.png" width="420" alt="Screenshot 15"> | **Screenshot 15**<br>Descrição em breve. |
 
 ### Requisitos
 
@@ -397,18 +402,23 @@ docker compose exec db psql -U gdrive -d gdrive -c "\dt"
 
 ### Screenshots
 
-| | | |
-|:-:|:-:|:-:|
-| ![Screenshot 1](docs/screenshots/1.png) | ![Screenshot 2](docs/screenshots/2.png) | ![Screenshot 3](docs/screenshots/3.png) |
-| **Screenshot 1** | **Screenshot 2** | **Screenshot 3** |
-| ![Screenshot 4](docs/screenshots/4.png) | ![Screenshot 5](docs/screenshots/5.png) | ![Screenshot 6](docs/screenshots/6.png) |
-| **Screenshot 4** | **Screenshot 5** | **Screenshot 6** |
-| ![Screenshot 7](docs/screenshots/7.png) | ![Screenshot 8](docs/screenshots/8.png) | ![Screenshot 9](docs/screenshots/9.png) |
-| **Screenshot 7** | **Screenshot 8** | **Screenshot 9** |
-| ![Screenshot 10](docs/screenshots/10.png) | ![Screenshot 11](docs/screenshots/11.png) | ![Screenshot 12](docs/screenshots/12.png) |
-| **Screenshot 10** | **Screenshot 11** | **Screenshot 12** |
-| ![Screenshot 13](docs/screenshots/13.png) | ![Screenshot 14](docs/screenshots/14.png) | ![Screenshot 15](docs/screenshots/15.png) |
-| **Screenshot 13** | **Screenshot 14** | **Screenshot 15** |
+| | |
+|:-:|---|
+| <img src="docs/screenshots/1.png" width="420" alt="Screenshot 1"> | **Screenshot 1**<br>Description coming soon. |
+| <img src="docs/screenshots/2.png" width="420" alt="Screenshot 2"> | **Screenshot 2**<br>Description coming soon. |
+| <img src="docs/screenshots/3.png" width="420" alt="Screenshot 3"> | **Screenshot 3**<br>Description coming soon. |
+| <img src="docs/screenshots/4.png" width="420" alt="Screenshot 4"> | **Screenshot 4**<br>Description coming soon. |
+| <img src="docs/screenshots/5.png" width="420" alt="Screenshot 5"> | **Screenshot 5**<br>Description coming soon. |
+| <img src="docs/screenshots/6.png" width="420" alt="Screenshot 6"> | **Screenshot 6**<br>Description coming soon. |
+| <img src="docs/screenshots/7.png" width="420" alt="Screenshot 7"> | **Screenshot 7**<br>Description coming soon. |
+| <img src="docs/screenshots/8.png" width="420" alt="Screenshot 8"> | **Screenshot 8**<br>Description coming soon. |
+| <img src="docs/screenshots/9.png" width="420" alt="Screenshot 9"> | **Screenshot 9**<br>Description coming soon. |
+| <img src="docs/screenshots/10.png" width="420" alt="Screenshot 10"> | **Screenshot 10**<br>Description coming soon. |
+| <img src="docs/screenshots/11.png" width="420" alt="Screenshot 11"> | **Screenshot 11**<br>Description coming soon. |
+| <img src="docs/screenshots/12.png" width="420" alt="Screenshot 12"> | **Screenshot 12**<br>Description coming soon. |
+| <img src="docs/screenshots/13.png" width="420" alt="Screenshot 13"> | **Screenshot 13**<br>Description coming soon. |
+| <img src="docs/screenshots/14.png" width="420" alt="Screenshot 14"> | **Screenshot 14**<br>Description coming soon. |
+| <img src="docs/screenshots/15.png" width="420" alt="Screenshot 15"> | **Screenshot 15**<br>Description coming soon. |
 
 ### Requirements
 
